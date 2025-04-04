@@ -27,14 +27,14 @@ const NewsTicker: React.FC = () => {
   };
 
   // The animation class depends on the paused state
-  const animationClass = isPaused ? '' : 'animate-marquee';
+  const animationClass = isPaused ? '' : 'animate-slow-marquee';
 
   return (
-    <div className="bg-gradient-to-r from-maroon to-navy text-white py-3 overflow-hidden relative group">
+    <div className="bg-gradient-to-r from-maroon to-navy text-white py-4 overflow-hidden relative group">
       <div className="container mx-auto flex items-center relative">
-        <div className="hidden md:flex items-center space-x-2 bg-black/20 px-3 py-1 rounded-md mr-4">
-          <span className="font-bold text-gold text-sm">LIVE UPDATES</span>
-          <span className="animate-pulse h-2 w-2 bg-destructive rounded-full"></span>
+        <div className="hidden md:flex items-center space-x-2 bg-black/20 px-4 py-2 rounded-md mr-4">
+          <span className="font-bold text-gold text-base">LIVE UPDATES</span>
+          <span className="animate-pulse h-3 w-3 bg-destructive rounded-full"></span>
         </div>
         
         <ScrollArea className="w-full overflow-hidden">
@@ -43,31 +43,31 @@ const NewsTicker: React.FC = () => {
             {[...tickerData, ...tickerData].map((item, index) => (
               <div 
                 key={`${item.id}-${index}`} 
-                className="inline-flex items-center mx-8 md:mx-12 hover:bg-white/10 px-3 py-1 rounded transition-colors duration-300"
+                className="inline-flex items-center mx-10 md:mx-16 hover:bg-white/10 px-4 py-2 rounded transition-colors duration-300"
               >
-                <span className="font-bold text-gold">{item.source}:</span>
-                <span className="ml-2">{item.content}</span>
-                <span className="ml-2 text-xs text-white/70">{item.timestamp}</span>
+                <span className="font-bold text-gold text-lg">{item.source}:</span>
+                <span className="ml-2 text-base">{item.content}</span>
+                <span className="ml-2 text-sm text-white/70">{item.timestamp}</span>
               </div>
             ))}
           </div>
         </ScrollArea>
         
         {/* Controls - only visible on hover on desktop */}
-        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center space-x-2 bg-black/30 backdrop-blur-sm p-1 rounded">
+        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center space-x-2 bg-black/30 backdrop-blur-sm p-2 rounded">
           <button 
             onClick={() => setIsPaused(!isPaused)} 
-            className="p-1 hover:bg-white/20 rounded transition-colors"
+            className="p-1.5 hover:bg-white/20 rounded transition-colors"
             aria-label={isPaused ? "Play ticker" : "Pause ticker"}
           >
-            {isPaused ? <Play size={16} /> : <Pause size={16} />}
+            {isPaused ? <Play size={18} /> : <Pause size={18} />}
           </button>
           <button 
             onClick={handleRefresh} 
-            className={`p-1 hover:bg-white/20 rounded transition-colors ${isRefreshing ? 'animate-spin' : ''}`}
+            className={`p-1.5 hover:bg-white/20 rounded transition-colors ${isRefreshing ? 'animate-spin' : ''}`}
             aria-label="Refresh ticker"
           >
-            <RefreshCw size={16} />
+            <RefreshCw size={18} />
           </button>
         </div>
       </div>

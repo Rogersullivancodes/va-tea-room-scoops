@@ -90,6 +90,10 @@ export default {
           '0%': { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-100%)' }
         },
+        'slow-marquee': {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-100%)' }
+        },
         'glitch': {
           '0%': { 
             transform: 'translate(0)', 
@@ -121,6 +125,7 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'marquee': 'marquee 25s linear infinite',
+        'slow-marquee': 'slow-marquee 60s linear infinite',
         'glitch': 'glitch 5s ease-in-out infinite',
         'fade-in': 'fade-in 0.5s ease-in'
       },
