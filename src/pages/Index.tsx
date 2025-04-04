@@ -15,11 +15,19 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <Hero />
-      <div className="sticky top-0 z-10">
+      <div className="sticky top-0 z-10 shadow-lg">
         <NewsTicker />
       </div>
       <main>
         <TeaDropsSection />
+        <div className="bg-navy/5 py-6 px-4 text-center">
+          <div className="container mx-auto">
+            <p className="text-sm text-gray-600">ADVERTISEMENT</p>
+            <div className="h-24 md:h-32 bg-gray-200 rounded-md flex items-center justify-center mt-2">
+              <span className="text-gray-500">Premium Banner Ad Space</span>
+            </div>
+          </div>
+        </div>
         <CampaignCoinSection />
         <MemeOfTheDay />
         <ElectionWatchSection />

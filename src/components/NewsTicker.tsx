@@ -3,14 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Pause, Play, RefreshCw } from 'lucide-react';
 
-// Mock data for the ticker (simulating tweets)
+// More accurate Virginia political news data
 const tickerData = [
-  { id: 1, source: '@vademocrats', content: 'We stand united against corruption.', timestamp: '2h ago' },
-  { id: 2, source: '@VASenateGOP', content: 'New poll shows swing in 6 key districts…', timestamp: '3h ago' },
-  { id: 3, source: '@RichmondTimes', content: 'Lobbyists spent $1.2M last quarter in VA legislature.', timestamp: '4h ago' },
-  { id: 4, source: '@VACapitolInsider', content: 'Speaker cancels tomorrow\'s session amid controversy.', timestamp: '6h ago' },
-  { id: 5, source: '@BlueVA', content: 'Breaking: New endorsement in the 7th district race.', timestamp: '7h ago' },
-  { id: 6, source: '@PoliticsBrief', content: 'Governor approval rating drops 5 points after budget veto.', timestamp: '9h ago' },
+  { id: 1, source: '@vademocrats', content: 'New legislative agenda focuses on healthcare and education funding for the 2025 session.', timestamp: '1h ago' },
+  { id: 2, source: '@VASenateGOP', content: 'Our economic plan could create 15,000 new jobs across Virginia's rural communities.', timestamp: '2h ago' },
+  { id: 3, source: '@RichmondTimes', content: 'General Assembly debate on transportation bill ends in surprising bipartisan agreement.', timestamp: '3h ago' },
+  { id: 4, source: '@VACapitolInsider', content: 'Governor visits flood-damaged areas in Southwest Virginia, announces emergency aid package.', timestamp: '4h ago' },
+  { id: 5, source: '@BlueVA', content: 'Latest polling shows tight race in Northern Virginia's 10th district ahead of November elections.', timestamp: '5h ago' },
+  { id: 6, source: '@PoliticsBrief', content: 'Special session called to address redistricting concerns before 2026 map finalization.', timestamp: '6h ago' },
 ];
 
 const NewsTicker: React.FC = () => {
@@ -30,9 +30,9 @@ const NewsTicker: React.FC = () => {
   const animationClass = isPaused ? '' : 'animate-slow-marquee';
 
   return (
-    <div className="bg-gradient-to-r from-maroon to-navy text-white py-4 overflow-hidden relative group">
+    <div className="bg-gradient-to-r from-maroon to-navy text-white py-5 overflow-hidden relative group sticky top-0 z-20 shadow-md">
       <div className="container mx-auto flex items-center relative">
-        <div className="hidden md:flex items-center space-x-2 bg-black/20 px-4 py-2 rounded-md mr-4">
+        <div className="hidden md:flex items-center space-x-2 bg-black/30 px-4 py-2 rounded-md mr-4">
           <span className="font-bold text-gold text-base">LIVE UPDATES</span>
           <span className="animate-pulse h-3 w-3 bg-destructive rounded-full"></span>
         </div>
@@ -43,31 +43,31 @@ const NewsTicker: React.FC = () => {
             {[...tickerData, ...tickerData].map((item, index) => (
               <div 
                 key={`${item.id}-${index}`} 
-                className="inline-flex items-center mx-10 md:mx-16 hover:bg-white/10 px-4 py-2 rounded transition-colors duration-300"
+                className="inline-flex items-center mx-12 md:mx-20 hover:bg-white/20 px-5 py-3 rounded-lg transition-colors duration-300"
               >
-                <span className="font-bold text-gold text-lg">{item.source}:</span>
-                <span className="ml-2 text-base">{item.content}</span>
-                <span className="ml-2 text-sm text-white/70">{item.timestamp}</span>
+                <span className="font-bold text-gold text-lg md:text-xl">{item.source}:</span>
+                <span className="ml-3 text-base md:text-lg">{item.content}</span>
+                <span className="ml-3 text-sm text-white/80">{item.timestamp}</span>
               </div>
             ))}
           </div>
         </ScrollArea>
         
         {/* Controls - only visible on hover on desktop */}
-        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center space-x-2 bg-black/30 backdrop-blur-sm p-2 rounded">
+        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center space-x-3 bg-black/40 backdrop-blur-sm p-3 rounded-lg">
           <button 
             onClick={() => setIsPaused(!isPaused)} 
-            className="p-1.5 hover:bg-white/20 rounded transition-colors"
+            className="p-2 hover:bg-white/20 rounded-md transition-colors"
             aria-label={isPaused ? "Play ticker" : "Pause ticker"}
           >
-            {isPaused ? <Play size={18} /> : <Pause size={18} />}
+            {isPaused ? <Play size={20} /> : <Pause size={20} />}
           </button>
           <button 
             onClick={handleRefresh} 
-            className={`p-1.5 hover:bg-white/20 rounded transition-colors ${isRefreshing ? 'animate-spin' : ''}`}
+            className={`p-2 hover:bg-white/20 rounded-md transition-colors ${isRefreshing ? 'animate-spin' : ''}`}
             aria-label="Refresh ticker"
           >
-            <RefreshCw size={18} />
+            <RefreshCw size={20} />
           </button>
         </div>
       </div>
