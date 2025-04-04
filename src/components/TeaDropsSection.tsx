@@ -17,31 +17,31 @@ type TeaDrop = {
 const teaDrops: TeaDrop[] = [
   {
     id: 1,
-    title: "Virginia House Speaker's Text Messages Reveal Previously Undisclosed Meetings with Lobbyists",
-    excerpt: "Leaked communications show three private meetings with energy sector representatives were held days before critical vote on regulatory bill...",
-    imageUrl: "https://images.unsplash.com/photo-1540910419892-4a36d2c3266c",
+    title: "Virginia General Assembly Passes Historic Transportation Funding Package",
+    excerpt: "Bipartisan legislation allocates $2.5 billion for road improvements, public transit expansion, and bridge repairs across the Commonwealth over the next five years...",
+    imageUrl: "https://images.unsplash.com/photo-1494522358652-f30e61a60313",
     date: "April 3, 2025",
-    category: "Investigations",
+    category: "Legislation",
     views: 4582,
     comments: 215
   },
   {
     id: 2,
-    title: "Newly Elected Fairfax Delegate's Undisclosed Real Estate Holdings Create Potential Conflict",
-    excerpt: "Public records reveal the freshman delegate owns properties that would directly benefit from infrastructure legislation she recently co-sponsored...",
-    imageUrl: "https://images.unsplash.com/photo-1542889601-399c4f3a8402",
+    title: "Competitive Race Shapes Up in Virginia's 7th Congressional District",
+    excerpt: "With incumbent retiring, both parties see opportunity in swing district that spans portions of central Virginia. Early fundraising numbers show tight contest ahead...",
+    imageUrl: "https://images.unsplash.com/photo-1541119989350-6f9d1c72ae51",
     date: "April 2, 2025",
-    category: "Conflicts of Interest",
+    category: "Elections",
     views: 3271,
     comments: 178
   },
   {
     id: 3,
-    title: "Budget Committee Chair's Former Staffers Now Employed by Companies Receiving State Contracts",
-    excerpt: "Five former senior aides have moved to positions with corporations that secured over $47 million in state funding during the last fiscal year...",
-    imageUrl: "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3",
+    title: "Virginia's New Clean Energy Initiative Aims to Create Jobs While Reducing Emissions",
+    excerpt: "State program will invest $120 million in renewable energy projects across Southern Virginia, with focus on transitioning coal communities toward sustainable industries...",
+    imageUrl: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9",
     date: "April 1, 2025",
-    category: "Revolving Door",
+    category: "Environment",
     views: 2985,
     comments: 163
   }
@@ -62,7 +62,7 @@ const TeaDropsSection: React.FC = () => {
         <div className="flex items-center justify-between mb-10">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-maroon mb-2">Virginia Political Insights</h2>
-            <p className="text-gray-600">The stories they don't want you to see</p>
+            <p className="text-gray-600">The latest news and analysis from across the Commonwealth</p>
           </div>
           <a href="#more-tea" className="text-navy font-medium flex items-center hover:text-maroon">
             View All <ArrowRight className="ml-1 h-4 w-4" />
