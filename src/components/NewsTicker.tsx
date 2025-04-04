@@ -6,10 +6,10 @@ import { Pause, Play, RefreshCw } from 'lucide-react';
 // More accurate Virginia political news data
 const tickerData = [
   { id: 1, source: '@vademocrats', content: 'New legislative agenda focuses on healthcare and education funding for the 2025 session.', timestamp: '1h ago' },
-  { id: 2, source: '@VASenateGOP', content: 'Our economic plan could create 15,000 new jobs across Virginia's rural communities.', timestamp: '2h ago' },
+  { id: 2, source: '@VASenateGOP', content: "Our economic plan could create 15,000 new jobs across Virginia's rural communities.", timestamp: '2h ago' },
   { id: 3, source: '@RichmondTimes', content: 'General Assembly debate on transportation bill ends in surprising bipartisan agreement.', timestamp: '3h ago' },
   { id: 4, source: '@VACapitolInsider', content: 'Governor visits flood-damaged areas in Southwest Virginia, announces emergency aid package.', timestamp: '4h ago' },
-  { id: 5, source: '@BlueVA', content: 'Latest polling shows tight race in Northern Virginia's 10th district ahead of November elections.', timestamp: '5h ago' },
+  { id: 5, source: '@BlueVA', content: "Latest polling shows tight race in Northern Virginia's 10th district ahead of November elections.", timestamp: '5h ago' },
   { id: 6, source: '@PoliticsBrief', content: 'Special session called to address redistricting concerns before 2026 map finalization.', timestamp: '6h ago' },
 ];
 
