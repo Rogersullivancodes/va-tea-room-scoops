@@ -68,9 +68,10 @@ export default {
           ring: 'hsl(var(--sidebar-ring))'
         },
         maroon: '#8B1E3F',
-        navy: '#303E73',
+        navy: '#1e293b',
         gold: '#F3B61F',
         lightgray: '#F5F5F5',
+        'crab-red': '#b22222',
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -94,28 +95,6 @@ export default {
           '0%': { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-100%)' }
         },
-        'glitch': {
-          '0%': { 
-            transform: 'translate(0)', 
-            filter: 'brightness(1)' 
-          },
-          '3%': { 
-            transform: 'translate(-3px, 2px)',
-            filter: 'brightness(1.1)' 
-          },
-          '6%': { 
-            transform: 'translate(2px, -2px)',
-            filter: 'brightness(0.9)' 
-          },
-          '9%': { 
-            transform: 'translate(0, 0)',
-            filter: 'brightness(1)' 
-          },
-          '100%': { 
-            transform: 'translate(0)', 
-            filter: 'brightness(1)' 
-          }
-        },
         'fade-in': {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' }
@@ -126,12 +105,12 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'marquee': 'marquee 25s linear infinite',
         'slow-marquee': 'slow-marquee 60s linear infinite',
-        'glitch': 'glitch 5s ease-in-out infinite',
         'fade-in': 'fade-in 0.5s ease-in'
       },
       fontFamily: {
         'montserrat': ['Montserrat', 'sans-serif'],
         'source': ['"Source Sans Pro"', 'sans-serif'],
+        'serif': ['Georgia', 'serif'],
       },
     }
   },
