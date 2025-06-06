@@ -26,10 +26,12 @@ const Hero: React.FC = () => {
               <span className="inline-block bg-red-600 text-white px-3 py-1 text-sm font-bold rounded mr-3">BREAKING</span>
               <span className="text-white/80 text-sm">June 4, 2025</span>
             </div>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-4 leading-tight font-serif">
-              Virginia Legislature Debates Historic Seafood Industry Reform Bill
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-6 leading-tight font-serif tracking-wide">
+              <span className="block mb-2">Virginia Legislature Debates</span>
+              <span className="block mb-2 text-red-400">Historic Seafood Industry</span>
+              <span className="block">Reform Bill</span>
             </h1>
-            <p className="text-white/90 mb-6 text-lg">
+            <p className="text-white/90 mb-6 text-lg leading-relaxed">
               Chesapeake Bay regulations spark heated political discussion as crab industry leaders meet with state officials
             </p>
             <div className="flex flex-wrap gap-3">

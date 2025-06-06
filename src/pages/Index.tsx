@@ -8,6 +8,8 @@ import TeaDropsSection from '@/components/TeaDropsSection';
 import CampaignCoinSection from '@/components/CampaignCoinSection';
 import MemeOfTheDay from '@/components/MemeOfTheDay';
 import ElectionWatchSection from '@/components/ElectionWatchSection';
+import InteractiveChat from '@/components/InteractiveChat';
+import PaymentSection from '@/components/PaymentSection';
 import SubmitTeaForm from '@/components/SubmitTeaForm';
 import Footer from '@/components/Footer';
 import LoadingScreen from '@/components/LoadingScreen';
@@ -36,6 +38,8 @@ const Index = () => {
           </div>
           <CampaignCoinSection />
           <MemeOfTheDay />
+          <InteractiveChat />
+          <PaymentSection />
           <ElectionWatchSection />
           <SubmitTeaForm />
         </main>
