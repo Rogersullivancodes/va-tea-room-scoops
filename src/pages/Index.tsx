@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
@@ -14,11 +13,16 @@ import SubmitTeaForm from '@/components/SubmitTeaForm';
 import Footer from '@/components/Footer';
 import LoadingScreen from '@/components/LoadingScreen';
 import ThemeProvider from '@/components/ThemeProvider';
+import AIChatbot from '@/components/AIChatbot';
+import PopupSystem from '@/components/PopupSystem';
+import SecureCheckout from '@/components/SecureCheckout';
+import AdSpaces from '@/components/AdSpaces';
 
 const Index = () => {
   return (
     <ThemeProvider>
       <LoadingScreen />
+      <PopupSystem />
       <div className="min-h-screen flex flex-col">
         <Navbar />
         <Hero />
@@ -28,22 +32,33 @@ const Index = () => {
         <main>
           <ImageCarousel />
           <TeaDropsSection />
-          <div className="bg-navy/5 dark:bg-gray-800/50 py-6 px-4 text-center">
-            <div className="container mx-auto">
-              <p className="text-sm text-gray-600 dark:text-gray-400">ADVERTISEMENT</p>
-              <div className="h-24 md:h-32 bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center mt-2">
-                <span className="text-gray-500 dark:text-gray-400">Premium Banner Ad Space</span>
-              </div>
-            </div>
+          
+          {/* First Ad Space */}
+          <div className="container mx-auto px-4 my-8">
+            <AdSpaces />
           </div>
+          
           <CampaignCoinSection />
           <MemeOfTheDay />
           <InteractiveChat />
+          
+          {/* Secure Checkout Section */}
+          <SecureCheckout />
+          
           <PaymentSection />
           <ElectionWatchSection />
+          
+          {/* More Ad Spaces */}
+          <div className="bg-navy/5 dark:bg-gray-800/50 py-6 px-4">
+            <div className="container mx-auto">
+              <AdSpaces />
+            </div>
+          </div>
+          
           <SubmitTeaForm />
         </main>
         <Footer />
+        <AIChatbot />
       </div>
     </ThemeProvider>
   );
