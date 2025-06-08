@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Menu, X, Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/components/ThemeProvider';
+import { Link } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,12 +19,12 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <a href="/" className="flex items-center">
+            <Link to="/" className="flex items-center">
               <span className="text-2xl font-bold text-red-700 dark:text-red-400">
                 Crabs<span className="text-slate-800 dark:text-slate-200">Fried</span>
                 <span className="text-red-600 dark:text-red-500">Politically</span>
               </span>
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
@@ -32,7 +33,10 @@ const Navbar: React.FC = () => {
             <a href="#scandals" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors">Scandals</a>
             <a href="#election-watch" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors">Election Watch</a>
             <a href="#submit-tea" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors">Submit Story</a>
-            <a href="#about" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors">About</a>
+            <Link to="/about" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors">About</Link>
+            <Link to="/contact" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors">Contact</Link>
+            <Link to="/memberships" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors">Memberships</Link>
+            <Link to="/login" className="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition-colors">Login</Link>
             
             {/* Dark Mode Toggle */}
             <Button
@@ -70,7 +74,10 @@ const Navbar: React.FC = () => {
             <a href="#scandals" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium py-2 transition-colors" onClick={toggleMenu}>Scandals</a>
             <a href="#election-watch" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium py-2 transition-colors" onClick={toggleMenu}>Election Watch</a>
             <a href="#submit-tea" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium py-2 transition-colors" onClick={toggleMenu}>Submit Story</a>
-            <a href="#about" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium py-2 transition-colors" onClick={toggleMenu}>About</a>
+            <Link to="/about" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium py-2 transition-colors" onClick={toggleMenu}>About</Link>
+            <Link to="/contact" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium py-2 transition-colors" onClick={toggleMenu}>Contact</Link>
+            <Link to="/memberships" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium py-2 transition-colors" onClick={toggleMenu}>Memberships</Link>
+            <Link to="/login" className="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition-colors text-center" onClick={toggleMenu}>Login</Link>
           </div>
         </div>
       )}

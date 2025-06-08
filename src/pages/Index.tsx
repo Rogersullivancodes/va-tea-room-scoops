@@ -18,6 +18,7 @@ import AIChatbot from '@/components/AIChatbot';
 import { PopupManagementSection } from '@/components/PopupSystem';
 import SecureCheckout from '@/components/SecureCheckout';
 import AdSpaces from '@/components/AdSpaces';
+import ShareCreditsWidget from '@/components/ShareCreditsWidget';
 
 const Index = () => {
   return (
@@ -30,6 +31,15 @@ const Index = () => {
           <NewsTicker />
         </div>
         <main>
+          {/* Free Credits Banner */}
+          <div className="bg-green-50 dark:bg-green-900/20 py-4">
+            <div className="container mx-auto px-4">
+              <div className="max-w-md mx-auto">
+                <ShareCreditsWidget />
+              </div>
+            </div>
+          </div>
+          
           <ImageCarousel />
           <TeaDropsSection />
           
