@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* About */}
           <div>
-            <h3 className="text-xl font-bold mb-4">About VA Tea Room</h3>
+            <h3 className="text-xl font-bold mb-4">About CrabsFriedPolitically</h3>
             <p className="text-white/80 mb-4">
               Serving the spiciest political gossip and news from the Virginia legislature, 
               campaigns, and local government - with a twist of humor.
@@ -25,15 +25,15 @@ const Footer: React.FC = () => {
               <a href="#facebook" className="text-white hover:text-gold">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="mailto:tips@vatearoom.com" className="text-white hover:text-gold">
+              <a href="mailto:tips@crabsfriedpolitically.com" className="text-white hover:text-gold">
                 <Mail className="h-5 w-5" />
               </a>
             </div>
           </div>
           
-          {/* Tea Categories */}
+          {/* Political Categories */}
           <div>
-            <h3 className="text-xl font-bold mb-4">Hot Tea Categories</h3>
+            <h3 className="text-xl font-bold mb-4">Hot Political Content</h3>
             <ul className="space-y-2">
               <li><a href="#social-tea" className="text-white/80 hover:text-gold">Social Media Slips</a></li>
               <li><a href="#scandals" className="text-white/80 hover:text-gold">Scandals & Gaffes</a></li>
@@ -47,19 +47,19 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-xl font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li><a href="#about" className="text-white/80 hover:text-gold">About Us</a></li>
+              <li><a href="/about" className="text-white/80 hover:text-gold">About Us</a></li>
               <li><a href="#submit-tip" className="text-white/80 hover:text-gold">Submit a Tip</a></li>
               <li><a href="#privacy" className="text-white/80 hover:text-gold">Privacy Policy</a></li>
               <li><a href="#terms" className="text-white/80 hover:text-gold">Terms of Use</a></li>
-              <li><a href="#contact" className="text-white/80 hover:text-gold">Contact Us</a></li>
+              <li><a href="/contact" className="text-white/80 hover:text-gold">Contact Us</a></li>
             </ul>
           </div>
           
           {/* Newsletter */}
           <div>
-            <h3 className="text-xl font-bold mb-4">Get the Tea Delivered</h3>
+            <h3 className="text-xl font-bold mb-4">Get the Latest Delivered</h3>
             <p className="text-white/80 mb-4">
-              Subscribe to our newsletter for the juiciest stories delivered straight to your inbox.
+              Subscribe to our newsletter for the juiciest political stories delivered straight to your inbox.
             </p>
             <form className="flex">
               <input 
@@ -81,10 +81,10 @@ const Footer: React.FC = () => {
         
         <div className="flex flex-col md:flex-row justify-between items-center">
           <p className="text-white/60 text-sm mb-4 md:mb-0">
-            &copy; {new Date().getFullYear()} VA Tea Room. All gossip rights reserved.
+            &copy; {new Date().getFullYear()} CrabsFriedPolitically. All gossip rights reserved.
           </p>
           <p className="text-white/60 text-sm">
-            For entertainment purposes. No tea was harmed in the making of this website.
+            For entertainment purposes. No crabs were harmed in the making of this website.
           </p>
         </div>
       </div>
