@@ -15,7 +15,7 @@ import Footer from '@/components/Footer';
 import LoadingScreen from '@/components/LoadingScreen';
 import ThemeProvider from '@/components/ThemeProvider';
 import AIChatbot from '@/components/AIChatbot';
-import PopupSystem, { PopupManagementSection } from '@/components/PopupSystem';
+import { PopupManagementSection } from '@/components/PopupSystem';
 import SecureCheckout from '@/components/SecureCheckout';
 import AdSpaces from '@/components/AdSpaces';
 
@@ -23,7 +23,6 @@ const Index = () => {
   return (
     <ThemeProvider>
       <LoadingScreen />
-      <PopupSystem />
       <div className="min-h-screen flex flex-col">
         <Navbar />
         <Hero />
