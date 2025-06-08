@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
@@ -14,7 +15,7 @@ import Footer from '@/components/Footer';
 import LoadingScreen from '@/components/LoadingScreen';
 import ThemeProvider from '@/components/ThemeProvider';
 import AIChatbot from '@/components/AIChatbot';
-import PopupSystem from '@/components/PopupSystem';
+import PopupSystem, { PopupManagementSection } from '@/components/PopupSystem';
 import SecureCheckout from '@/components/SecureCheckout';
 import AdSpaces from '@/components/AdSpaces';
 
@@ -46,7 +47,12 @@ const Index = () => {
           <SecureCheckout />
           
           <PaymentSection />
-          <ElectionWatchSection />
+          
+          {/* Election Watch and Popup Management side by side */}
+          <div className="bg-white dark:bg-gray-900">
+            <ElectionWatchSection />
+          </div>
+          <PopupManagementSection />
           
           {/* More Ad Spaces */}
           <div className="bg-navy/5 dark:bg-gray-800/50 py-6 px-4">
