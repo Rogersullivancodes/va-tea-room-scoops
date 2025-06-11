@@ -4,6 +4,7 @@ import { Menu, X, Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/components/ThemeProvider';
 import { Link } from 'react-router-dom';
+import AuthButtons from './AuthButtons';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -36,7 +37,9 @@ const Navbar: React.FC = () => {
             <Link to="/about" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors">About</Link>
             <Link to="/contact" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors">Contact</Link>
             <Link to="/memberships" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors">Memberships</Link>
-            <Link to="/login" className="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition-colors">Login</Link>
+            
+            {/* Auth Buttons */}
+            <AuthButtons />
             
             {/* Dark Mode Toggle */}
             <Button
@@ -77,7 +80,11 @@ const Navbar: React.FC = () => {
             <Link to="/about" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium py-2 transition-colors" onClick={toggleMenu}>About</Link>
             <Link to="/contact" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium py-2 transition-colors" onClick={toggleMenu}>Contact</Link>
             <Link to="/memberships" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 font-medium py-2 transition-colors" onClick={toggleMenu}>Memberships</Link>
-            <Link to="/login" className="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition-colors text-center" onClick={toggleMenu}>Login</Link>
+            
+            {/* Mobile Auth Buttons */}
+            <div className="py-2" onClick={toggleMenu}>
+              <AuthButtons />
+            </div>
           </div>
         </div>
       )}
