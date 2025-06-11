@@ -1,14 +1,15 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ThemeProvider from '@/components/ThemeProvider';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Signup: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -20,16 +21,45 @@ const Signup: React.FC = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { signUp, user } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSignup = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match');
       return;
     }
-    console.log('Signup attempt:', formData);
-    // Handle signup logic here
+    
+    setLoading(true);
+    
+    const { error } = await signUp(
+      formData.email,
+      formData.password,
+      formData.firstName,
+      formData.lastName
+    );
+    
+    if (!error) {
+      // User will be redirected after email confirmation
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+      });
+    }
+    
+    setLoading(false);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,6 +99,7 @@ const Signup: React.FC = () => {
                         placeholder="John"
                         className="pl-10"
                         required
+                        disabled={loading}
                       />
                     </div>
                   </div>
@@ -82,6 +113,7 @@ const Signup: React.FC = () => {
                       onChange={handleInputChange}
                       placeholder="Doe"
                       required
+                      disabled={loading}
                     />
                   </div>
                 </div>
@@ -99,6 +131,7 @@ const Signup: React.FC = () => {
                       placeholder="your@email.com"
                       className="pl-10"
                       required
+                      disabled={loading}
                     />
                   </div>
                 </div>
@@ -116,11 +149,13 @@ const Signup: React.FC = () => {
                       placeholder="••••••••"
                       className="pl-10 pr-10"
                       required
+                      disabled={loading}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      disabled={loading}
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -140,40 +175,21 @@ const Signup: React.FC = () => {
                       placeholder="••••••••"
                       className="pl-10 pr-10"
                       required
+                      disabled={loading}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      disabled={loading}
                     >
                       {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
                 </div>
                 
-                <div className="flex items-center">
-                  <input
-                    id="terms"
-                    type="checkbox"
-                    checked={agreeToTerms}
-                    onChange={(e) => setAgreeToTerms(e.target.checked)}
-                    className="h-4 w-4 text-red-600 rounded"
-                    required
-                  />
-                  <Label htmlFor="terms" className="ml-2 text-sm">
-                    I agree to the{' '}
-                    <Link to="/terms" className="text-red-600 hover:text-red-700">
-                      Terms of Service
-                    </Link>{' '}
-                    and{' '}
-                    <Link to="/privacy" className="text-red-600 hover:text-red-700">
-                      Privacy Policy
-                    </Link>
-                  </Label>
-                </div>
-                
-                <Button type="submit" className="w-full bg-red-600 hover:bg-red-700">
-                  Create Account & Get 10 FREE Credits
+                <Button type="submit" className="w-full bg-red-600 hover:bg-red-700" disabled={loading}>
+                  {loading ? 'Creating Account...' : 'Create Account & Get 10 FREE Credits'}
                 </Button>
               </form>
               
