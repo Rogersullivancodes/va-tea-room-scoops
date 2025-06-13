@@ -1,5 +1,6 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import NewsTicker from '@/components/NewsTicker';
@@ -19,8 +20,22 @@ import { PopupManagementSection } from '@/components/PopupSystem';
 import SecureCheckout from '@/components/SecureCheckout';
 import AdSpaces from '@/components/AdSpaces';
 import ShareCreditsWidget from '@/components/ShareCreditsWidget';
+import { useAdmin } from '@/contexts/AdminContext';
 
 const Index = () => {
+  const { isAuthenticated: isAdminAuthenticated } = useAdmin();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAdminAuthenticated) {
+      navigate('/admin/dashboard');
+    }
+  }, [isAdminAuthenticated, navigate]);
+
+  if (isAdminAuthenticated) {
+    return null; // Don't render anything while redirecting
+  }
+
   return (
     <ThemeProvider>
       <LoadingScreen />

@@ -9,6 +9,7 @@ import { AdminProvider } from "@/contexts/AdminContext";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import SignupComplete from "./pages/SignupComplete";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Memberships from "./pages/Memberships";
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/signup-complete" element={<SignupComplete />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/memberships" element={<Memberships />} />

@@ -52,7 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}/signup-complete`;
       
       const { error } = await supabase.auth.signUp({
         email,
@@ -72,16 +72,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           description: error.message,
           variant: "destructive",
         });
+        return { error };
       } else {
         toast({
-          title: "Sign up successful!",
-          description: "Please check your email to confirm your account.",
+          title: "Account created successfully!",
+          description: "Please check your email to verify your account.",
         });
+        return { error: null };
       }
-
-      return { error };
     } catch (error) {
       console.error('Sign up error:', error);
+      toast({
+        title: "Sign up failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
       return { error };
     }
   };
@@ -109,6 +114,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error };
     } catch (error) {
       console.error('Sign in error:', error);
+      toast({
+        title: "Sign in failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
       return { error };
     }
   };
@@ -130,6 +140,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (error) {
       console.error('Sign out error:', error);
+      toast({
+        title: "Sign out failed",
+        description: "An unexpected error occurred.",
+        variant: "destructive",
+      });
     }
   };
 

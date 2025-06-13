@@ -9,7 +9,12 @@ const AuthButtons: React.FC = () => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div className="w-20 h-8 bg-gray-200 dark:bg-gray-700 animate-pulse rounded"></div>;
+    return (
+      <div className="flex items-center space-x-2">
+        <div className="w-16 h-8 bg-gray-200 dark:bg-gray-700 animate-pulse rounded"></div>
+        <div className="w-20 h-8 bg-gray-200 dark:bg-gray-700 animate-pulse rounded"></div>
+      </div>
+    );
   }
 
   if (user) {

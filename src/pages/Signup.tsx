@@ -49,14 +49,8 @@ const Signup: React.FC = () => {
     );
     
     if (!error) {
-      // User will be redirected after email confirmation
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
-      });
+      // Redirect to signup completion page instead of clearing form
+      navigate('/signup-complete');
     }
     
     setLoading(false);

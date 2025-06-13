@@ -2,8 +2,11 @@
 import React from 'react';
 import { Mail, Twitter, Instagram, Facebook } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { useAdmin } from '@/contexts/AdminContext';
 
 const Footer: React.FC = () => {
+  const { isAuthenticated } = useAdmin();
+
   return (
     <footer className="bg-navy text-white pt-12 pb-6">
       <div className="container mx-auto px-4">
@@ -52,6 +55,9 @@ const Footer: React.FC = () => {
               <li><a href="#privacy" className="text-white/80 hover:text-gold">Privacy Policy</a></li>
               <li><a href="#terms" className="text-white/80 hover:text-gold">Terms of Use</a></li>
               <li><a href="/contact" className="text-white/80 hover:text-gold">Contact Us</a></li>
+              {isAuthenticated && (
+                <li><a href="/admin/dashboard" className="text-white/80 hover:text-gold">Admin Dashboard</a></li>
+              )}
             </ul>
           </div>
           

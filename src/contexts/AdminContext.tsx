@@ -42,8 +42,14 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const adminData = localStorage.getItem('admin_user');
     
     if (token && adminData) {
-      setSessionToken(token);
-      setAdmin(JSON.parse(adminData));
+      try {
+        setSessionToken(token);
+        setAdmin(JSON.parse(adminData));
+      } catch (error) {
+        console.error('Error parsing admin data:', error);
+        localStorage.removeItem('admin_session_token');
+        localStorage.removeItem('admin_user');
+      }
     }
     setLoading(false);
   }, []);
@@ -54,9 +60,17 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         body: { email, password }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Admin auth error:', error);
+        toast({
+          title: "Sign in failed",
+          description: "Failed to authenticate. Please try again.",
+          variant: "destructive",
+        });
+        return { error };
+      }
 
-      if (data.success) {
+      if (data?.success) {
         setAdmin(data.admin);
         setSessionToken(data.sessionToken);
         localStorage.setItem('admin_session_token', data.sessionToken);
@@ -69,12 +83,19 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         
         return { error: null };
       } else {
-        throw new Error(data.error);
+        const errorMessage = data?.error || 'Invalid credentials';
+        toast({
+          title: "Sign in failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        return { error: new Error(errorMessage) };
       }
     } catch (error) {
+      console.error('Admin sign in error:', error);
       toast({
         title: "Sign in failed",
-        description: error.message,
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
       return { error };
@@ -82,15 +103,24 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const signOut = async () => {
-    setAdmin(null);
-    setSessionToken(null);
-    localStorage.removeItem('admin_session_token');
-    localStorage.removeItem('admin_user');
-    
-    toast({
-      title: "Signed out",
-      description: "Successfully signed out of admin panel.",
-    });
+    try {
+      setAdmin(null);
+      setSessionToken(null);
+      localStorage.removeItem('admin_session_token');
+      localStorage.removeItem('admin_user');
+      
+      toast({
+        title: "Signed out",
+        description: "Successfully signed out of admin panel.",
+      });
+    } catch (error) {
+      console.error('Admin sign out error:', error);
+      toast({
+        title: "Sign out failed",
+        description: "An error occurred while signing out.",
+        variant: "destructive",
+      });
+    }
   };
 
   const value = {
