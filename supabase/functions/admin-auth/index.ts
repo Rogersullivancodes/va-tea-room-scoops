@@ -20,8 +20,8 @@ serve(async (req) => {
 
     const { email, password } = await req.json()
 
-    // Simple password check for admin user
-    if (email === 'cfp@crabsfriedpolitically.com' && password === 'admin') {
+    // Simple password check for admin user - updated to use "admincfp"
+    if (email === 'cfp@crabsfriedpolitically.com' && password === 'admincfp') {
       // Generate session token
       const sessionToken = crypto.randomUUID()
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours

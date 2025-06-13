@@ -92,7 +92,7 @@ const AdminLogin: React.FC = () => {
                       type={showPassword ? "text" : "password"}
                       value={credentials.password}
                       onChange={handleInputChange}
-                      placeholder="admin"
+                      placeholder="admincfp"
                       className="pl-10 pr-10 bg-gray-700 border-gray-600 text-white"
                       required
                       disabled={loading}

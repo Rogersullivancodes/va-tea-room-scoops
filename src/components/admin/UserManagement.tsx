@@ -16,9 +16,18 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 
+interface User {
+  id: string;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
+  credits?: number;
+  created_at?: string;
+}
+
 const UserManagement: React.FC = () => {
   const { toast } = useToast();
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -149,7 +158,7 @@ const UserManagement: React.FC = () => {
                     <TableCell className="text-gray-300">{user.email}</TableCell>
                     <TableCell className="text-gray-300">
                       <div className="flex items-center space-x-2">
-                        <span>{user.credits}</span>
+                        <span>{user.credits || 0}</span>
                         <Button 
                           size="sm" 
                           variant="outline"
