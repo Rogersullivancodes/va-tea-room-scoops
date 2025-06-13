@@ -9,6 +9,71 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_sessions: {
+        Row: {
+          admin_id: string | null
+          created_at: string | null
+          expires_at: string
+          id: string
+          session_token: string
+        }
+        Insert: {
+          admin_id?: string | null
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          session_token: string
+        }
+        Update: {
+          admin_id?: string | null
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          session_token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_sessions_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      admin_users: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          last_login: string | null
+          name: string | null
+          password_hash: string
+          role: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          last_login?: string | null
+          name?: string | null
+          password_hash: string
+          role?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          last_login?: string | null
+          name?: string | null
+          password_hash?: string
+          role?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       news_articles: {
         Row: {
           category: string | null
@@ -84,6 +149,33 @@ export type Database = {
           id?: string
           last_name?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          key: string
+          updated_at: string | null
+          value: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          key: string
+          updated_at?: string | null
+          value?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          key?: string
+          updated_at?: string | null
+          value?: Json | null
         }
         Relationships: []
       }
