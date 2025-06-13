@@ -52,9 +52,12 @@ export const useNews = () => {
   useEffect(() => {
     fetchNews();
 
+    // Create a unique channel name to avoid conflicts
+    const channelName = `news-updates-${Date.now()}`;
+    
     // Set up real-time subscription for new articles
     const channel = supabase
-      .channel('news-updates')
+      .channel(channelName)
       .on(
         'postgres_changes',
         {
@@ -70,6 +73,8 @@ export const useNews = () => {
       .subscribe();
 
     return () => {
+      // Properly unsubscribe and remove the channel
+      channel.unsubscribe();
       supabase.removeChannel(channel);
     };
   }, []);
