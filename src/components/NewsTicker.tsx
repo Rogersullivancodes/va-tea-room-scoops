@@ -2,25 +2,30 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Pause, Play, RefreshCw } from 'lucide-react';
-
-// Legitimate Virginia political news data
-const tickerData = [
-  { id: 1, source: 'Virginia Mercury', content: 'Virginia General Assembly approves $171 billion two-year state budget with tax cuts and increased education funding.', timestamp: '1h ago' },
-  { id: 2, source: 'Richmond Times-Dispatch', content: "Governor's proposal to reform Virginia's mental health services gains bipartisan support in latest session.", timestamp: '2h ago' },
-  { id: 3, source: 'WRIC 8News', content: 'Virginia Redistricting Commission prepares for next round of maps as 2025 election cycle approaches.', timestamp: '3h ago' },
-  { id: 4, source: 'The Virginian-Pilot', content: 'Hampton Roads transit funding bill advances through committee with amendments addressing coastal flooding concerns.', timestamp: '4h ago' },
-  { id: 5, source: 'Washington Post', content: "Northern Virginia congressional race tightens as new polling shows candidates within margin of error.", timestamp: '5h ago' },
-  { id: 6, source: 'WTOP News', content: 'Virginia Department of Elections launches new voter information portal ahead of November elections.', timestamp: '6h ago' },
-];
+import { useNews } from '@/hooks/useNews';
+import { format } from 'date-fns';
 
 const NewsTicker: React.FC = () => {
+  const { articles, fetchMoreNews } = useNews();
   const [isPaused, setIsPaused] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  // Convert news articles to ticker format
+  const tickerData = articles.slice(0, 8).map((article, index) => ({
+    id: index + 1,
+    source: article.source,
+    content: article.title,
+    timestamp: format(new Date(article.published_at), 'h\'h\' \'ago\'')
+  }));
+
   // Handle refresh action
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true);
-    // Simulate a refresh
+    try {
+      await fetchMoreNews();
+    } catch (error) {
+      console.error('Error refreshing news:', error);
+    }
     setTimeout(() => {
       setIsRefreshing(false);
     }, 1000);
@@ -29,18 +34,25 @@ const NewsTicker: React.FC = () => {
   // The animation class depends on the paused state
   const animationClass = isPaused ? '' : 'animate-slow-marquee';
 
+  // Fallback data if no articles available
+  const fallbackData = [
+    { id: 1, source: 'Virginia Mercury', content: 'Loading latest Virginia political news...', timestamp: 'now' },
+  ];
+
+  const displayData = tickerData.length > 0 ? tickerData : fallbackData;
+
   return (
     <div className="bg-gradient-to-r from-maroon to-navy text-white py-5 overflow-hidden relative group sticky top-0 z-20 shadow-md">
       <div className="container mx-auto flex items-center relative">
         <div className="hidden md:flex items-center space-x-2 bg-black/30 px-4 py-2 rounded-md mr-4">
-          <span className="font-bold text-gold text-base">LIVE UPDATES</span>
+          <span className="font-bold text-gold text-base">LIVE NEWS</span>
           <span className="animate-pulse h-3 w-3 bg-destructive rounded-full"></span>
         </div>
         
         <ScrollArea className="w-full overflow-hidden">
           <div className={`flex whitespace-nowrap ${animationClass}`}>
             {/* Duplicate the items to create a seamless loop */}
-            {[...tickerData, ...tickerData].map((item, index) => (
+            {[...displayData, ...displayData].map((item, index) => (
               <div 
                 key={`${item.id}-${index}`} 
                 className="inline-flex items-center mx-12 md:mx-20 hover:bg-white/20 px-5 py-3 rounded-lg transition-colors duration-300"

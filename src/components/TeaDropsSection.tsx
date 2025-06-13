@@ -1,53 +1,45 @@
 
 import React from 'react';
-import { ArrowRight, Eye, MessageSquare, Share2 } from 'lucide-react';
+import { ArrowRight, Eye, MessageSquare, Share2, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-
-type TeaDrop = {
-  id: number;
-  title: string;
-  excerpt: string;
-  imageUrl: string;
-  date: string;
-  category: string;
-  views: number;
-  comments: number;
-};
-
-const teaDrops: TeaDrop[] = [
-  {
-    id: 1,
-    title: "Virginia General Assembly Passes Historic Transportation Funding Package",
-    excerpt: "Bipartisan legislation allocates $2.5 billion for road improvements, public transit expansion, and bridge repairs across the Commonwealth over the next five years...",
-    imageUrl: "https://images.unsplash.com/photo-1494522358652-f30e61a60313",
-    date: "April 3, 2025",
-    category: "Legislation",
-    views: 4582,
-    comments: 215
-  },
-  {
-    id: 2,
-    title: "Competitive Race Shapes Up in Virginia's 7th Congressional District",
-    excerpt: "With incumbent retiring, both parties see opportunity in swing district that spans portions of central Virginia. Early fundraising numbers show tight contest ahead...",
-    imageUrl: "https://images.unsplash.com/photo-1541119989350-6f9d1c72ae51",
-    date: "April 2, 2025",
-    category: "Elections",
-    views: 3271,
-    comments: 178
-  },
-  {
-    id: 3,
-    title: "Virginia's New Clean Energy Initiative Aims to Create Jobs While Reducing Emissions",
-    excerpt: "State program will invest $120 million in renewable energy projects across Southern Virginia, with focus on transitioning coal communities toward sustainable industries...",
-    imageUrl: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9",
-    date: "April 1, 2025",
-    category: "Environment",
-    views: 2985,
-    comments: 163
-  }
-];
+import { Button } from '@/components/ui/button';
+import { useNews } from '@/hooks/useNews';
+import { format } from 'date-fns';
 
 const TeaDropsSection: React.FC = () => {
+  const { articles, loading, error, fetchMoreNews } = useNews();
+
+  const handleFetchNews = async () => {
+    await fetchMoreNews();
+  };
+
+  if (loading) {
+    return (
+      <section id="tea-drops" className="py-14 bg-lightgray relative">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-maroon"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section id="tea-drops" className="py-14 bg-lightgray relative">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <p className="text-red-600">Error loading news: {error}</p>
+            <Button onClick={handleFetchNews} className="mt-4">
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="tea-drops" className="py-14 bg-lightgray relative">
       {/* Ad sidebar - desktop only */}
@@ -61,55 +53,80 @@ const TeaDropsSection: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-maroon mb-2">Virginia Political Insights</h2>
-            <p className="text-gray-600">The latest news and analysis from across the Commonwealth</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-maroon mb-2">
+              Live Virginia Political News
+            </h2>
+            <p className="text-gray-600">Real-time updates from across the Commonwealth</p>
           </div>
-          <a href="#more-tea" className="text-navy font-medium flex items-center hover:text-maroon">
-            View All <ArrowRight className="ml-1 h-4 w-4" />
-          </a>
+          <div className="flex items-center space-x-4">
+            <Button 
+              onClick={handleFetchNews}
+              variant="outline"
+              size="sm"
+              className="flex items-center space-x-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              <span>Fetch Latest</span>
+            </Button>
+            <a href="#more-tea" className="text-navy font-medium flex items-center hover:text-maroon">
+              View All <ArrowRight className="ml-1 h-4 w-4" />
+            </a>
+          </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {teaDrops.map((tea) => (
-            <Card key={tea.id} className="card-shadow group">
-              <div className="h-56 overflow-hidden rounded-t-lg relative">
-                <img 
-                  src={tea.imageUrl} 
-                  alt={tea.title} 
-                  className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs font-semibold text-white bg-maroon px-2 py-1 rounded">
-                    {tea.category}
-                  </span>
-                  <span className="text-xs text-gray-500">{tea.date}</span>
+        {articles.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600 mb-4">No news articles available yet.</p>
+            <Button onClick={handleFetchNews}>
+              Fetch Latest News
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {articles.slice(0, 6).map((article) => (
+              <Card key={article.id} className="card-shadow group">
+                <div className="h-56 overflow-hidden rounded-t-lg relative">
+                  <img 
+                    src={article.image_url || "https://images.unsplash.com/photo-1494522358652-f30e61a60313"} 
+                    alt={article.title} 
+                    className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
-                <CardTitle className="text-xl font-bold text-navy group-hover:text-maroon transition-colors">
-                  <a href={`#story-${tea.id}`}>{tea.title}</a>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">{tea.excerpt}</p>
-              </CardContent>
-              <CardFooter className="flex justify-between border-t pt-4">
-                <div className="flex space-x-4 text-gray-500">
-                  <span className="flex items-center text-sm">
-                    <Eye className="h-4 w-4 mr-1" /> {tea.views.toLocaleString()}
-                  </span>
-                  <span className="flex items-center text-sm">
-                    <MessageSquare className="h-4 w-4 mr-1" /> {tea.comments}
-                  </span>
-                </div>
-                <button className="text-maroon hover:text-navy">
-                  <Share2 className="h-5 w-5" />
-                </button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs font-semibold text-white bg-maroon px-2 py-1 rounded">
+                      {article.category}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {format(new Date(article.published_at), 'MMM d, yyyy')}
+                    </span>
+                  </div>
+                  <CardTitle className="text-xl font-bold text-navy group-hover:text-maroon transition-colors">
+                    <a href={article.url || `#story-${article.id}`}>{article.title}</a>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600">{article.excerpt || article.content.substring(0, 150) + "..."}</p>
+                  <p className="text-sm text-gray-500 mt-2 font-medium">Source: {article.source}</p>
+                </CardContent>
+                <CardFooter className="flex justify-between border-t pt-4">
+                  <div className="flex space-x-4 text-gray-500">
+                    <span className="flex items-center text-sm">
+                      <Eye className="h-4 w-4 mr-1" /> {article.views?.toLocaleString() || 0}
+                    </span>
+                    <span className="flex items-center text-sm">
+                      <MessageSquare className="h-4 w-4 mr-1" /> {article.comments || 0}
+                    </span>
+                  </div>
+                  <button className="text-maroon hover:text-navy">
+                    <Share2 className="h-5 w-5" />
+                  </button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )}
         
         {/* Newsletter signup - revenue generator */}
         <div className="mt-14 bg-gradient-to-r from-navy to-maroon p-6 md:p-8 rounded-lg text-white shadow-lg">
