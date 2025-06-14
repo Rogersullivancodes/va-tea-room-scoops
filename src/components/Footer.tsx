@@ -55,6 +55,7 @@ const Footer: React.FC = () => {
               <li><a href="#privacy" className="text-white/80 hover:text-gold">Privacy Policy</a></li>
               <li><a href="#terms" className="text-white/80 hover:text-gold">Terms of Use</a></li>
               <li><a href="/contact" className="text-white/80 hover:text-gold">Contact Us</a></li>
+              <li><a href="/secure/admin" className="text-white/80 hover:text-gold">Admin Login</a></li>
               {isAuthenticated && (
                 <li><a href="/admin/dashboard" className="text-white/80 hover:text-gold">Admin Dashboard</a></li>
               )}
