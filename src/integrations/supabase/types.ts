@@ -74,6 +74,146 @@ export type Database = {
         }
         Relationships: []
       }
+      articles: {
+        Row: {
+          author_id: string
+          category: string | null
+          content: string
+          created_at: string
+          credits_required: number | null
+          excerpt: string | null
+          featured_image_url: string | null
+          id: string
+          is_premium: boolean | null
+          likes: number | null
+          meta_description: string | null
+          meta_keywords: string[] | null
+          published_at: string | null
+          status: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          views: number | null
+        }
+        Insert: {
+          author_id: string
+          category?: string | null
+          content: string
+          created_at?: string
+          credits_required?: number | null
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: string
+          is_premium?: boolean | null
+          likes?: number | null
+          meta_description?: string | null
+          meta_keywords?: string[] | null
+          published_at?: string | null
+          status?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          views?: number | null
+        }
+        Update: {
+          author_id?: string
+          category?: string | null
+          content?: string
+          created_at?: string
+          credits_required?: number | null
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: string
+          is_premium?: boolean | null
+          likes?: number | null
+          meta_description?: string | null
+          meta_keywords?: string[] | null
+          published_at?: string | null
+          status?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          views?: number | null
+        }
+        Relationships: []
+      }
+      bookmarks: {
+        Row: {
+          article_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          article_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          article_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookmarks_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comments: {
+        Row: {
+          article_id: string
+          content: string
+          created_at: string
+          id: string
+          is_approved: boolean | null
+          parent_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          article_id: string
+          content: string
+          created_at?: string
+          id?: string
+          is_approved?: boolean | null
+          parent_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          article_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_approved?: boolean | null
+          parent_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       news_articles: {
         Row: {
           category: string | null
@@ -122,35 +262,192 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_campaigns: {
+        Row: {
+          click_rate: number | null
+          content: string
+          created_at: string
+          id: string
+          open_rate: number | null
+          recipients_count: number | null
+          scheduled_at: string | null
+          sent_at: string | null
+          status: string | null
+          subject: string
+          title: string
+        }
+        Insert: {
+          click_rate?: number | null
+          content: string
+          created_at?: string
+          id?: string
+          open_rate?: number | null
+          recipients_count?: number | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          subject: string
+          title: string
+        }
+        Update: {
+          click_rate?: number | null
+          content?: string
+          created_at?: string
+          id?: string
+          open_rate?: number | null
+          recipients_count?: number | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          subject?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      newsletter_subscribers: {
+        Row: {
+          email: string
+          id: string
+          is_active: boolean | null
+          name: string | null
+          preferences: Json | null
+          subscribed_at: string
+        }
+        Insert: {
+          email: string
+          id?: string
+          is_active?: boolean | null
+          name?: string | null
+          preferences?: Json | null
+          subscribed_at?: string
+        }
+        Update: {
+          email?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string | null
+          preferences?: Json | null
+          subscribed_at?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          article_id: string | null
+          created_at: string
+          id: string
+          is_read: boolean | null
+          message: string
+          title: string
+          type: string | null
+          user_id: string
+        }
+        Insert: {
+          article_id?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message: string
+          title: string
+          type?: string | null
+          user_id: string
+        }
+        Update: {
+          article_id?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          title?: string
+          type?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
+          avatar_url: string | null
+          bio: string | null
           created_at: string | null
           credits: number | null
           email: string | null
           first_name: string | null
           id: string
           last_name: string | null
+          notification_preferences: Json | null
+          subscription_tier: string | null
+          theme_preference: string | null
           updated_at: string | null
         }
         Insert: {
+          avatar_url?: string | null
+          bio?: string | null
           created_at?: string | null
           credits?: number | null
           email?: string | null
           first_name?: string | null
           id: string
           last_name?: string | null
+          notification_preferences?: Json | null
+          subscription_tier?: string | null
+          theme_preference?: string | null
           updated_at?: string | null
         }
         Update: {
+          avatar_url?: string | null
+          bio?: string | null
           created_at?: string | null
           credits?: number | null
           email?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
+          notification_preferences?: Json | null
+          subscription_tier?: string | null
+          theme_preference?: string | null
           updated_at?: string | null
         }
         Relationships: []
+      }
+      reading_history: {
+        Row: {
+          article_id: string
+          id: string
+          read_at: string
+          read_duration: number | null
+          user_id: string
+        }
+        Insert: {
+          article_id: string
+          id?: string
+          read_at?: string
+          read_duration?: number | null
+          user_id: string
+        }
+        Update: {
+          article_id?: string
+          id?: string
+          read_at?: string
+          read_duration?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reading_history_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       site_settings: {
         Row: {
@@ -176,6 +473,48 @@ export type Database = {
           key?: string
           updated_at?: string | null
           value?: Json | null
+        }
+        Relationships: []
+      }
+      tips_submissions: {
+        Row: {
+          admin_notes: string | null
+          contact_email: string | null
+          content: string
+          created_at: string
+          id: string
+          is_anonymous: boolean | null
+          reward_credits: number | null
+          status: string | null
+          title: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          contact_email?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          is_anonymous?: boolean | null
+          reward_credits?: number | null
+          status?: string | null
+          title: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          contact_email?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          is_anonymous?: boolean | null
+          reward_credits?: number | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }

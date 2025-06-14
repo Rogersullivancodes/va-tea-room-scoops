@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { User, LogOut, CreditCard, Settings } from 'lucide-react';
+import { User, LogOut, CreditCard, Settings, Bookmark, History } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
@@ -32,6 +32,18 @@ const UserMenu: React.FC = () => {
           <Link to="/profile" className="flex items-center">
             <User className="mr-2 h-4 w-4" />
             <span>Profile</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/profile?tab=bookmarks" className="flex items-center">
+            <Bookmark className="mr-2 h-4 w-4" />
+            <span>Bookmarks</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/profile?tab=history" className="flex items-center">
+            <History className="mr-2 h-4 w-4" />
+            <span>Reading History</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
