@@ -27,7 +27,7 @@ export const useArticles = () => {
     }
   };
 
-  const createArticle = async (articleData: Partial<Article>) => {
+  const createArticle = async (articleData: Omit<Article, 'id' | 'created_at' | 'updated_at' | 'views' | 'likes'>) => {
     try {
       const { data, error } = await supabase
         .from('articles')

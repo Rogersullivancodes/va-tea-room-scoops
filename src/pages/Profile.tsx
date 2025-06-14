@@ -1,49 +1,94 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { 
   User, 
-  Mail, 
-  Calendar, 
   Bookmark, 
   History, 
-  Bell, 
-  Settings,
+  Settings, 
   CreditCard,
-  Trophy
+  Bell,
+  Eye,
+  Calendar,
+  Mail
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { useBookmarks } from '@/hooks/useBookmarks';
 import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
+import ThemeProvider from '@/components/ThemeProvider';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import ThemeProvider from '@/components/ThemeProvider';
-import ArticleCard from '@/components/ArticleCard';
-import type { Tables } from '@/integrations/supabase/types';
 
-type Profile = Tables<'profiles'>;
+interface Bookmark {
+  id: string;
+  user_id: string;
+  article_id: string;
+  created_at: string;
+  article?: {
+    id: string;
+    title: string;
+    excerpt: string;
+    published_at: string;
+    category: string;
+  };
+}
+
+interface ReadingHistoryItem {
+  id: string;
+  user_id: string;
+  article_id: string;
+  read_at: string;
+  read_duration: number;
+  article?: {
+    id: string;
+    title: string;
+    excerpt: string;
+    published_at: string;
+    category: string;
+  };
+}
+
+interface UserProfile {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  credits: number;
+  bio?: string;
+  avatar_url?: string;
+  theme_preference: 'light' | 'dark' | 'system';
+  subscription_tier: 'free' | 'premium' | 'vip';
+  notification_preferences: {
+    email?: boolean;
+    push?: boolean;
+    breaking?: boolean;
+  };
+}
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
-  const { bookmarks } = useBookmarks();
   const { toast } = useToast();
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [activeTab, setActiveTab] = useState('profile');
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [readingHistory, setReadingHistory] = useState<ReadingHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [readingHistory, setReadingHistory] = useState([]);
 
   useEffect(() => {
     if (user) {
       fetchProfile();
+      fetchBookmarks();
       fetchReadingHistory();
     }
   }, [user]);
@@ -60,10 +105,41 @@ const Profile: React.FC = () => {
 
       if (error) throw error;
       setProfile(data);
-    } catch (err) {
-      console.error('Error fetching profile:', err);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load profile information.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchBookmarks = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('bookmarks')
+        .select(`
+          *,
+          article:articles(
+            id,
+            title,
+            excerpt,
+            published_at,
+            category
+          )
+        `)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setBookmarks(data || []);
+    } catch (error) {
+      console.error('Error fetching bookmarks:', error);
     }
   };
 
@@ -75,26 +151,26 @@ const Profile: React.FC = () => {
         .from('reading_history')
         .select(`
           *,
-          articles:article_id (
+          article:articles(
             id,
             title,
             excerpt,
-            category,
-            published_at
+            published_at,
+            category
           )
         `)
         .eq('user_id', user.id)
         .order('read_at', { ascending: false })
-        .limit(10);
+        .limit(50);
 
       if (error) throw error;
       setReadingHistory(data || []);
-    } catch (err) {
-      console.error('Error fetching reading history:', err);
+    } catch (error) {
+      console.error('Error fetching reading history:', error);
     }
   };
 
-  const updateProfile = async (updates: Partial<Profile>) => {
+  const updateProfile = async (updates: Partial<UserProfile>) => {
     if (!user) return;
 
     setSaving(true);
@@ -105,16 +181,17 @@ const Profile: React.FC = () => {
         .eq('id', user.id);
 
       if (error) throw error;
-      
+
       setProfile(prev => prev ? { ...prev, ...updates } : null);
       toast({
-        title: "Profile updated",
-        description: "Your profile has been successfully updated.",
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully.",
       });
-    } catch (err) {
+    } catch (error) {
+      console.error('Error updating profile:', error);
       toast({
         title: "Error",
-        description: "Failed to update profile. Please try again.",
+        description: "Failed to update profile.",
         variant: "destructive",
       });
     } finally {
@@ -122,36 +199,58 @@ const Profile: React.FC = () => {
     }
   };
 
-  if (!user) {
+  const removeBookmark = async (bookmarkId: string) => {
+    try {
+      const { error } = await supabase
+        .from('bookmarks')
+        .delete()
+        .eq('id', bookmarkId);
+
+      if (error) throw error;
+
+      setBookmarks(prev => prev.filter(b => b.id !== bookmarkId));
+      toast({
+        title: "Bookmark Removed",
+        description: "Article has been removed from your bookmarks.",
+      });
+    } catch (error) {
+      console.error('Error removing bookmark:', error);
+      toast({
+        title: "Error",
+        description: "Failed to remove bookmark.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (loading) {
     return (
       <ThemeProvider>
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen bg-background">
           <Navbar />
-          <main className="flex-1 flex items-center justify-center">
-            <Card className="w-full max-w-md">
-              <CardContent className="p-6 text-center">
-                <h2 className="text-xl font-bold mb-2">Access Required</h2>
-                <p className="text-gray-600 mb-4">Please sign in to view your profile.</p>
-                <Button asChild>
-                  <a href="/login">Sign In</a>
-                </Button>
-              </CardContent>
-            </Card>
-          </main>
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-4 text-muted-foreground">Loading profile...</p>
+            </div>
+          </div>
           <Footer />
         </div>
       </ThemeProvider>
     );
   }
 
-  if (loading) {
+  if (!profile) {
     return (
       <ThemeProvider>
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen bg-background">
           <Navbar />
-          <main className="flex-1 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
-          </main>
+          <div className="container mx-auto px-4 py-8">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold mb-4">Profile not found</h1>
+              <p className="text-muted-foreground">Unable to load your profile information.</p>
+            </div>
+          </div>
           <Footer />
         </div>
       </ThemeProvider>
@@ -160,49 +259,57 @@ const Profile: React.FC = () => {
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen bg-background">
         <Navbar />
-        <main className="flex-1 container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center space-x-4 mb-8">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={profile?.avatar_url || ''} />
+                <AvatarImage src={profile.avatar_url} />
                 <AvatarFallback>
-                  <User className="h-10 w-10" />
+                  {profile.first_name?.[0]}{profile.last_name?.[0]}
                 </AvatarFallback>
               </Avatar>
               <div>
                 <h1 className="text-3xl font-bold">
-                  {profile?.first_name || profile?.last_name 
-                    ? `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim()
-                    : 'User Profile'
-                  }
+                  {profile.first_name} {profile.last_name}
                 </h1>
-                <div className="flex items-center space-x-4 mt-2">
-                  <Badge variant="outline" className="flex items-center space-x-1">
-                    <CreditCard className="h-3 w-3" />
-                    <span>{profile?.credits || 0} Credits</span>
+                <p className="text-muted-foreground">{profile.email}</p>
+                <div className="flex items-center space-x-2 mt-2">
+                  <Badge variant={profile.subscription_tier === 'free' ? 'secondary' : 'default'}>
+                    {profile.subscription_tier.toUpperCase()}
                   </Badge>
-                  <Badge className="flex items-center space-x-1">
-                    <Trophy className="h-3 w-3" />
-                    <span className="capitalize">{profile?.subscription_tier || 'free'}</span>
-                  </Badge>
+                  <span className="text-sm text-muted-foreground">
+                    {profile.credits} credits
+                  </span>
                 </div>
               </div>
             </div>
 
-            <Tabs defaultValue="profile" className="w-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="profile">Profile</TabsTrigger>
-                <TabsTrigger value="bookmarks">Bookmarks</TabsTrigger>
-                <TabsTrigger value="history">Reading History</TabsTrigger>
-                <TabsTrigger value="settings">Settings</TabsTrigger>
+                <TabsTrigger value="profile">
+                  <User className="h-4 w-4 mr-2" />
+                  Profile
+                </TabsTrigger>
+                <TabsTrigger value="bookmarks">
+                  <Bookmark className="h-4 w-4 mr-2" />
+                  Bookmarks ({bookmarks.length})
+                </TabsTrigger>
+                <TabsTrigger value="history">
+                  <History className="h-4 w-4 mr-2" />
+                  History
+                </TabsTrigger>
+                <TabsTrigger value="settings">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Settings
+                </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="profile" className="space-y-6">
+              <TabsContent value="profile" className="mt-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Personal Information</CardTitle>
+                    <CardTitle>Profile Information</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -210,18 +317,16 @@ const Profile: React.FC = () => {
                         <Label htmlFor="firstName">First Name</Label>
                         <Input
                           id="firstName"
-                          value={profile?.first_name || ''}
+                          value={profile.first_name || ''}
                           onChange={(e) => setProfile(prev => prev ? {...prev, first_name: e.target.value} : null)}
-                          onBlur={(e) => updateProfile({ first_name: e.target.value })}
                         />
                       </div>
                       <div>
                         <Label htmlFor="lastName">Last Name</Label>
                         <Input
                           id="lastName"
-                          value={profile?.last_name || ''}
+                          value={profile.last_name || ''}
                           onChange={(e) => setProfile(prev => prev ? {...prev, last_name: e.target.value} : null)}
-                          onBlur={(e) => updateProfile({ last_name: e.target.value })}
                         />
                       </div>
                     </div>
@@ -229,48 +334,86 @@ const Profile: React.FC = () => {
                       <Label htmlFor="email">Email</Label>
                       <Input
                         id="email"
-                        value={profile?.email || user.email || ''}
+                        type="email"
+                        value={profile.email || ''}
                         disabled
-                        className="bg-gray-100 dark:bg-gray-800"
+                        className="bg-muted"
                       />
                     </div>
                     <div>
                       <Label htmlFor="bio">Bio</Label>
                       <Textarea
                         id="bio"
-                        value={profile?.bio || ''}
-                        onChange={(e) => setProfile(prev => prev ? {...prev, bio: e.target.value} : null)}
-                        onBlur={(e) => updateProfile({ bio: e.target.value })}
                         placeholder="Tell us about yourself..."
-                        rows={3}
+                        value={profile.bio || ''}
+                        onChange={(e) => setProfile(prev => prev ? {...prev, bio: e.target.value} : null)}
+                        rows={4}
                       />
                     </div>
+                    <Button 
+                      onClick={() => updateProfile({
+                        first_name: profile.first_name,
+                        last_name: profile.last_name,
+                        bio: profile.bio
+                      })}
+                      disabled={saving}
+                    >
+                      {saving ? 'Saving...' : 'Save Changes'}
+                    </Button>
                   </CardContent>
                 </Card>
               </TabsContent>
 
-              <TabsContent value="bookmarks" className="space-y-6">
+              <TabsContent value="bookmarks" className="mt-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <Bookmark className="h-5 w-5" />
-                      <span>Bookmarked Articles</span>
-                    </CardTitle>
+                    <CardTitle>Your Bookmarks</CardTitle>
                   </CardHeader>
                   <CardContent>
                     {bookmarks.length === 0 ? (
-                      <p className="text-center text-gray-500 py-8">
-                        No bookmarked articles yet. Start bookmarking articles you want to read later!
-                      </p>
+                      <div className="text-center py-8">
+                        <Bookmark className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                        <p className="text-muted-foreground">No bookmarks yet</p>
+                        <p className="text-sm text-muted-foreground">
+                          Bookmark articles to save them for later reading
+                        </p>
+                      </div>
                     ) : (
-                      <div className="grid gap-4">
+                      <div className="space-y-4">
                         {bookmarks.map((bookmark) => (
                           <div key={bookmark.id} className="border rounded-lg p-4">
-                            <h3 className="font-semibold mb-2">{bookmark.articles?.title}</h3>
-                            <p className="text-sm text-gray-600 mb-2">{bookmark.articles?.excerpt}</p>
-                            <div className="flex items-center justify-between text-xs text-gray-500">
-                              <span>Category: {bookmark.articles?.category}</span>
-                              <span>Bookmarked: {new Date(bookmark.created_at).toLocaleDateString()}</span>
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <h3 className="font-semibold mb-2">
+                                  {bookmark.article?.title}
+                                </h3>
+                                <p className="text-sm text-muted-foreground mb-2">
+                                  {bookmark.article?.excerpt}
+                                </p>
+                                <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                                  <span>{bookmark.article?.category}</span>
+                                  <span>
+                                    {bookmark.article?.published_at && 
+                                      format(new Date(bookmark.article.published_at), 'MMM dd, yyyy')
+                                    }
+                                  </span>
+                                  <span>
+                                    Bookmarked {format(new Date(bookmark.created_at), 'MMM dd, yyyy')}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex space-x-2">
+                                <Button size="sm" variant="outline">
+                                  <Eye className="h-3 w-3" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => removeBookmark(bookmark.id)}
+                                >
+                                  Remove
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -280,28 +423,45 @@ const Profile: React.FC = () => {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="history" className="space-y-6">
+              <TabsContent value="history" className="mt-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <History className="h-5 w-5" />
-                      <span>Reading History</span>
-                    </CardTitle>
+                    <CardTitle>Reading History</CardTitle>
                   </CardHeader>
                   <CardContent>
                     {readingHistory.length === 0 ? (
-                      <p className="text-center text-gray-500 py-8">
-                        No reading history yet. Start reading articles to build your history!
-                      </p>
+                      <div className="text-center py-8">
+                        <History className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                        <p className="text-muted-foreground">No reading history yet</p>
+                        <p className="text-sm text-muted-foreground">
+                          Your reading history will appear here as you read articles
+                        </p>
+                      </div>
                     ) : (
-                      <div className="grid gap-4">
-                        {readingHistory.map((history: any) => (
-                          <div key={history.id} className="border rounded-lg p-4">
-                            <h3 className="font-semibold mb-2">{history.articles?.title}</h3>
-                            <p className="text-sm text-gray-600 mb-2">{history.articles?.excerpt}</p>
-                            <div className="flex items-center justify-between text-xs text-gray-500">
-                              <span>Category: {history.articles?.category}</span>
-                              <span>Read: {new Date(history.read_at).toLocaleDateString()}</span>
+                      <div className="space-y-4">
+                        {readingHistory.map((item) => (
+                          <div key={item.id} className="border rounded-lg p-4">
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <h3 className="font-semibold mb-2">
+                                  {item.article?.title}
+                                </h3>
+                                <p className="text-sm text-muted-foreground mb-2">
+                                  {item.article?.excerpt}
+                                </p>
+                                <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                                  <span>{item.article?.category}</span>
+                                  <span>
+                                    Read {format(new Date(item.read_at), 'MMM dd, yyyy')}
+                                  </span>
+                                  <span>
+                                    {Math.round(item.read_duration / 60)} min read
+                                  </span>
+                                </div>
+                              </div>
+                              <Button size="sm" variant="outline">
+                                <Eye className="h-3 w-3" />
+                              </Button>
                             </div>
                           </div>
                         ))}
@@ -311,55 +471,88 @@ const Profile: React.FC = () => {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="settings" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <Settings className="h-5 w-5" />
-                      <span>Notification Preferences</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label>Email Notifications</Label>
-                        <p className="text-sm text-gray-500">Receive updates via email</p>
-                      </div>
-                      <Switch
-                        checked={profile?.notification_preferences?.email || false}
-                        onCheckedChange={(checked) => 
-                          updateProfile({ 
-                            notification_preferences: { 
-                              ...profile?.notification_preferences, 
+              <TabsContent value="settings" className="mt-6">
+                <div className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Notification Preferences</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="email-notifications">Email Notifications</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Receive email updates about new articles and breaking news
+                          </p>
+                        </div>
+                        <Switch
+                          id="email-notifications"
+                          checked={profile.notification_preferences?.email || false}
+                          onCheckedChange={(checked) => {
+                            const newPrefs = { 
+                              ...profile.notification_preferences, 
                               email: checked 
-                            } 
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label>Breaking News Alerts</Label>
-                        <p className="text-sm text-gray-500">Get notified of breaking political news</p>
+                            };
+                            updateProfile({ notification_preferences: newPrefs });
+                          }}
+                        />
                       </div>
-                      <Switch
-                        checked={profile?.notification_preferences?.breaking || false}
-                        onCheckedChange={(checked) => 
-                          updateProfile({ 
-                            notification_preferences: { 
-                              ...profile?.notification_preferences, 
+                      <Separator />
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="breaking-notifications">Breaking News Alerts</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Get notified immediately about breaking political news
+                          </p>
+                        </div>
+                        <Switch
+                          id="breaking-notifications"
+                          checked={profile.notification_preferences?.breaking || false}
+                          onCheckedChange={(checked) => {
+                            const newPrefs = { 
+                              ...profile.notification_preferences, 
                               breaking: checked 
-                            } 
-                          })
-                        }
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
+                            };
+                            updateProfile({ notification_preferences: newPrefs });
+                          }}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Account Settings</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <Label>Subscription Tier</Label>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <Badge variant={profile.subscription_tier === 'free' ? 'secondary' : 'default'}>
+                            {profile.subscription_tier.toUpperCase()}
+                          </Badge>
+                          <Button size="sm" variant="outline">
+                            <CreditCard className="h-3 w-3 mr-1" />
+                            Upgrade
+                          </Button>
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Credits Balance</Label>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <span className="text-lg font-semibold">{profile.credits}</span>
+                          <Button size="sm" variant="outline">
+                            Buy Credits
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               </TabsContent>
             </Tabs>
           </div>
-        </main>
+        </div>
         <Footer />
       </div>
     </ThemeProvider>
