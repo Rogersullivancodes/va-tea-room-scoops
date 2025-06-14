@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -116,7 +115,9 @@ const Profile: React.FC = () => {
         avatar_url: data.avatar_url,
         theme_preference: (data.theme_preference as 'light' | 'dark' | 'system') || 'system',
         subscription_tier: (data.subscription_tier as 'free' | 'premium' | 'vip') || 'free',
-        notification_preferences: data.notification_preferences || {}
+        notification_preferences: typeof data.notification_preferences === 'object' && data.notification_preferences !== null 
+          ? data.notification_preferences as { email?: boolean; push?: boolean; breaking?: boolean; }
+          : {}
       };
       
       setProfile(typedProfile);
