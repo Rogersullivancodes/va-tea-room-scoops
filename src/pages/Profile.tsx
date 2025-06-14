@@ -104,7 +104,22 @@ const Profile: React.FC = () => {
         .single();
 
       if (error) throw error;
-      setProfile(data);
+      
+      // Type conversion to ensure proper typing
+      const typedProfile: UserProfile = {
+        id: data.id,
+        first_name: data.first_name || '',
+        last_name: data.last_name || '',
+        email: data.email || '',
+        credits: data.credits || 0,
+        bio: data.bio,
+        avatar_url: data.avatar_url,
+        theme_preference: (data.theme_preference as 'light' | 'dark' | 'system') || 'system',
+        subscription_tier: (data.subscription_tier as 'free' | 'premium' | 'vip') || 'free',
+        notification_preferences: data.notification_preferences || {}
+      };
+      
+      setProfile(typedProfile);
     } catch (error) {
       console.error('Error fetching profile:', error);
       toast({
@@ -265,22 +280,22 @@ const Profile: React.FC = () => {
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center space-x-4 mb-8">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={profile.avatar_url} />
+                <AvatarImage src={profile?.avatar_url} />
                 <AvatarFallback>
-                  {profile.first_name?.[0]}{profile.last_name?.[0]}
+                  {profile?.first_name?.[0]}{profile?.last_name?.[0]}
                 </AvatarFallback>
               </Avatar>
               <div>
                 <h1 className="text-3xl font-bold">
-                  {profile.first_name} {profile.last_name}
+                  {profile?.first_name} {profile?.last_name}
                 </h1>
-                <p className="text-muted-foreground">{profile.email}</p>
+                <p className="text-muted-foreground">{profile?.email}</p>
                 <div className="flex items-center space-x-2 mt-2">
-                  <Badge variant={profile.subscription_tier === 'free' ? 'secondary' : 'default'}>
-                    {profile.subscription_tier.toUpperCase()}
+                  <Badge variant={profile?.subscription_tier === 'free' ? 'secondary' : 'default'}>
+                    {profile?.subscription_tier?.toUpperCase()}
                   </Badge>
                   <span className="text-sm text-muted-foreground">
-                    {profile.credits} credits
+                    {profile?.credits} credits
                   </span>
                 </div>
               </div>
