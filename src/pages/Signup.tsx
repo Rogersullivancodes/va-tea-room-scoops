@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +10,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ThemeProvider from '@/components/ThemeProvider';
 import { useAuth } from '@/contexts/AuthContext';
+import { sanitizeEmail, sanitizeInput, validateEmail, validatePassword } from '@/utils/security';
 
 interface SignupFormData {
   firstName: string;
@@ -43,11 +43,32 @@ const Signup: React.FC = () => {
     
     setLoading(true);
     
+    // Sanitize and validate inputs
+    const sanitizedEmail = sanitizeEmail(data.email);
+    const sanitizedFirstName = sanitizeInput(data.firstName);
+    const sanitizedLastName = sanitizeInput(data.lastName);
+    const passwordValidation = validatePassword(data.password);
+    
+    if (!validateEmail(sanitizedEmail)) {
+      setLoading(false);
+      return;
+    }
+    
+    if (!passwordValidation.valid) {
+      setLoading(false);
+      return;
+    }
+    
+    if (!sanitizedFirstName || !sanitizedLastName) {
+      setLoading(false);
+      return;
+    }
+    
     const { error } = await signUp(
-      data.email,
+      sanitizedEmail,
       data.password,
-      data.firstName,
-      data.lastName
+      sanitizedFirstName,
+      sanitizedLastName
     );
     
     if (!error) {

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +10,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ThemeProvider from '@/components/ThemeProvider';
 import { useAuth } from '@/contexts/AuthContext';
+import { sanitizeEmail, validateEmail, validatePassword } from '@/utils/security';
 
 interface LoginFormData {
   email: string;
@@ -34,7 +34,21 @@ const Login: React.FC = () => {
   const onSubmit = async (data: LoginFormData) => {
     setLoading(true);
     
-    const { error } = await signIn(data.email, data.password);
+    // Sanitize and validate inputs
+    const sanitizedEmail = sanitizeEmail(data.email);
+    const passwordValidation = validatePassword(data.password);
+    
+    if (!validateEmail(sanitizedEmail)) {
+      setLoading(false);
+      return;
+    }
+    
+    if (!passwordValidation.valid) {
+      setLoading(false);
+      return;
+    }
+
+    const { error } = await signIn(sanitizedEmail, data.password);
     
     if (!error) {
       navigate('/');

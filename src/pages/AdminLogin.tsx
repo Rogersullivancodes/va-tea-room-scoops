@@ -4,22 +4,28 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Eye, EyeOff, Lock, User } from 'lucide-react';
+import { Shield, Eye, EyeOff, Lock, User, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ThemeProvider from '@/components/ThemeProvider';
 import { useAdmin } from '@/contexts/AdminContext';
 
+interface AdminLoginFormData {
+  email: string;
+  password: string;
+}
+
 const AdminLogin: React.FC = () => {
-  const [credentials, setCredentials] = useState({
-    username: '',
-    password: '',
-  });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [lockoutTime, setLockoutTime] = useState<Date | null>(null);
   const { signIn, isAuthenticated } = useAdmin();
   const navigate = useNavigate();
+
+  const { register, handleSubmit, formState: { errors } } = useForm<AdminLoginFormData>();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -27,21 +33,39 @@ const AdminLogin: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCredentials({ ...credentials, [e.target.name]: e.target.value });
-  };
+  // Check if account is locked out
+  const isLockedOut = lockoutTime && new Date() < lockoutTime;
 
-  const handleAdminLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAdminLogin = async (data: AdminLoginFormData) => {
+    if (isLockedOut) {
+      return;
+    }
+
     setLoading(true);
     
-    const { error } = await signIn(credentials.username, credentials.password);
+    const { error } = await signIn(data.email, data.password);
     
-    if (!error) {
+    if (error) {
+      const newFailedAttempts = failedAttempts + 1;
+      setFailedAttempts(newFailedAttempts);
+      
+      // Lock out after 3 failed attempts for 15 minutes
+      if (newFailedAttempts >= 3) {
+        const lockout = new Date(Date.now() + 15 * 60 * 1000);
+        setLockoutTime(lockout);
+      }
+    } else {
+      setFailedAttempts(0);
+      setLockoutTime(null);
       navigate('/admin/dashboard');
     }
     
     setLoading(false);
+  };
+
+  const getRemainingLockoutTime = () => {
+    if (!lockoutTime) return 0;
+    return Math.max(0, Math.ceil((lockoutTime.getTime() - Date.now()) / 1000 / 60));
   };
 
   return (
@@ -62,24 +86,39 @@ const AdminLogin: React.FC = () => {
               <p className="text-gray-400">
                 Authorized personnel only
               </p>
+              {isLockedOut && (
+                <div className="flex items-center justify-center space-x-2 text-red-400 mt-2">
+                  <AlertTriangle className="h-4 w-4" />
+                  <span className="text-sm">
+                    Account locked for {getRemainingLockoutTime()} minutes
+                  </span>
+                </div>
+              )}
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleAdminLogin} className="space-y-6">
+              <form onSubmit={handleSubmit(handleAdminLogin)} className="space-y-6">
                 <div>
-                  <Label htmlFor="username" className="text-gray-300">Administrator Email</Label>
+                  <Label htmlFor="email" className="text-gray-300">Administrator Email</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
-                      id="username"
-                      name="username"
-                      value={credentials.username}
-                      onChange={handleInputChange}
-                      placeholder="cfp@crabsfriedpolitically.com"
+                      id="email"
+                      type="email"
+                      placeholder="Enter admin email"
                       className="pl-10 bg-gray-700 border-gray-600 text-white"
-                      required
-                      disabled={loading}
+                      disabled={loading || isLockedOut}
+                      {...register("email", { 
+                        required: "Email is required",
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                          message: "Invalid email address"
+                        }
+                      })}
                     />
                   </div>
+                  {errors.email && (
+                    <p className="text-sm text-red-400 mt-1">{errors.email.message}</p>
+                  )}
                 </div>
                 
                 <div>
@@ -88,29 +127,45 @@ const AdminLogin: React.FC = () => {
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       id="password"
-                      name="password"
                       type={showPassword ? "text" : "password"}
-                      value={credentials.password}
-                      onChange={handleInputChange}
-                      placeholder="admincfp"
+                      placeholder="Enter password"
                       className="pl-10 pr-10 bg-gray-700 border-gray-600 text-white"
-                      required
-                      disabled={loading}
+                      disabled={loading || isLockedOut}
+                      {...register("password", { 
+                        required: "Password is required",
+                        minLength: {
+                          value: 8,
+                          message: "Password must be at least 8 characters"
+                        }
+                      })}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                      disabled={loading}
+                      disabled={loading || isLockedOut}
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
+                  {errors.password && (
+                    <p className="text-sm text-red-400 mt-1">{errors.password.message}</p>
+                  )}
                 </div>
+
+                {failedAttempts > 0 && !isLockedOut && (
+                  <div className="text-yellow-400 text-sm text-center">
+                    Failed attempts: {failedAttempts}/3
+                  </div>
+                )}
                 
-                <Button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white" disabled={loading}>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-red-600 hover:bg-red-700 text-white" 
+                  disabled={loading || isLockedOut}
+                >
                   <Shield className="h-4 w-4 mr-2" />
-                  {loading ? 'Authenticating...' : 'Access Admin Panel'}
+                  {loading ? 'Authenticating...' : isLockedOut ? 'Account Locked' : 'Access Admin Panel'}
                 </Button>
               </form>
               
