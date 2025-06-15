@@ -25,6 +25,7 @@ import { Plus, Send, Edit, Trash2, Users, BarChart } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { sanitizeInput } from '@/utils/security';
 
 const NewsletterManagement: React.FC = () => {
   const { toast } = useToast();
@@ -76,12 +77,18 @@ const NewsletterManagement: React.FC = () => {
 
   const handleCreateCampaign = async () => {
     try {
+      // Sanitize inputs
+      const sanitizedCampaign = {
+        title: sanitizeInput(newCampaign.title),
+        subject: sanitizeInput(newCampaign.subject),
+        content: sanitizeInput(newCampaign.content),
+        recipients_count: subscribers.length,
+        user_id: 'admin' // For now, using 'admin' as user_id since this is admin functionality
+      };
+
       const { error } = await supabase
         .from('newsletter_campaigns')
-        .insert([{
-          ...newCampaign,
-          recipients_count: subscribers.length
-        }]);
+        .insert([sanitizedCampaign]);
 
       if (error) throw error;
 
