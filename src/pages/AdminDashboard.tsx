@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -25,6 +26,35 @@ import NewsletterManagement from '@/components/admin/NewsletterManagement';
 import SiteSettings from '@/components/admin/SiteSettings';
 import UserManagement from '@/components/admin/UserManagement';
 import Analytics from '@/components/admin/Analytics';
+import { supabase } from '@/integrations/supabase/client';
+
+const fetchStats = async () => {
+  // Fetch article count
+  const [{count: articlesCount}, {count: usersCount}, {count: newsArticleCount, data: newsViewsData}, {count: articleCount, data: articleViewsData}, {count: newsletterSubCount}]
+    = await Promise.all([
+      supabase.from('articles').select('id', { count: 'exact', head: true }),
+      supabase.from('profiles').select('id', { count: 'exact', head: true }),
+      supabase.from('news_articles').select('id,views', { count: 'exact' }),
+      supabase.from('articles').select('id,views', { count: 'exact' }),
+      supabase.from('newsletter_subscribers').select('id', { count: 'exact', head: true })
+    ]);
+
+  // Count views for pageviews (articles + news_articles)
+  let totalViews = 0;
+  if (newsViewsData) {
+    for (const row of newsViewsData) totalViews += row.views || 0;
+  }
+  if (articleViewsData) {
+    for (const row of articleViewsData) totalViews += row.views || 0;
+  }
+  
+  return {
+    articles: articlesCount || 0,
+    users: usersCount || 0,
+    pageViews: totalViews,
+    newsletter: newsletterSubCount || 0,
+  };
+};
 
 const AdminDashboard: React.FC = () => {
   const { admin, signOut, isAuthenticated } = useAdmin();
@@ -41,6 +71,11 @@ const AdminDashboard: React.FC = () => {
     await signOut();
     navigate('/secure/admin');
   };
+
+  const { data: stats, isLoading } = useQuery({
+    queryKey: ['admin-stats'],
+    queryFn: fetchStats,
+  });
 
   if (!isAuthenticated) {
     return null;
@@ -115,8 +150,12 @@ const AdminDashboard: React.FC = () => {
                     <FileText className="h-4 w-4 text-red-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">1,234</div>
-                    <p className="text-xs text-green-400">+20.1% from last month</p>
+                    <div className="text-2xl font-bold text-white">
+                      {isLoading ? 'Loading...' : stats?.articles ?? 0}
+                    </div>
+                    <p className="text-xs text-green-400">
+                      {/* Demo: could use history for percentage + change */}
+                    </p>
                   </CardContent>
                 </Card>
 
@@ -126,8 +165,10 @@ const AdminDashboard: React.FC = () => {
                     <Users className="h-4 w-4 text-red-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">2,350</div>
-                    <p className="text-xs text-green-400">+180.1% from last month</p>
+                    <div className="text-2xl font-bold text-white">
+                      {isLoading ? 'Loading...' : stats?.users ?? 0}
+                    </div>
+                    <p className="text-xs text-green-400"></p>
                   </CardContent>
                 </Card>
 
@@ -137,8 +178,10 @@ const AdminDashboard: React.FC = () => {
                     <Globe className="h-4 w-4 text-red-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">12,234</div>
-                    <p className="text-xs text-green-400">+19% from last month</p>
+                    <div className="text-2xl font-bold text-white">
+                      {isLoading ? 'Loading...' : stats?.pageViews ?? 0}
+                    </div>
+                    <p className="text-xs text-green-400"></p>
                   </CardContent>
                 </Card>
 
@@ -148,8 +191,10 @@ const AdminDashboard: React.FC = () => {
                     <Mail className="h-4 w-4 text-red-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">573</div>
-                    <p className="text-xs text-green-400">+201 since last month</p>
+                    <div className="text-2xl font-bold text-white">
+                      {isLoading ? 'Loading...' : stats?.newsletter ?? 0}
+                    </div>
+                    <p className="text-xs text-green-400"></p>
                   </CardContent>
                 </Card>
               </div>
