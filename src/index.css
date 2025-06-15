@@ -3,6 +3,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@400;700&display=swap');
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -53,12 +55,25 @@
     @apply border-border;
   }
 
+  html {
+    font-family: 'Montserrat', system-ui, sans-serif;
+    font-size: 16px;
+    scroll-behavior: smooth;
+    background: var(--background);
+  }
+
   body {
-    @apply bg-background text-foreground font-source transition-colors;
+    @apply bg-background text-foreground transition-colors;
+    font-family: 'Montserrat', system-ui, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif font-bold;
+    @apply font-playfair font-extrabold;
+    letter-spacing: -0.5px;
+  }
+  
+  .font-playfair {
+    font-family: 'Playfair Display', serif;
   }
   
   .card-shadow {
@@ -66,19 +81,23 @@
   }
   
   .headline {
-    @apply text-2xl md:text-3xl lg:text-4xl font-extrabold text-red-700 dark:text-red-400;
+    @apply text-glow;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.12);
   }
   
   .subheading {
-    @apply text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-200;
+    @apply text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-200 font-playfair;
   }
 }
 
 @layer utilities {
   .text-glow {
-    text-shadow: 0 0 8px rgba(178, 34, 34, 0.6);
+    text-shadow: 0 0 8px rgba(178, 34, 34, 0.6), 0 2px 12px rgba(0,0,0,0.15);
   }
-  
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
   .bg-gradient {
     @apply bg-gradient-to-r from-red-700 to-slate-800;
   }

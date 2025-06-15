@@ -111,6 +111,7 @@ export default {
         'montserrat': ['Montserrat', 'sans-serif'],
         'source': ['"Source Sans Pro"', 'sans-serif'],
         'serif': ['Georgia', 'serif'],
+        'playfair': ['Playfair Display', 'serif'],
       },
     }
   },

@@ -16,18 +16,18 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+    <nav className="bg-white/80 dark:bg-navy/90 shadow-lg border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50 backdrop-blur-md transition-shadow">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 flex items-center space-x-2">
             <Link to="/" className="flex items-center">
               <img 
                 src="/lovable-uploads/99f513e2-a0c1-437b-ab9a-d71ec82d9ea8.png" 
                 alt="CrabsFriedPolitically"
-                className="h-8 w-auto"
+                className="h-9 sm:h-10 w-auto rounded shadow"
               />
-              <span className="ml-2 text-xl font-bold text-navy dark:text-white hidden sm:block">
+              <span className="ml-2 text-2xl font-playfair font-extrabold text-navy dark:text-white tracking-wide hidden sm:block">
                 CrabsFriedPolitically
               </span>
             </Link>
@@ -41,16 +41,16 @@ const Navbar: React.FC = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
             <Link to="/articles">
-              <Button variant="ghost">Articles</Button>
+              <Button variant="ghost" className="text-navy dark:text-gold font-semibold transition-colors hover:bg-primary/10">Articles</Button>
             </Link>
             <Link to="/about">
-              <Button variant="ghost">About</Button>
+              <Button variant="ghost" className="text-navy dark:text-gold font-semibold transition-colors hover:bg-primary/10">About</Button>
             </Link>
             <Link to="/contact">
-              <Button variant="ghost">Contact</Button>
+              <Button variant="ghost" className="text-navy dark:text-gold font-semibold transition-colors hover:bg-primary/10">Contact</Button>
             </Link>
             <Link to="/memberships">
-              <Button variant="ghost">Memberships</Button>
+              <Button variant="ghost" className="text-navy dark:text-gold font-semibold transition-colors hover:bg-primary/10">Memberships</Button>
             </Link>
             <ThemeToggle />
             <NotificationCenter />
@@ -61,7 +61,7 @@ const Navbar: React.FC = () => {
           <div className="md:hidden flex items-center space-x-2">
             <ThemeToggle />
             <NotificationCenter />
-            <Button variant="ghost" onClick={toggleMenu}>
+            <Button variant="ghost" onClick={toggleMenu} className="focus:outline-none">
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
           </div>
@@ -75,25 +75,25 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Navigation Menu */}
       {isMenuOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+        <div className="md:hidden transition-all duration-150">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white/95 dark:bg-navy/95 border-t border-gray-200 dark:border-gray-800">
             <Link to="/articles" className="block">
-              <Button variant="ghost" className="w-full justify-start" onClick={() => setIsMenuOpen(false)}>
+              <Button variant="ghost" className="w-full justify-start text-navy dark:text-gold font-semibold" onClick={() => setIsMenuOpen(false)}>
                 Articles
               </Button>
             </Link>
             <Link to="/about" className="block">
-              <Button variant="ghost" className="w-full justify-start" onClick={() => setIsMenuOpen(false)}>
+              <Button variant="ghost" className="w-full justify-start text-navy dark:text-gold font-semibold" onClick={() => setIsMenuOpen(false)}>
                 About
               </Button>
             </Link>
             <Link to="/contact" className="block">
-              <Button variant="ghost" className="w-full justify-start" onClick={() => setIsMenuOpen(false)}>
+              <Button variant="ghost" className="w-full justify-start text-navy dark:text-gold font-semibold" onClick={() => setIsMenuOpen(false)}>
                 Contact
               </Button>
             </Link>
             <Link to="/memberships" className="block">
-              <Button variant="ghost" className="w-full justify-start" onClick={() => setIsMenuOpen(false)}>
+              <Button variant="ghost" className="w-full justify-start text-navy dark:text-gold font-semibold" onClick={() => setIsMenuOpen(false)}>
                 Memberships
               </Button>
             </Link>
