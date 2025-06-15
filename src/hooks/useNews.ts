@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
@@ -73,8 +72,7 @@ export const useNews = () => {
       .subscribe();
 
     return () => {
-      // Properly unsubscribe and remove the channel
-      channel.unsubscribe();
+      // FIX: Only remove the channel, do NOT call channel.unsubscribe()
       supabase.removeChannel(channel);
     };
   }, []);
