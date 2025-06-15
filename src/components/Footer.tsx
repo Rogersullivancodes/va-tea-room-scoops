@@ -3,6 +3,7 @@ import React from 'react';
 import { Mail, Twitter, Instagram, Facebook } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useAdmin } from '@/contexts/AdminContext';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   const { isAuthenticated } = useAdmin();
@@ -49,14 +50,14 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-xl font-playfair font-bold mb-4 text-gold">Quick Links</h3>
             <ul className="space-y-1 text-sm">
-              <li><a href="/about" className="text-white/80 hover:text-gold transition-colors">About Us</a></li>
+              <li><Link to="/about" className="text-white/80 hover:text-gold transition-colors">About Us</Link></li>
               <li><a href="#submit-tip" className="text-white/80 hover:text-gold transition-colors">Submit a Tip</a></li>
               <li><a href="#privacy" className="text-white/80 hover:text-gold transition-colors">Privacy Policy</a></li>
               <li><a href="#terms" className="text-white/80 hover:text-gold transition-colors">Terms of Use</a></li>
-              <li><a href="/contact" className="text-white/80 hover:text-gold transition-colors">Contact Us</a></li>
-              <li><a href="/secure/admin" className="text-white/80 hover:text-gold transition-colors">Admin Login</a></li>
+              <li><Link to="/contact" className="text-white/80 hover:text-gold transition-colors">Contact Us</Link></li>
+              <li><Link to="/secure/admin" className="text-white/80 hover:text-gold transition-colors">Admin Login</Link></li>
               {isAuthenticated && (
-                <li><a href="/admin/dashboard" className="text-white/80 hover:text-gold transition-colors">Admin Dashboard</a></li>
+                <li><Link to="/admin/dashboard" className="text-white/80 hover:text-gold transition-colors">Admin Dashboard</Link></li>
               )}
             </ul>
           </div>
