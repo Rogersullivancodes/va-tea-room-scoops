@@ -11,8 +11,8 @@ const AuthButtons: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center space-x-2">
-        <div className="w-16 h-8 bg-gray-200 dark:bg-gray-700 animate-pulse rounded"></div>
-        <div className="w-20 h-8 bg-gray-200 dark:bg-gray-700 animate-pulse rounded"></div>
+        <div className="w-16 h-8 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 animate-pulse rounded-lg"></div>
+        <div className="w-20 h-8 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 animate-pulse rounded-lg"></div>
       </div>
     );
   }
@@ -23,10 +23,10 @@ const AuthButtons: React.FC = () => {
 
   return (
     <div className="flex items-center space-x-2">
-      <Button variant="ghost" asChild>
+      <Button variant="ghost" asChild className="hover:bg-primary/10 transition-all duration-200">
         <Link to="/login">Login</Link>
       </Button>
-      <Button asChild className="bg-red-600 hover:bg-red-700">
+      <Button asChild className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 shadow-lg hover:shadow-xl transition-all duration-200">
         <Link to="/signup">Sign Up</Link>
       </Button>
     </div>

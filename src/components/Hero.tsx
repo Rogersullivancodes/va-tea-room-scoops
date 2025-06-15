@@ -12,12 +12,10 @@ const Hero: React.FC = () => {
           style={{
             backgroundImage: `url('/lovable-uploads/99f513e2-a0c1-437b-ab9a-d71ec82d9ea8.png')`,
             opacity: 0.60,
--           filter: 'blur(2px) grayscale(40%)'
-+           filter: 'blur(2px) grayscale(40%)'
+            filter: 'blur(2px) grayscale(40%)'
           }}
         />
--       <div className="absolute inset-0 bg-gradient-to-tr from-navy/95 to-red-900/80" />
-+       <div className="absolute inset-0 bg-gradient-to-tr from-navy/95 to-red-900/80 dark:from-black/85 dark:to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-navy/95 to-red-900/80 dark:from-black/85 dark:to-black/70" />
       </div>
 
       {/* Content */}
@@ -64,4 +62,3 @@ const Hero: React.FC = () => {
 };
 
 export default Hero;
-
