@@ -75,9 +75,12 @@ export const useNotifications = () => {
     fetchNotifications();
 
     if (user) {
+      // Create a unique channel name using user ID, timestamp and random number
+      const channelId = `notifications-${user.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
       // Set up real-time subscription for new notifications
       const channel = supabase
-        .channel(`notifications-${user.id}`)
+        .channel(channelId)
         .on(
           'postgres_changes',
           {

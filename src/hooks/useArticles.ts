@@ -62,9 +62,12 @@ export const useArticles = () => {
   useEffect(() => {
     fetchArticles();
 
+    // Create a unique channel name using timestamp and random number
+    const channelId = `articles-changes-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
     // Set up real-time subscription
     const channel = supabase
-      .channel(`articles-changes-${Date.now()}`)
+      .channel(channelId)
       .on(
         'postgres_changes',
         {

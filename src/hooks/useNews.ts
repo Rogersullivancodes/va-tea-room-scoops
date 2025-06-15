@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
@@ -51,12 +52,12 @@ export const useNews = () => {
   useEffect(() => {
     fetchNews();
 
-    // Create a unique channel name to avoid conflicts
-    const channelName = `news-updates-${Date.now()}`;
+    // Create a unique channel name using timestamp and random number
+    const channelId = `news-updates-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     // Set up real-time subscription for new articles
     const channel = supabase
-      .channel(channelName)
+      .channel(channelId)
       .on(
         'postgres_changes',
         {
@@ -72,7 +73,6 @@ export const useNews = () => {
       .subscribe();
 
     return () => {
-      // FIX: Only remove the channel, do NOT call channel.unsubscribe()
       supabase.removeChannel(channel);
     };
   }, []);
