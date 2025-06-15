@@ -6,18 +6,24 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Eye, EyeOff, Lock, Mail, Sparkles } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ThemeProvider from '@/components/ThemeProvider';
 import { useAuth } from '@/contexts/AuthContext';
 
+interface LoginFormData {
+  email: string;
+  password: string;
+}
+
 const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signIn, user } = useAuth();
   const navigate = useNavigate();
+  
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
 
   useEffect(() => {
     if (user) {
@@ -25,11 +31,10 @@ const Login: React.FC = () => {
     }
   }, [user, navigate]);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: LoginFormData) => {
     setLoading(true);
     
-    const { error } = await signIn(email, password);
+    const { error } = await signIn(data.email, data.password);
     
     if (!error) {
       navigate('/');
@@ -62,7 +67,7 @@ const Login: React.FC = () => {
               </p>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleLogin} className="space-y-6">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm font-semibold">Email</Label>
                   <div className="relative">
@@ -70,14 +75,21 @@ const Login: React.FC = () => {
                     <Input
                       id="email"
                       type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
                       placeholder="your@email.com"
                       className="pl-10 h-12 bg-white/50 dark:bg-black/50 border-gray-200 dark:border-gray-700 focus:border-primary dark:focus:border-gold transition-all duration-200"
-                      required
                       disabled={loading}
+                      {...register("email", { 
+                        required: "Email is required",
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                          message: "Invalid email address"
+                        }
+                      })}
                     />
                   </div>
+                  {errors.email && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
+                  )}
                 </div>
                 
                 <div className="space-y-2">
@@ -87,12 +99,16 @@ const Login: React.FC = () => {
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
                       className="pl-10 pr-10 h-12 bg-white/50 dark:bg-black/50 border-gray-200 dark:border-gray-700 focus:border-primary dark:focus:border-gold transition-all duration-200"
-                      required
                       disabled={loading}
+                      {...register("password", { 
+                        required: "Password is required",
+                        minLength: {
+                          value: 6,
+                          message: "Password must be at least 6 characters"
+                        }
+                      })}
                     />
                     <button
                       type="button"
@@ -103,6 +119,9 @@ const Login: React.FC = () => {
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
+                  {errors.password && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>
+                  )}
                 </div>
                 
                 <Button 

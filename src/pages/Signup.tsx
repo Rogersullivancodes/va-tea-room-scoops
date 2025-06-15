@@ -6,24 +6,29 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ThemeProvider from '@/components/ThemeProvider';
 import { useAuth } from '@/contexts/AuthContext';
 
+interface SignupFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 const Signup: React.FC = () => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signUp, user } = useAuth();
   const navigate = useNavigate();
+
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<SignupFormData>();
+  const password = watch("password");
 
   useEffect(() => {
     if (user) {
@@ -31,36 +36,25 @@ const Signup: React.FC = () => {
     }
   }, [user, navigate]);
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
+  const onSubmit = async (data: SignupFormData) => {
+    if (data.password !== data.confirmPassword) {
       return;
     }
     
     setLoading(true);
     
     const { error } = await signUp(
-      formData.email,
-      formData.password,
-      formData.firstName,
-      formData.lastName
+      data.email,
+      data.password,
+      data.firstName,
+      data.lastName
     );
     
     if (!error) {
-      // Redirect to signup completion page instead of clearing form
       navigate('/signup-complete');
     }
     
     setLoading(false);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
   };
 
   return (
@@ -78,7 +72,7 @@ const Signup: React.FC = () => {
               </p>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSignup} className="space-y-4">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="firstName">First Name</Label>
@@ -86,29 +80,41 @@ const Signup: React.FC = () => {
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                       <Input
                         id="firstName"
-                        name="firstName"
                         type="text"
-                        value={formData.firstName}
-                        onChange={handleInputChange}
                         placeholder="John"
                         className="pl-10"
-                        required
                         disabled={loading}
+                        {...register("firstName", { 
+                          required: "First name is required",
+                          minLength: {
+                            value: 2,
+                            message: "First name must be at least 2 characters"
+                          }
+                        })}
                       />
                     </div>
+                    {errors.firstName && (
+                      <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.firstName.message}</p>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="lastName">Last Name</Label>
                     <Input
                       id="lastName"
-                      name="lastName"
                       type="text"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
                       placeholder="Doe"
-                      required
                       disabled={loading}
+                      {...register("lastName", { 
+                        required: "Last name is required",
+                        minLength: {
+                          value: 2,
+                          message: "Last name must be at least 2 characters"
+                        }
+                      })}
                     />
+                    {errors.lastName && (
+                      <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.lastName.message}</p>
+                    )}
                   </div>
                 </div>
                 
@@ -118,16 +124,22 @@ const Signup: React.FC = () => {
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       id="email"
-                      name="email"
                       type="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
                       placeholder="your@email.com"
                       className="pl-10"
-                      required
                       disabled={loading}
+                      {...register("email", { 
+                        required: "Email is required",
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                          message: "Invalid email address"
+                        }
+                      })}
                     />
                   </div>
+                  {errors.email && (
+                    <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.email.message}</p>
+                  )}
                 </div>
                 
                 <div>
@@ -136,14 +148,17 @@ const Signup: React.FC = () => {
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       id="password"
-                      name="password"
                       type={showPassword ? "text" : "password"}
-                      value={formData.password}
-                      onChange={handleInputChange}
                       placeholder="••••••••"
                       className="pl-10 pr-10"
-                      required
                       disabled={loading}
+                      {...register("password", { 
+                        required: "Password is required",
+                        minLength: {
+                          value: 6,
+                          message: "Password must be at least 6 characters"
+                        }
+                      })}
                     />
                     <button
                       type="button"
@@ -154,6 +169,9 @@ const Signup: React.FC = () => {
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
+                  {errors.password && (
+                    <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.password.message}</p>
+                  )}
                 </div>
                 
                 <div>
@@ -162,14 +180,14 @@ const Signup: React.FC = () => {
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       id="confirmPassword"
-                      name="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
-                      value={formData.confirmPassword}
-                      onChange={handleInputChange}
                       placeholder="••••••••"
                       className="pl-10 pr-10"
-                      required
                       disabled={loading}
+                      {...register("confirmPassword", { 
+                        required: "Please confirm your password",
+                        validate: value => value === password || "Passwords do not match"
+                      })}
                     />
                     <button
                       type="button"
@@ -180,6 +198,9 @@ const Signup: React.FC = () => {
                       {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
+                  {errors.confirmPassword && (
+                    <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.confirmPassword.message}</p>
+                  )}
                 </div>
                 
                 <Button type="submit" className="w-full bg-red-600 hover:bg-red-700" disabled={loading}>
