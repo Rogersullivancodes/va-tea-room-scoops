@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
@@ -16,7 +15,7 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-white/80 dark:bg-navy/90 shadow-lg border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50 backdrop-blur-md transition-shadow">
+    <nav className="bg-white/80 dark:bg-black shadow-lg border-b border-gray-200 dark:border-gray-900 sticky top-0 z-50 backdrop-blur-md transition-shadow">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}

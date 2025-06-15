@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Mail, Twitter, Instagram, Facebook } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
@@ -9,7 +8,7 @@ const Footer: React.FC = () => {
   const { isAuthenticated } = useAdmin();
 
   return (
-    <footer className="bg-navy text-white pt-14 pb-8 text-base">
+    <footer className="bg-navy dark:bg-black text-white pt-14 pb-8 text-base">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-8">
           {/* About */}

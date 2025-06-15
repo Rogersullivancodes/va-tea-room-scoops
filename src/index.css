@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -30,27 +29,44 @@
   }
 
   .dark {
-    --background: 0 0% 0%;
+    --background: 0 0% 0%; /* pure black */
     --foreground: 0 0% 98%;
-    --card: 0 0% 4%;
+    --card: 0 0% 5%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 4%;
+    --popover: 0 0% 6%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 72.2% 50.6%;
+    --primary: 0 0% 80%; /* gray for contrast */
     --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 8%;
+    --secondary: 0 0% 18%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 8%;
+    --muted: 0 0% 10%;
     --muted-foreground: 0 0% 65%;
-    --accent: 0 0% 8%;
+    --accent: 0 0% 12%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 12%;
-    --input: 0 0% 12%;
-    --ring: 0 72.2% 50.6%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 0 0% 60%;
   }
-
++
++  .dark,
++  .dark body,
++  .dark .bg-navy,
++  .dark .bg-gradient,
++  .dark .bg-navy\/90,
++  .dark .bg-navy\/95 {
++    background: #000 !important;
++    background-color: #000 !important;
++  }
++
++  .dark .bg-gradient-to-br,
++  .dark .bg-gradient-to-tr {
++    background: linear-gradient(135deg, #000 92%, #222 100%) !important;
++  }
++  .dark .shadow-lg, .dark .shadow-xl, .dark .card-shadow {
++    box-shadow: 0 2px 24px rgba(0,0,0,0.7), 0 2px 6px rgba(0,0,0,0.15)!important;
++  }
   * {
     @apply border-border;
   }
