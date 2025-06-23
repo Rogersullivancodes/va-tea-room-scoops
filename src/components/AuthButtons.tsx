@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import UserMenu from './UserMenu';
 
 const AuthButtons: React.FC = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, isGuest } = useAuth();
 
   if (loading) {
     return (
@@ -19,6 +19,20 @@ const AuthButtons: React.FC = () => {
 
   if (user) {
     return <UserMenu />;
+  }
+
+  if (isGuest) {
+    return (
+      <div className="flex items-center space-x-2">
+        <span className="text-sm text-gray-600 dark:text-gray-400">Guest Mode</span>
+        <Button variant="ghost" asChild className="hover:bg-primary/10 transition-all duration-200">
+          <Link to="/login">Login</Link>
+        </Button>
+        <Button asChild className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 shadow-lg hover:shadow-xl transition-all duration-200">
+          <Link to="/signup">Sign Up</Link>
+        </Button>
+      </div>
+    );
   }
 
   return (

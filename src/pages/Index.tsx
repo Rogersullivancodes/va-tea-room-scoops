@@ -21,9 +21,11 @@ import SecureCheckout from '@/components/SecureCheckout';
 import AdSpaces from '@/components/AdSpaces';
 import ShareCreditsWidget from '@/components/ShareCreditsWidget';
 import { useAdmin } from '@/contexts/AdminContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
   const { isAuthenticated: isAdminAuthenticated } = useAdmin();
+  const { user, isGuest } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,14 +48,16 @@ const Index = () => {
           <NewsTicker />
         </div>
         <main>
-          {/* Free Credits Banner */}
-          <div className="bg-green-50 dark:bg-green-900/20 py-4">
-            <div className="container mx-auto px-4">
-              <div className="max-w-md mx-auto">
-                <ShareCreditsWidget />
+          {/* Free Credits Banner - only show for authenticated users */}
+          {user && !isGuest && (
+            <div className="bg-green-50 dark:bg-green-900/20 py-4">
+              <div className="container mx-auto px-4">
+                <div className="max-w-md mx-auto">
+                  <ShareCreditsWidget />
+                </div>
               </div>
             </div>
-          </div>
+          )}
           
           <ImageCarousel />
           <TeaDropsSection />
@@ -67,9 +71,10 @@ const Index = () => {
           <MemeOfTheDay />
           <InteractiveChat />
           
-          {/* Secure Checkout Section */}
-          <SecureCheckout />
+          {/* Secure Checkout Section - only show for authenticated users */}
+          {user && !isGuest && <SecureCheckout />}
           
+          {/* Payment Section - show for guests to encourage signup */}
           <PaymentSection />
           
           {/* Election Watch and Popup Management side by side */}

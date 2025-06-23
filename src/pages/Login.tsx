@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, EyeOff, Lock, Mail, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, Sparkles, UserCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import Navbar from '@/components/Navbar';
@@ -20,16 +21,16 @@ interface LoginFormData {
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signIn, user } = useAuth();
+  const { signIn, user, isGuest, continueAsGuest } = useAuth();
   const navigate = useNavigate();
   
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
 
   useEffect(() => {
-    if (user) {
+    if (user || isGuest) {
       navigate('/');
     }
-  }, [user, navigate]);
+  }, [user, isGuest, navigate]);
 
   const onSubmit = async (data: LoginFormData) => {
     setLoading(true);
@@ -57,6 +58,11 @@ const Login: React.FC = () => {
     setLoading(false);
   };
 
+  const handleGuestAccess = () => {
+    continueAsGuest();
+    navigate('/');
+  };
+
   return (
     <ThemeProvider>
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-black dark:to-gray-800">
@@ -80,7 +86,7 @@ const Login: React.FC = () => {
                 Sign in to access premium political content
               </p>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-6">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm font-semibold">Email</Label>
@@ -153,6 +159,32 @@ const Login: React.FC = () => {
                   )}
                 </Button>
               </form>
+
+              {/* Guest Access Option */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-gray-200 dark:border-gray-700" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-white dark:bg-black px-2 text-gray-500">Or</span>
+                </div>
+              </div>
+
+              <Button 
+                onClick={handleGuestAccess}
+                variant="outline"
+                className="w-full h-12 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200"
+                disabled={loading}
+              >
+                <UserCheck className="h-4 w-4 mr-2" />
+                Continue as Guest
+              </Button>
+
+              <div className="text-center">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Guest mode provides limited access to content
+                </p>
+              </div>
               
               <div className="mt-8 text-center">
                 <p className="text-gray-600 dark:text-gray-300">
