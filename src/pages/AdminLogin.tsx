@@ -11,6 +11,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ThemeProvider from '@/components/ThemeProvider';
 import { useAdmin } from '@/contexts/AdminContext';
+import { sanitizeEmail, validateEmail, validatePassword } from '@/utils/security';
 
 interface AdminLoginFormData {
   email: string;
@@ -33,6 +34,13 @@ const AdminLogin: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
+  // Redirect /secure/admin to /admin-login
+  useEffect(() => {
+    if (window.location.pathname === '/secure/admin') {
+      navigate('/admin-login', { replace: true });
+    }
+  }, [navigate]);
+
   // Check if account is locked out
   const isLockedOut = lockoutTime && new Date() < lockoutTime;
 
@@ -43,7 +51,21 @@ const AdminLogin: React.FC = () => {
 
     setLoading(true);
     
-    const { error } = await signIn(data.email, data.password);
+    // Sanitize and validate inputs
+    const sanitizedEmail = sanitizeEmail(data.email);
+    const passwordValidation = validatePassword(data.password);
+    
+    if (!validateEmail(sanitizedEmail)) {
+      setLoading(false);
+      return;
+    }
+    
+    if (!passwordValidation.valid) {
+      setLoading(false);
+      return;
+    }
+    
+    const { error } = await signIn(sanitizedEmail, data.password);
     
     if (error) {
       const newFailedAttempts = failedAttempts + 1;
