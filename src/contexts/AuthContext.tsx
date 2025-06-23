@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,11 +8,9 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  isGuest: boolean;
   signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
-  continueAsGuest: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,31 +27,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isGuest, setIsGuest] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user chose guest mode
-    const guestMode = localStorage.getItem('guest_mode');
-    if (guestMode === 'true') {
-      setIsGuest(true);
-      setLoading(false);
-      return;
-    }
-
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('Auth state changed:', event, session);
         setSession(session);
         setUser(session?.user ?? null);
-        setIsGuest(false);
         setLoading(false);
-        
-        // Clear guest mode if user authenticates
-        if (session) {
-          localStorage.removeItem('guest_mode');
-        }
       }
     );
 
@@ -65,14 +49,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return () => subscription.unsubscribe();
   }, []);
-
-  const continueAsGuest = () => {
-    localStorage.setItem('guest_mode', 'true');
-    setIsGuest(true);
-    setUser(null);
-    setSession(null);
-    setLoading(false);
-  };
 
   const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
@@ -157,9 +133,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           variant: "destructive",
         });
       } else {
-        // Clear guest mode on sign out
-        localStorage.removeItem('guest_mode');
-        setIsGuest(false);
         toast({
           title: "Signed out",
           description: "You have been signed out successfully.",
@@ -179,11 +152,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     session,
     loading,
-    isGuest,
     signUp,
     signIn,
     signOut,
-    continueAsGuest,
   };
 
   return (

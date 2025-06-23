@@ -275,7 +275,6 @@ export type Database = {
           status: string | null
           subject: string
           title: string
-          user_id: string
         }
         Insert: {
           click_rate?: number | null
@@ -289,7 +288,6 @@ export type Database = {
           status?: string | null
           subject: string
           title: string
-          user_id: string
         }
         Update: {
           click_rate?: number | null
@@ -303,7 +301,6 @@ export type Database = {
           status?: string | null
           subject?: string
           title?: string
-          user_id?: string
         }
         Relationships: []
       }
@@ -315,7 +312,6 @@ export type Database = {
           name: string | null
           preferences: Json | null
           subscribed_at: string
-          user_id: string | null
         }
         Insert: {
           email: string
@@ -324,7 +320,6 @@ export type Database = {
           name?: string | null
           preferences?: Json | null
           subscribed_at?: string
-          user_id?: string | null
         }
         Update: {
           email?: string
@@ -333,7 +328,6 @@ export type Database = {
           name?: string | null
           preferences?: Json | null
           subscribed_at?: string
-          user_id?: string | null
         }
         Relationships: []
       }
