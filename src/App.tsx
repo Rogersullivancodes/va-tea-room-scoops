@@ -31,7 +31,8 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes><Route path="/articles" element={<Articles />} />
+            <Routes>
+              <Route path="/articles" element={<Articles />} />
 <Route path="/articles/:articleSlug" element={<ArticleDetail />} /> {/* ADD THIS */}
 <Route path="/secure/admin" element={<AdminLogin />} />
               <Route path="/" element={<Index />} />
