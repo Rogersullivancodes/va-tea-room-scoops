@@ -1,6 +1,4 @@
-import ArticleDetail from "./pages/ArticleDetail";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsOfUse from "./pages/TermsOfUse";
+// src/App.tsx
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +18,9 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Profile from "./pages/Profile";
 import Articles from "./pages/Articles";
 import NotFound from "./pages/NotFound";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfUse from "./pages/TermsOfUse";
+import ArticleDetail from "./pages/ArticleDetail";
 
 const queryClient = new QueryClient();
 
@@ -32,9 +33,6 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/articles" element={<Articles />} />
-<Route path="/articles/:articleSlug" element={<ArticleDetail />} /> {/* ADD THIS */}
-<Route path="/secure/admin" element={<AdminLogin />} />
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
@@ -43,17 +41,16 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="/memberships" element={<Memberships />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/articles" element={<Articles />} 
-        
+              <Route path="/articles" element={<Articles />} />
+              {/* Corrected routes below */}
+              <Route path="/articles/:articleSlug" element={<ArticleDetail />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-use" element={<TermsOfUse />} />
               <Route path="/secure/admin" element={<AdminLogin />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              {/* CATCH-ALL ROUTE MUST BE LAST */}
               <Route path="*" element={<NotFound />} />
-            </Routes><Route path="/about" element={<About />} />
-<Route path="/contact" element={<Contact />} />
-<Route path="/privacy-policy" element={<PrivacyPolicy />} /> {/* ADD THIS */}
-<Route path="/terms-of-use" element={<TermsOfUse />} />     {/* ADD THIS */}
-<Route path="/memberships" element={<Memberships />} />
+            </Routes>
           </BrowserRouter>
         </AdminProvider>
       </AuthProvider>
