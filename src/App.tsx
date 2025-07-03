@@ -44,7 +44,11 @@ const App = () => (
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
-            </Routes>
+            </Routes><Route path="/about" element={<About />} />
+<Route path="/contact" element={<Contact />} />
+<Route path="/privacy-policy" element={<PrivacyPolicy />} /> {/* ADD THIS */}
+<Route path="/terms-of-use" element={<TermsOfUse />} />     {/* ADD THIS */}
+<Route path="/memberships" element={<Memberships />} />
           </BrowserRouter>
         </AdminProvider>
       </AuthProvider>
