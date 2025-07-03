@@ -1,4 +1,23 @@
+// Inside your Articles.tsx component
+import { Link } from 'react-router-dom';
 
+// A sample list of articles. You would fetch this from Supabase.
+const articleList = [
+  { title: 'Scandals and Gaffes Shake Up Capitol Hill', slug: 'scandals-and-gaffes' },
+  { title: 'Following the Money in Politics', slug: 'money-in-politics' },
+  { title: 'Latest Election Coverage and Predictions', slug: 'election-coverage' }
+];
+
+// In your return statement, where you map over the articles:
+<div>
+  {articleList.map(article => (
+    <div key={article.slug} className="mb-4">
+      <Link to={`/articles/${article.slug}`}>
+        <h2 className="text-2xl font-bold hover:underline">{article.title}</h2>
+      </Link>
+    </div>
+  ))}
+</div>
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
