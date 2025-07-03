@@ -1,3 +1,4 @@
+import ArticleDetail from "./pages/ArticleDetail";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOfUse";
 import { Toaster } from "@/components/ui/toaster";
