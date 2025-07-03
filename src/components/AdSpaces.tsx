@@ -1,42 +1,53 @@
-
 import React, { useState, useEffect } from 'react';
-import { ExternalLink, X } from 'lucide-react';
+import { ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const AdSpaces: React.FC = () => {
-  const [showFloatingAd, setShowFloatingAd] = useState(false);
-
-  useEffect(() => {
-    // Show floating ad after 10 seconds
-    const timer = setTimeout(() => {
-      setShowFloatingAd(true);
-    }, 10000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  const ads = [
+  // Data for the new dynamic banner
+  const bannerAds = [
     {
-      id: 'sidebar-1',
-      title: 'Political Campaign Management',
-      description: 'Professional campaign services for Virginia candidates',
-      cta: 'Learn More',
-      size: 'medium'
+      id: 'banner-dynamic-1',
+      title: 'Virginia Tourism: Explore Historic Routes',
+      description: 'From the Wilderness Road to the Crooked Road, discover the paths that shaped a nation.',
+      cta: 'Plan Your Trip',
+      bgColor: 'bg-gradient-to-r from-green-600 to-blue-600',
+      textColor: 'text-white'
     },
     {
-      id: 'banner-1',
-      title: 'Virginia Law Firm - Political Legal Services',
-      description: 'Expert legal representation for political matters',
-      cta: 'Contact Us',
-      size: 'large'
+      id: 'banner-dynamic-2',
+      title: 'Advanced Political Analytics Platform',
+      description: 'Track voter sentiment and predict election outcomes with our AI-powered platform.',
+      cta: 'Start Free Trial',
+      bgColor: 'bg-gradient-to-r from-purple-600 to-indigo-700',
+      textColor: 'text-white'
     },
     {
-      id: 'sponsored-1',
-      title: 'Sponsored: Political Consulting',
-      description: 'Data-driven strategies for modern campaigns',
-      cta: 'Get Quote',
-      size: 'small'
+      id: 'banner-dynamic-3',
+      title: 'Political Legal Services in Virginia',
+      description: 'Expert legal representation for campaign finance, election law, and political compliance.',
+      cta: 'Contact Our Team',
+      bgColor: 'bg-gradient-to-r from-red-700 to-blue-800',
+      textColor: 'text-white'
     }
   ];
+
+  const [currentBanner, setCurrentBanner] = useState(0);
+
+  // Effect to handle the auto-rotation of the banner
+  useEffect(() => {
+    const bannerTimer = setInterval(() => {
+      setCurrentBanner((prevBanner) => (prevBanner + 1) % bannerAds.length);
+    }, 5000); // Change banner every 5 seconds
+
+    return () => clearInterval(bannerTimer);
+  }, [bannerAds.length]);
+  
+  const nextBanner = () => {
+      setCurrentBanner((prevBanner) => (prevBanner + 1) % bannerAds.length);
+  }
+  
+  const prevBanner = () => {
+      setCurrentBanner((prevBanner) => (prevBanner - 1 + bannerAds.length) % bannerAds.length);
+  }
 
   return (
     <>
@@ -52,16 +63,43 @@ const AdSpaces: React.FC = () => {
         </div>
       </div>
 
-      {/* Banner Ad */}
-      <div className="bg-gray-50 dark:bg-gray-800 py-8 px-4 text-center mb-8">
-        <div className="container mx-auto">
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">ADVERTISEMENT</p>
-          <div className="bg-gradient-to-r from-red-700 to-blue-800 text-white p-8 rounded-lg">
-            <h3 className="text-2xl font-bold mb-3">Virginia Law Firm - Political Legal Services</h3>
-            <p className="text-lg mb-4">Expert legal representation for campaign finance, election law, and political compliance</p>
-            <button className="bg-white text-red-700 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors">
-              Contact Our Political Law Team
-            </button>
+      {/* --- REPLACEMENT: Dynamic Banner Ad --- */}
+      <div className="container mx-auto mb-8 relative">
+        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 text-center">ADVERTISEMENT</p>
+        <div className="relative overflow-hidden rounded-lg">
+          {/* Banners container */}
+          <div
+            className="flex transition-transform duration-500 ease-in-out"
+            style={{ transform: `translateX(-${currentBanner * 100}%)` }}
+          >
+            {bannerAds.map((ad) => (
+              <div key={ad.id} className={`w-full flex-shrink-0 p-8 text-center ${ad.bgColor} ${ad.textColor}`}>
+                <h3 className="text-2xl font-bold mb-3">{ad.title}</h3>
+                <p className="text-lg mb-4">{ad.description}</p>
+                <button className="bg-white/90 hover:bg-white text-gray-800 px-6 py-3 rounded-lg font-bold transition-colors">
+                  {ad.cta}
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Navigation Buttons */}
+          <button onClick={prevBanner} className="absolute top-1/2 left-3 -translate-y-1/2 bg-black/30 hover:bg-black/50 p-2 rounded-full text-white z-10">
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+          <button onClick={nextBanner} className="absolute top-1/2 right-3 -translate-y-1/2 bg-black/30 hover:bg-black/50 p-2 rounded-full text-white z-10">
+            <ChevronRight className="h-6 w-6" />
+          </button>
+          
+          {/* Navigation Dots */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
+            {bannerAds.map((_, index) => (
+              <button 
+                key={index}
+                onClick={() => setCurrentBanner(index)}
+                className={`h-2 w-2 rounded-full ${currentBanner === index ? 'bg-white' : 'bg-white/50'} hover:bg-white transition-colors`} 
+              />
+            ))}
           </div>
         </div>
       </div>
@@ -83,36 +121,7 @@ const AdSpaces: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Floating Video Ad */}
-      {showFloatingAd && (
-        <div className="fixed bottom-20 left-4 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-2xl z-40 border border-gray-200 dark:border-gray-700">
-          <div className="relative">
-            <button
-              onClick={() => setShowFloatingAd(false)}
-              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 z-10"
-            >
-              <X className="h-4 w-4" />
-            </button>
-            <div className="p-4">
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">SPONSORED VIDEO</p>
-              <div className="bg-gradient-to-br from-green-600 to-blue-600 h-40 rounded flex items-center justify-center text-white">
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <div className="w-0 h-0 border-l-4 border-l-white border-y-4 border-y-transparent ml-1"></div>
-                  </div>
-                  <p className="font-semibold">Virginia Tourism Board</p>
-                  <p className="text-sm">Discover Political History</p>
-                </div>
-              </div>
-              <button className="w-full mt-3 bg-green-600 hover:bg-green-700 text-white py-2 rounded font-semibold">
-                Watch Full Video
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
+      
       {/* Native Ad in Content */}
       <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-6 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
         <div className="flex items-center mb-3">
