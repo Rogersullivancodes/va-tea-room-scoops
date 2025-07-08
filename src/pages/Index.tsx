@@ -1,4 +1,4 @@
-// src/pages/Index.tsx
+import DynamicTopBanner from '@/components/DynamicTopBanner';// src/pages/Index.tsx
 
 // --- NEW, MORE POWERFUL PLACEHOLDER DATA ---
 const mainStory = { 
