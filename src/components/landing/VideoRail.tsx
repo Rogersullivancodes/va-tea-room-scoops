@@ -12,11 +12,7 @@ export const VideoRail: React.FC<{ videos: Video[] }> = ({ videos }) => {
   return (
     <aside className="bg-gray-100 dark:bg-gray-900 p-4">
       <h2 className="text-2xl font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2 font-oswald uppercase">
-<<<<<<< HEAD
-        HOT VIDEOS
-=======
         MUST SEE VIDEOS
->>>>>>> c261369b03977a2d5402fd0a6c13ed1103bf7c3e
       </h2>
       <div className="space-y-4">
         {videos.map(video => (
