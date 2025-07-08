@@ -1,3 +1,4 @@
+// tailwind.config.js (Corrected and Unified)
 import type { Config } from "tailwindcss";
 
 export default {
@@ -89,17 +90,22 @@ export default {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' }
         },
-        'marquee': {
-          '0%': { transform: 'translateX(0%)' },
+        'marquee': { // THE CORRECTED MARQUEE
+          '0%': { transform: 'translateX(100%)' },
           '100%': { transform: 'translateX(-100%)' }
         },
-        'slow-marquee': {
-          '0%': { transform: 'translateX(0%)' },
+        'slow-marquee': { // Corrected this one too for consistency
+          '0%': { transform: 'translateX(100%)' },
           '100%': { transform: 'translateX(-100%)' }
         },
         'fade-in': {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' }
+        },
+        'text-pop-in': { // THE MISSING SPLASH PAGE ANIMATION
+          '0%': { transform: 'scale(0.5)', opacity: '0' },
+          '70%': { transform: 'scale(1.05)', opacity: '1' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
         }
       },
       animation: {
@@ -107,7 +113,8 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'marquee': 'marquee 25s linear infinite',
         'slow-marquee': 'slow-marquee 60s linear infinite',
-        'fade-in': 'fade-in 0.5s ease-in'
+        'fade-in': 'fade-in 0.5s ease-in',
+        'text-pop-in': 'text-pop-in 0.8s ease-out forwards', // THE MISSING SPLASH PAGE UTILITY
       },
       fontFamily: {
         'montserrat': ['Montserrat', 'sans-serif'],
