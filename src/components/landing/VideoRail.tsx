@@ -11,8 +11,8 @@ interface Video {
 export const VideoRail: React.FC<{ videos: Video[] }> = ({ videos }) => {
   return (
     <aside className="bg-gray-100 dark:bg-gray-900 p-4">
-      <h2 className="text-2xl font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2">
-        MUST SEE VIDEOS
+      <h2 className="text-2xl font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2 font-oswald uppercase">
+        HOT VIDEOS
       </h2>
       <div className="space-y-4">
         {videos.map(video => (
