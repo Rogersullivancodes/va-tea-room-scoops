@@ -7,10 +7,8 @@ const SplashPage: React.FC = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate('/home'); // Redirects to the main homepage after 5 seconds
-    }, 5000); // 5000 milliseconds = 5 seconds
-
-    // This is a cleanup function to prevent errors if the user navigates away early
+      navigate('/home');
+    }, 5000);
     return () => clearTimeout(timer);
   }, [navigate]);
 
@@ -23,4 +21,4 @@ const SplashPage: React.FC = () => {
   );
 };
 
-export default SplashPage;
+export default SplashPage; // This line is critical.
