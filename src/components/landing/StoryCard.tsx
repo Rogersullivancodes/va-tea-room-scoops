@@ -13,7 +13,7 @@ export const StoryCard: React.FC<{ story: Story }> = ({ story }) => {
     <article>
       <Link to={`/articles/${story.slug}`} className="group">
         <img src={story.imageUrl} alt={story.title} className="w-full h-auto object-cover mb-2" />
-        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 group-hover:underline">
+        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 group-hover:underline font-oswald uppercase">
           {story.title}
         </h2>
       </Link>

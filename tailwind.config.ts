@@ -117,6 +117,8 @@ export default {
         'text-pop-in': 'text-pop-in 0.8s ease-out forwards', // THE MISSING SPLASH PAGE UTILITY
       },
       fontFamily: {
+        'oswald': ['Oswald', 'sans-serif'], 
+        'roboto': ['Roboto', 'sans-serif'], 
         'montserrat': ['Montserrat', 'sans-serif'],
         'source': ['"Source Sans Pro"', 'sans-serif'],
         'serif': ['Georgia', 'serif'],
