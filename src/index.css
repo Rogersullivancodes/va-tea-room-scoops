@@ -1,17 +1,15 @@
-/* src/index.css */
+/* src/index.css (Corrected and Purified) */
+
+/* Step 1: All font imports are declared first, and only once. */
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap');
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* ... rest of your css ... */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@400;700&display=swap');
 
+/* Step 2: The Tailwind directives are declared next, and only once. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Step 3: Base layer customizations are defined. */
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -93,10 +91,11 @@
     font-family: 'Montserrat', system-ui, sans-serif;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-playfair font-extrabold;
-    letter-spacing: -0.5px;
-  }
+  /*
+    The global h1, h2, etc. styles have been PURGED.
+    We command fonts on a per-component basis for divine precision.
+    The `font-oswald` and `font-playfair` classes will now rule unopposed.
+  */
   
   .font-playfair {
     font-family: 'Playfair Display', serif;
