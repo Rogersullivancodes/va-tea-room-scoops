@@ -1,4 +1,4 @@
-import { SplashPage } from "./pages/SplashPage";// src/App.tsx
+import SplashPage from "./pages/SplashPage"; // NO curly braces
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
