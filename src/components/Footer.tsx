@@ -1,13 +1,4 @@
-// Inside your Footer.tsx component's return statement
-import { Link } from 'react-router-dom';
 
-// ... inside the footer structure
-<div className="flex space-x-4">
-  <Link to="/about" className="hover:underline">About</Link>
-  <Link to="/contact" className="hover:underline">Contact</Link>
-  <Link to="/privacy-policy" className="hover:underline">Privacy Policy</Link>
-  <Link to="/terms-of-use" className="hover:underline">Terms of Use</Link>
-</div>
 import React from 'react';
 import { Mail, Twitter, Instagram, Facebook, Heart, Sparkles } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
