@@ -1,4 +1,5 @@
-import DynamicTopBanner from '@/components/DynamicTopBanner';// src/pages/Index.tsx
+
+import DynamicTopBanner from '@/components/DynamicTopBanner';
 
 // --- NEW, MORE POWERFUL PLACEHOLDER DATA ---
 const mainStory = { 
@@ -25,4 +26,14 @@ const videoItems = [
   { imageUrl: 'https://picsum.photos/seed/hotmic/300/170', title: 'Watch the Viral Hot Mic Moment That Has Everyone Talking', slug: 'viral-hot-mic' },
   { imageUrl: 'https://picsum.photos/seed/debate/300/170', title: 'Body Language Expert Breaks Down Tense Debate Performance', slug: 'debate-body-language' },
 ];
-// --- END OF NEW PLACEHOLDER DATA ---
+
+const Index = () => {
+  return (
+    <div className="min-h-screen bg-background">
+      <DynamicTopBanner />
+      {/* Add your main content here */}
+    </div>
+  );
+};
+
+export default Index;
