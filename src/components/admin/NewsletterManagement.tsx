@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,9 +24,11 @@ import { Plus, Send, Edit, Trash2, Users, BarChart } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 const NewsletterManagement: React.FC = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [campaigns, setCampaigns] = useState([]);
   const [subscribers, setSubscribers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,12 +76,22 @@ const NewsletterManagement: React.FC = () => {
   };
 
   const handleCreateCampaign = async () => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to create campaigns.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('newsletter_campaigns')
         .insert([{
           ...newCampaign,
-          recipients_count: subscribers.length
+          recipients_count: subscribers.length,
+          user_id: user.id
         }]);
 
       if (error) throw error;
