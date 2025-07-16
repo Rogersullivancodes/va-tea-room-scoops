@@ -1,5 +1,6 @@
 
 import React from 'react';
+import TopAdBanner from '@/components/TopAdBanner';
 import DynamicTopBanner from '@/components/DynamicTopBanner';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -19,6 +20,7 @@ const Index = () => {
     <ThemeProvider>
       <div className="min-h-screen bg-background">
         <Navbar />
+        <TopAdBanner />
         <DynamicTopBanner />
         <NewsTicker />
         
