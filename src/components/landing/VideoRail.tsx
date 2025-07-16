@@ -1,30 +1,56 @@
-// src/components/landing/VideoRail.tsx
+
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Play } from 'lucide-react';
 
-interface Video {
+interface VideoItem {
   imageUrl: string;
   title: string;
   slug: string;
+  duration?: string;
 }
 
-export const VideoRail: React.FC<{ videos: Video[] }> = ({ videos }) => {
+interface VideoRailProps {
+  items: VideoItem[];
+}
+
+const VideoRail: React.FC<VideoRailProps> = ({ items }) => {
   return (
-    <aside className="bg-gray-100 dark:bg-gray-900 p-4">
-      <h2 className="text-2xl font-bold text-red-600 mb-4 border-b-2 border-red-600 pb-2 font-oswald uppercase">
-        MUST SEE VIDEOS
-      </h2>
+    <div className="space-y-4">
+      <h2 className="text-xl font-bold text-foreground">Video Highlights</h2>
       <div className="space-y-4">
-        {videos.map(video => (
-          <Link key={video.slug} to={`/articles/${video.slug}`} className="block group">
-            <div className="relative">
-              <img src={video.imageUrl} alt={video.title} className="w-full h-auto" />
-              <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-0 transition-all"></div>
-            </div>
-            <h3 className="mt-2 font-semibold text-gray-900 dark:text-white group-hover:underline">{video.title}</h3>
+        {items.map((item, index) => (
+          <Link key={index} to={`/articles/${item.slug}`} className="block group">
+            <article className="relative overflow-hidden rounded-lg">
+              <div className="aspect-video relative">
+                <img 
+                  src={item.imageUrl} 
+                  alt={item.title}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Play className="w-5 h-5 text-primary-foreground ml-1" fill="currentColor" />
+                  </div>
+                </div>
+                {item.duration && (
+                  <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                    {item.duration}
+                  </div>
+                )}
+              </div>
+              <div className="p-3">
+                <h4 className="text-sm font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                  {item.title}
+                </h4>
+              </div>
+            </article>
           </Link>
         ))}
       </div>
-    </aside>
+    </div>
   );
 };
+
+export default VideoRail;

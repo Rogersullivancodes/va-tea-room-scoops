@@ -1,22 +1,39 @@
-// src/components/landing/HeroStory.tsx
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-interface Story {
+interface HeroStoryProps {
   imageUrl: string;
   title: string;
   slug: string;
+  excerpt?: string;
 }
 
-export const HeroStory: React.FC<{ story: Story }> = ({ story }) => {
+const HeroStory: React.FC<HeroStoryProps> = ({ imageUrl, title, slug, excerpt }) => {
   return (
-    <article className="border-b-4 border-red-600 pb-4">
-      <Link to={`/articles/${story.slug}`}>
-        <img src={story.imageUrl} alt={story.title} className="w-full h-auto object-cover mb-4" />
-       <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white hover:text-red-600 transition-colors uppercase font-oswald tracking-tight">
-         {story.title}
-        </h1>
-      </Link>
-    </article>
+    <Link to={`/articles/${slug}`} className="block group">
+      <article className="relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
+        <div className="aspect-video relative">
+          <img 
+            src={imageUrl} 
+            alt={title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          <div className="absolute bottom-4 left-4 right-4">
+            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 leading-tight">
+              {title}
+            </h1>
+            {excerpt && (
+              <p className="text-white/90 text-sm line-clamp-2">
+                {excerpt}
+              </p>
+            )}
+          </div>
+        </div>
+      </article>
+    </Link>
   );
 };
+
+export default HeroStory;

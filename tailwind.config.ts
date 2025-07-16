@@ -70,7 +70,7 @@ export default {
         maroon: '#8B1E3F',
         navy: {
           DEFAULT: "#1e293b",
-          dark: "#000000" // Use black for navy in dark mode
+          dark: "#000000"
         },
         gold: '#F3B61F',
         lightgray: '#F5F5F5',
@@ -90,11 +90,11 @@ export default {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' }
         },
-        'marquee': { // THE CORRECTED MARQUEE
+        'marquee': {
           '0%': { transform: 'translateX(100%)' },
           '100%': { transform: 'translateX(-100%)' }
         },
-        'slow-marquee': { // Corrected this one too for consistency
+        'slow-marquee': {
           '0%': { transform: 'translateX(100%)' },
           '100%': { transform: 'translateX(-100%)' }
         },
@@ -102,10 +102,18 @@ export default {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' }
         },
-        'text-pop-in': { // THE MISSING SPLASH PAGE ANIMATION
+        'text-pop-in': {
           '0%': { transform: 'scale(0.5)', opacity: '0' },
           '70%': { transform: 'scale(1.05)', opacity: '1' },
           '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        'float': {
+          '0%, 100%': {
+            transform: 'translateY(0px)',
+          },
+          '50%': {
+            transform: 'translateY(-10px)',
+          }
         }
       },
       animation: {
@@ -114,7 +122,8 @@ export default {
         'marquee': 'marquee 25s linear infinite',
         'slow-marquee': 'slow-marquee 60s linear infinite',
         'fade-in': 'fade-in 0.5s ease-in',
-        'text-pop-in': 'text-pop-in 0.8s ease-out forwards', // THE MISSING SPLASH PAGE UTILITY
+        'text-pop-in': 'text-pop-in 0.8s ease-out forwards',
+        'float': 'float 6s ease-in-out infinite',
       },
       fontFamily: {
         'oswald': ['Oswald', 'sans-serif'], 

@@ -1,7 +1,18 @@
 
+import React from 'react';
 import DynamicTopBanner from '@/components/DynamicTopBanner';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import Hero from '@/components/Hero';
+import HeroStory from '@/components/landing/HeroStory';
+import StoryCard from '@/components/landing/StoryCard';
+import FeedItem from '@/components/landing/FeedItem';
+import VideoRail from '@/components/landing/VideoRail';
+import AdSpaces from '@/components/AdSpaces';
+import NewsTicker from '@/components/NewsTicker';
+import ThemeProvider from '@/components/ThemeProvider';
 
-// --- NEW, MORE POWERFUL PLACEHOLDER DATA ---
+// --- PLACEHOLDER DATA ---
 const mainStory = { 
   imageUrl: 'https://picsum.photos/seed/mainstory/800/450', 
   title: 'Explosive Documents Reveal Shocking Political Alliance',
@@ -29,10 +40,66 @@ const videoItems = [
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <DynamicTopBanner />
-      {/* Add your main content here */}
-    </div>
+    <ThemeProvider>
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <DynamicTopBanner />
+        <NewsTicker />
+        
+        <main className="container mx-auto px-4 py-8">
+          {/* Hero Section */}
+          <div className="mb-8">
+            <Hero />
+          </div>
+
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Left Column - Main Stories */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Hero Story */}
+              <HeroStory 
+                imageUrl={mainStory.imageUrl}
+                title={mainStory.title}
+                slug={mainStory.slug}
+              />
+              
+              {/* Secondary Stories */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {secondaryStories.map((story, index) => (
+                  <StoryCard 
+                    key={index}
+                    imageUrl={story.imageUrl}
+                    title={story.title}
+                    slug={story.slug}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Center Column - Feed */}
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold text-foreground mb-4">Latest Buzz</h2>
+              {mainFeed.map((item, index) => (
+                <FeedItem 
+                  key={index}
+                  imageUrl={item.imageUrl}
+                  title={item.title}
+                  slug={item.slug}
+                />
+              ))}
+            </div>
+
+            {/* Right Column - Ads & Videos */}
+            <div className="space-y-8">
+              <AdSpaces />
+              <VideoRail items={videoItems} />
+            </div>
+          </div>
+        </main>
+
+        <Footer />
+      </div>
+    </ThemeProvider>
   );
 };
 
