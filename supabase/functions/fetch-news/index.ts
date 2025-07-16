@@ -1,53 +1,168 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { DOMParser } from "https://deno.land/x/deno_dom@v0.1.43/deno-dom-wasm.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// Mock news data generator (in production, you'd connect to real news APIs)
-const generateMockNews = () => {
-  const sources = ['Virginia Mercury', 'Richmond Times-Dispatch', 'WRIC 8News', 'The Virginian-Pilot', 'Washington Post', 'WTOP News'];
-  const categories = ['Legislation', 'Elections', 'Environment', 'Economy', 'Healthcare', 'Education'];
+// News sources configuration
+const NEWS_SOURCES = {
+  "wtkr": "https://www.wtkr.com/",
+  "wvec": "https://www.13newsnow.com/",
+  "virginian_pilot": "https://www.pilotonline.com/",
+  "richmond_times_dispatch": "https://richmond.com/",
+  "daily_press": "https://www.dailypress.com/",
+  "virginia_mercury": "https://www.virginiamercury.com/",
+}
+
+const COLLEGE_NEWS_SOURCES = {
+  "vcu": "https://news.vcu.edu/",
+  "univ_richmond": "https://news.richmond.edu/",
+  "odu": "https://www.odu.edu/news/",
+  "nsu": "https://www.nsu.edu/news/",
+}
+
+// Filter keywords for relevance
+const POLITICAL_KEYWORDS = ["politics", "election", "campaign", "legislature", "senate", "house of delegates", "bill", "law", "governor", "democrat", "republican", "vote", "policy", "political", "council", "mayor", "congress", "ballot", "candidates"]
+const GOVERNMENT_KEYWORDS = ["government", "statehouse", "capitol", "agency", "department", "public service", "official", "administration", "bureau", "budget", "tax", "regulation", "city council", "board of supervisors", "commissioners", "federal", "state", "local", "public hearing", "ordinance"]
+const VIRGINIA_KEYWORDS = ["virginia", "va", "commonwealth", "richmond", "norfolk", "virginia beach", "chesapeake", "newport news", "hampton", "alexandria", "portsmouth"]
+
+const ALL_RELEVANT_KEYWORDS = [...POLITICAL_KEYWORDS, ...GOVERNMENT_KEYWORDS, ...VIRGINIA_KEYWORDS].map(k => k.toLowerCase())
+
+// Utility functions
+const sanitizeTitle = (text: string): string => {
+  return text.replace(/[^\w\s-]/g, '').trim().substring(0, 200)
+}
+
+const isRelevantContent = (text: string): boolean => {
+  const textLower = text.toLowerCase()
+  return ALL_RELEVANT_KEYWORDS.some(keyword => textLower.includes(keyword))
+}
+
+const fetchPageContent = async (url: string): Promise<string | null> => {
+  try {
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    
+    const response = await fetch(url, { 
+      headers,
+      signal: AbortSignal.timeout(10000) // 10 second timeout
+    })
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`)
+    }
+    
+    return await response.text()
+  } catch (error) {
+    console.error(`Error fetching ${url}:`, error)
+    return null
+  }
+}
+
+const scrapeNewsSource = async (sourceName: string, url: string): Promise<any[]> => {
+  console.log(`Scraping ${sourceName} (${url})...`)
   
-  const headlines = [
-    "Virginia General Assembly Passes Comprehensive Climate Action Bill",
-    "New Polling Shows Tight Race in Virginia's Congressional Districts",
-    "Richmond City Council Approves Major Infrastructure Investment",
-    "Virginia Department of Education Announces New STEM Initiative",
-    "Hampton Roads Transit Authority Unveils Electric Bus Fleet",
-    "Governor Signs Historic Renewable Energy Legislation",
-    "Virginia Tech Receives Federal Grant for Clean Energy Research",
-    "Norfolk City Council Debates Affordable Housing Ordinance",
-    "Virginia Beach Mayor Announces Economic Development Initiative",
-    "State Legislature Reviews Healthcare Access Expansion Bill"
-  ];
+  const htmlContent = await fetchPageContent(url)
+  if (!htmlContent) return []
 
-  const article = {
-    title: headlines[Math.floor(Math.random() * headlines.length)],
-    source: sources[Math.floor(Math.random() * sources.length)],
-    category: categories[Math.floor(Math.random() * categories.length)],
-    published_at: new Date().toISOString(),
-    views: Math.floor(Math.random() * 5000) + 100,
-    comments: Math.floor(Math.random() * 200) + 10,
-    image_url: `https://images.unsplash.com/photo-${1494522358652 + Math.floor(Math.random() * 1000000)}`,
-  };
+  const doc = new DOMParser().parseFromString(htmlContent, "text/html")
+  if (!doc) return []
 
-  // Generate appropriate content based on title
-  const contents = [
-    "Virginia lawmakers reached a bipartisan agreement on significant legislation that promises to reshape policy across the Commonwealth. The bill passed with strong support from both chambers after extensive committee review and public hearings.",
-    "Political analysts are closely watching Virginia's competitive electoral landscape as new polling data reveals shifting voter preferences across key demographic groups in suburban and rural districts.",
-    "Local government officials announced a major public works initiative designed to modernize infrastructure and improve quality of life for residents while creating new employment opportunities.",
-    "Education leaders unveiled ambitious plans to enhance student outcomes through innovative programs and increased funding for schools across Virginia's diverse communities.",
-    "Transportation authorities are implementing sustainable solutions to reduce emissions and improve public transit access throughout the Hampton Roads region."
-  ];
+  const articles: any[] = []
+  
+  // Look for article elements with common patterns
+  const articleSelectors = [
+    'article',
+    '[class*="article"]',
+    '[class*="news"]',
+    '[class*="post"]',
+    '[class*="story"]',
+    '[class*="item"]'
+  ]
+  
+  let articleElements: Element[] = []
+  for (const selector of articleSelectors) {
+    const elements = Array.from(doc.querySelectorAll(selector))
+    if (elements.length > 0) {
+      articleElements = elements.slice(0, 10) // Limit to 10 articles per source
+      break
+    }
+  }
+  
+  // Fallback to headline/title links if no articles found
+  if (articleElements.length === 0) {
+    articleElements = Array.from(doc.querySelectorAll('a[href]')).slice(0, 20)
+  }
 
-  article.content = contents[Math.floor(Math.random() * contents.length)];
-  article.excerpt = article.content.substring(0, 150) + "...";
+  for (const element of articleElements) {
+    try {
+      // Extract title
+      const titleElement = element.querySelector('h1, h2, h3, h4, h5, h6, [class*="title"], [class*="headline"]') || element
+      const title = titleElement?.textContent?.trim() || 'No Title'
+      
+      // Extract link
+      let link = element.getAttribute('href') || 
+                 element.querySelector('a')?.getAttribute('href') || 
+                 url
+      
+      if (link && !link.startsWith('http')) {
+        try {
+          link = new URL(link, url).href
+        } catch {
+          continue // Skip invalid URLs
+        }
+      }
+      
+      // Extract content/excerpt
+      const contentElement = element.querySelector('p, [class*="excerpt"], [class*="summary"], [class*="description"]')
+      const content = contentElement?.textContent?.trim() || ''
+      
+      const combinedText = `${title} ${content}`.toLowerCase()
+      
+      // Check relevance
+      if (isRelevantContent(combinedText) && title.length > 10) {
+        const article = {
+          title: sanitizeTitle(title),
+          content: content.substring(0, 1000) + (content.length > 1000 ? '...' : ''),
+          excerpt: content.substring(0, 200) + (content.length > 200 ? '...' : ''),
+          source: sourceName,
+          url: link,
+          category: 'politics',
+          published_at: new Date().toISOString(),
+          image_url: extractImageUrl(element, url),
+          views: Math.floor(Math.random() * 1000) + 50,
+          comments: Math.floor(Math.random() * 50) + 5
+        }
+        
+        articles.push(article)
+      }
+    } catch (error) {
+      console.error(`Error processing article from ${sourceName}:`, error)
+    }
+  }
+  
+  console.log(`Found ${articles.length} relevant articles from ${sourceName}`)
+  return articles
+}
 
-  return article;
-};
+const extractImageUrl = (element: Element, baseUrl: string): string | null => {
+  const imgElement = element.querySelector('img')
+  if (imgElement) {
+    const src = imgElement.getAttribute('src') || imgElement.getAttribute('data-src')
+    if (src) {
+      try {
+        return new URL(src, baseUrl).href
+      } catch {
+        return null
+      }
+    }
+  }
+  return `https://images.unsplash.com/photo-${1600000000000 + Math.floor(Math.random() * 100000000)}?w=400&h=300&fit=crop`
+}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -61,44 +176,102 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    console.log('Starting news fetch process...');
+    console.log('Starting comprehensive news fetch process...');
 
-    // Generate multiple news articles
-    const newsArticles = [];
-    for (let i = 0; i < 5; i++) {
-      newsArticles.push(generateMockNews());
+    const allArticles: any[] = []
+
+    // Scrape general news sources
+    console.log('Scraping general news sources...')
+    for (const [name, url] of Object.entries(NEWS_SOURCES)) {
+      try {
+        const articles = await scrapeNewsSource(name, url)
+        allArticles.push(...articles)
+        
+        // Rate limiting - wait 2 seconds between requests
+        await new Promise(resolve => setTimeout(resolve, 2000))
+      } catch (error) {
+        console.error(`Error scraping ${name}:`, error)
+      }
     }
 
-    console.log(`Generated ${newsArticles.length} news articles`);
-
-    // Insert articles into database
-    const { data, error } = await supabase
-      .from('news_articles')
-      .insert(newsArticles)
-      .select();
-
-    if (error) {
-      console.error('Error inserting news articles:', error);
-      throw error;
+    // Scrape college news sources
+    console.log('Scraping college news sources...')
+    for (const [name, url] of Object.entries(COLLEGE_NEWS_SOURCES)) {
+      try {
+        const articles = await scrapeNewsSource(name, url)
+        allArticles.push(...articles)
+        
+        // Rate limiting
+        await new Promise(resolve => setTimeout(resolve, 2000))
+      } catch (error) {
+        console.error(`Error scraping ${name}:`, error)
+      }
     }
 
-    console.log(`Successfully inserted ${data?.length || 0} news articles`);
+    console.log(`Scraped ${allArticles.length} total articles`)
 
-    // Clean up old articles (keep only latest 50)
+    if (allArticles.length === 0) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          message: 'No articles found during scraping'
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200 
+        }
+      );
+    }
+
+    // Remove duplicates based on title similarity
+    const uniqueArticles = allArticles.filter((article, index, arr) => 
+      arr.findIndex(a => a.title.toLowerCase() === article.title.toLowerCase()) === index
+    )
+
+    console.log(`${uniqueArticles.length} unique articles after deduplication`)
+
+    // Insert articles into database in batches
+    const batchSize = 10
+    const insertedArticles = []
+    
+    for (let i = 0; i < uniqueArticles.length; i += batchSize) {
+      const batch = uniqueArticles.slice(i, i + batchSize)
+      
+      const { data, error } = await supabase
+        .from('news_articles')
+        .insert(batch)
+        .select()
+
+      if (error) {
+        console.error('Error inserting batch:', error)
+        continue
+      }
+
+      if (data) {
+        insertedArticles.push(...data)
+      }
+    }
+
+    console.log(`Successfully inserted ${insertedArticles.length} news articles`)
+
+    // Clean up old articles (keep only latest 100)
     const { error: deleteError } = await supabase
-      .from('news_articles')
-      .delete()
-      .not('id', 'in', `(SELECT id FROM news_articles ORDER BY published_at DESC LIMIT 50)`);
+      .rpc('delete_old_news_articles', { keep_count: 100 })
 
     if (deleteError) {
-      console.error('Error cleaning up old articles:', deleteError);
+      console.error('Error cleaning up old articles:', deleteError)
     }
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: `Successfully fetched and stored ${data?.length || 0} news articles`,
-        articles: data 
+        message: `Successfully fetched and stored ${insertedArticles.length} news articles`,
+        articles: insertedArticles,
+        stats: {
+          total_scraped: allArticles.length,
+          unique_articles: uniqueArticles.length,
+          inserted: insertedArticles.length
+        }
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
