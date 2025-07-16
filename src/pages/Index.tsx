@@ -4,41 +4,17 @@ import DynamicTopBanner from '@/components/DynamicTopBanner';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Hero from '@/components/Hero';
-import HeroStory from '@/components/landing/HeroStory';
-import StoryCard from '@/components/landing/StoryCard';
-import FeedItem from '@/components/landing/FeedItem';
-import VideoRail from '@/components/landing/VideoRail';
 import AdSpaces from '@/components/AdSpaces';
 import NewsTicker from '@/components/NewsTicker';
 import ThemeProvider from '@/components/ThemeProvider';
-
-// --- PLACEHOLDER DATA ---
-const mainStory = { 
-  imageUrl: 'https://picsum.photos/seed/mainstory/800/450', 
-  title: 'Explosive Documents Reveal Shocking Political Alliance',
-  slug: 'explosive-docs-reveal-alliance'
-};
-
-const secondaryStories = [
-  { imageUrl: 'https://picsum.photos/seed/gossip/400/225', title: 'Capitol Hill Aide Caught in Midnight Rendezvous', slug: 'aide-rendezvous' },
-  { imageUrl: 'https://picsum.photos/seed/money/400/225', title: 'Unprecedented Campaign Donations Traced to Offshore Accounts', slug: 'donations-traced' },
-];
-
-const mainFeed = [
-  { imageUrl: 'https://picsum.photos/seed/fundraiser/100/75', title: 'Governor Spotted at Lavish Unregistered Fundraiser', slug: 'governor-fundraiser' },
-  { imageUrl: 'https://picsum.photos/seed/scuffle/100/75', title: 'Senator\'s Son Involved in Minor Traffic Scuffle, Demands Immunity', slug: 'senator-son-scuffle' },
-  { imageUrl: 'https://picsum.photos/seed/slipup/100/75', title: 'Social Media Slip-Up: Candidate Tweets Private Message Publicly', slug: 'candidate-tweet-slip' },
-  { imageUrl: 'https://picsum.photos/seed/context/100/75', title: '"It Was Taken Out of Context" - The Political Excuse of the Week', slug: 'context-excuse' },
-  { imageUrl: 'https://picsum.photos/seed/underdog/100/75', title: 'New Polls Show Unexpected Surge for Underdog Candidate', slug: 'underdog-surge' },
-  { imageUrl: 'https://picsum.photos/seed/gaffe/100/75', title: 'Analysis: What the Latest Gaffe Really Means for the Election', slug: 'gaffe-analysis' },
-];
-
-const videoItems = [
-  { imageUrl: 'https://picsum.photos/seed/hotmic/300/170', title: 'Watch the Viral Hot Mic Moment That Has Everyone Talking', slug: 'viral-hot-mic' },
-  { imageUrl: 'https://picsum.photos/seed/debate/300/170', title: 'Body Language Expert Breaks Down Tense Debate Performance', slug: 'debate-body-language' },
-];
+import { useNews } from '@/hooks/useNews';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { Clock, TrendingUp } from 'lucide-react';
 
 const Index = () => {
+  const { articles, loading } = useNews();
+
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-background">
@@ -53,46 +29,66 @@ const Index = () => {
           </div>
 
           {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Left Column - Main Stories */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Latest News */}
             <div className="lg:col-span-2 space-y-8">
-              {/* Hero Story */}
-              <HeroStory 
-                imageUrl={mainStory.imageUrl}
-                title={mainStory.title}
-                slug={mainStory.slug}
-              />
-              
-              {/* Secondary Stories */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {secondaryStories.map((story, index) => (
-                  <StoryCard 
-                    key={index}
-                    imageUrl={story.imageUrl}
-                    title={story.title}
-                    slug={story.slug}
-                  />
-                ))}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-3xl font-bold text-foreground flex items-center gap-2">
+                  <TrendingUp className="h-8 w-8 text-primary" />
+                  Latest News
+                </h2>
+                <Link to="/news">
+                  <Button variant="outline" className="hover:bg-primary hover:text-primary-foreground">
+                    View All News
+                  </Button>
+                </Link>
               </div>
+              
+              {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="bg-card border border-border rounded-lg p-4 animate-pulse">
+                      <div className="w-full h-48 bg-muted rounded mb-4"></div>
+                      <div className="h-4 bg-muted rounded mb-2"></div>
+                      <div className="h-4 bg-muted rounded w-3/4"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {articles.slice(0, 6).map((article, index) => (
+                    <div key={article.id} className="bg-card border border-border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+                      <img 
+                        src={article.image_url || `https://picsum.photos/seed/${article.id}/400/250`}
+                        alt={article.title}
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="p-4">
+                        <h3 className="font-semibold text-foreground mb-2 line-clamp-2">
+                          {article.title}
+                        </h3>
+                        <p className="text-muted-foreground text-sm line-clamp-2 mb-3">
+                          {article.excerpt}
+                        </p>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {new Date(article.published_at).toLocaleDateString()}
+                          </span>
+                          <span className="bg-primary/10 text-primary px-2 py-1 rounded">
+                            {article.source}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Center Column - Feed */}
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-foreground mb-4">Latest Buzz</h2>
-              {mainFeed.map((item, index) => (
-                <FeedItem 
-                  key={index}
-                  imageUrl={item.imageUrl}
-                  title={item.title}
-                  slug={item.slug}
-                />
-              ))}
-            </div>
-
-            {/* Right Column - Ads & Videos */}
+            {/* Right Column - Ads */}
             <div className="space-y-8">
               <AdSpaces />
-              <VideoRail items={videoItems} />
             </div>
           </div>
         </main>

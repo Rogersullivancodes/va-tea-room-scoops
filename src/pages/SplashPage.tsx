@@ -8,7 +8,7 @@ const SplashPage: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate('/home');
-    }, 5000);
+    }, 3000);
     return () => clearTimeout(timer);
   }, [navigate]);
 

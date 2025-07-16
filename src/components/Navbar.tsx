@@ -50,15 +50,15 @@ const Navbar: React.FC = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
-            <Link to="/articles">
-              <Button variant="ghost" className={`${navLinkClasses} ${pathname === '/articles' ? activeNavLinkClasses : ''}`}>
-                <span className="relative z-10">Articles</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-              </Button>
-            </Link>
             <Link to="/news">
               <Button variant="ghost" className={`${navLinkClasses} ${pathname === '/news' ? activeNavLinkClasses : ''}`}>
                 <span className="relative z-10">News</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+              </Button>
+            </Link>
+            <Link to="/articles">
+              <Button variant="ghost" className={`${navLinkClasses} ${pathname === '/articles' ? activeNavLinkClasses : ''}`}>
+                <span className="relative z-10">Articles</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
               </Button>
             </Link>
@@ -107,14 +107,14 @@ const Navbar: React.FC = () => {
       {isMenuOpen && (
         <div className="md:hidden transition-all duration-300 animate-fade-in">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white/98 dark:bg-black/98 border-t border-gray-200/50 dark:border-gray-800/50 backdrop-blur-xl">
-            <Link to="/articles" className="block">
-              <Button variant="ghost" className={`w-full justify-start font-semibold hover:bg-primary/10 transition-all duration-200 ${pathname === '/articles' ? activeNavLinkClasses : 'text-navy dark:text-gold'}`} onClick={() => setIsMenuOpen(false)}>
-                Articles
-              </Button>
-            </Link>
             <Link to="/news" className="block">
               <Button variant="ghost" className={`w-full justify-start font-semibold hover:bg-primary/10 transition-all duration-200 ${pathname === '/news' ? activeNavLinkClasses : 'text-navy dark:text-gold'}`} onClick={() => setIsMenuOpen(false)}>
                 News
+              </Button>
+            </Link>
+            <Link to="/articles" className="block">
+              <Button variant="ghost" className={`w-full justify-start font-semibold hover:bg-primary/10 transition-all duration-200 ${pathname === '/articles' ? activeNavLinkClasses : 'text-navy dark:text-gold'}`} onClick={() => setIsMenuOpen(false)}>
+                Articles
               </Button>
             </Link>
             <Link to="/about" className="block">
