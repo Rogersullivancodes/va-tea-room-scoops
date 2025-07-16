@@ -56,6 +56,12 @@ const Navbar: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
               </Button>
             </Link>
+            <Link to="/news">
+              <Button variant="ghost" className={`${navLinkClasses} ${pathname === '/news' ? activeNavLinkClasses : ''}`}>
+                <span className="relative z-10">News</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+              </Button>
+            </Link>
             <Link to="/about">
               <Button variant="ghost" className={`${navLinkClasses} ${pathname === '/about' ? activeNavLinkClasses : ''}`}>
                 <span className="relative z-10">About</span>
@@ -104,6 +110,11 @@ const Navbar: React.FC = () => {
             <Link to="/articles" className="block">
               <Button variant="ghost" className={`w-full justify-start font-semibold hover:bg-primary/10 transition-all duration-200 ${pathname === '/articles' ? activeNavLinkClasses : 'text-navy dark:text-gold'}`} onClick={() => setIsMenuOpen(false)}>
                 Articles
+              </Button>
+            </Link>
+            <Link to="/news" className="block">
+              <Button variant="ghost" className={`w-full justify-start font-semibold hover:bg-primary/10 transition-all duration-200 ${pathname === '/news' ? activeNavLinkClasses : 'text-navy dark:text-gold'}`} onClick={() => setIsMenuOpen(false)}>
+                News
               </Button>
             </Link>
             <Link to="/about" className="block">

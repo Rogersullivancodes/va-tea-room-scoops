@@ -132,7 +132,7 @@ const Contact: React.FC = () => {
                       <Mail className="h-6 w-6 text-red-600 mr-4" />
                       <div>
                         <h3 className="font-semibold">Email</h3>
-                        <p className="text-gray-600 dark:text-gray-300">tips@crabsfriedpolitically.com</p>
+                        <p className="text-gray-600 dark:text-gray-300">cfp@crabsfriedpolitically.com</p>
                       </div>
                     </div>
                     
@@ -177,7 +177,7 @@ const Contact: React.FC = () => {
                       Press and media representatives can reach our editorial team directly.
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      media@crabsfriedpolitically.com
+                      cfp@crabsfriedpolitically.com
                     </p>
                   </CardContent>
                 </Card>

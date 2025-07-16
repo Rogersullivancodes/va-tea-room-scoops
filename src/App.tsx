@@ -18,6 +18,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import Profile from "./pages/Profile";
 import Articles from "./pages/Articles";
+import News from "./pages/News";
 import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOfUse";
@@ -45,6 +46,7 @@ const App = () => (
               <Route path="/profile" element={<Profile />} />
               <Route path="/articles" element={<Articles />} />
               <Route path="/articles/:articleSlug" element={<ArticleDetail />} />
+              <Route path="/news" element={<News />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-use" element={<TermsOfUse />} />
               <Route path="/secure/admin" element={<AdminLogin />} />

@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
               <a href="#facebook" className="text-white/70 hover:text-gold transition-all duration-300 hover:scale-110 p-2 rounded-full hover:bg-white/10">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="mailto:tips@crabsfriedpolitically.com" className="text-white/70 hover:text-gold transition-all duration-300 hover:scale-110 p-2 rounded-full hover:bg-white/10">
+              <a href="mailto:cfp@crabsfriedpolitically.com" className="text-white/70 hover:text-gold transition-all duration-300 hover:scale-110 p-2 rounded-full hover:bg-white/10">
                 <Mail className="h-5 w-5" />
               </a>
             </div>
