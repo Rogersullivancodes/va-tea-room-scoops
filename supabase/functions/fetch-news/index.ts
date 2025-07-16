@@ -9,27 +9,40 @@ const corsHeaders = {
 
 // News sources configuration
 const NEWS_SOURCES = {
-  "wtkr": "https://www.wtkr.com/",
-  "wvec": "https://www.13newsnow.com/",
+  "rivers_casino": "https://www.riverscasino.com/portsmouth/",
+  "wtkr": "https://WTKR.com/",
+  "wvec": "https://WVEC.TV/",
   "virginian_pilot": "https://www.pilotonline.com/",
   "richmond_times_dispatch": "https://richmond.com/",
   "daily_press": "https://www.dailypress.com/",
-  "virginia_mercury": "https://www.virginiamercury.com/",
+  "va_lis_bill_search": "https://lis.virginia.gov/bill-search/",
+  "va_general_assembly": "https://virginiageneralassembly.gov/virginiaLegislature.php/includes/index.php",
+  "va_governor_office": "https://www.governor.virginia.gov/",
+  "ballotpedia_2025_spotlight": "https://news.ballotpedia.org/2025/05/20/virginia-2025-elections-spotlight-part-1/",
+  "ballotpedia_va_elections": "https://ballotpedia.org/Virginia_elections,_2025",
+  "virginiagrassroots_elections": "https://www.virginiagrassroots.org/election2025-table.php",
+  "va_elections_candidates": "https://www.elections.virginia.gov/casting-a-ballot/candidate-list/",
+  "va_elections_voterinfo": "https://vote.elections.virginia.gov/VoterInformation",
+  "c_span": "https://www.c-span.org/",
 }
 
 const COLLEGE_NEWS_SOURCES = {
   "vcu": "https://news.vcu.edu/",
   "univ_richmond": "https://news.richmond.edu/",
-  "odu": "https://www.odu.edu/news/",
+  "tcc_portsmouth": "https://news.tcc.edu/",
   "nsu": "https://www.nsu.edu/news/",
+  "odu": "https://www.odu.edu/news/",
+  "hampton_univ": "https://news.hamptonu.edu/",
 }
 
 // Filter keywords for relevance
 const POLITICAL_KEYWORDS = ["politics", "election", "campaign", "legislature", "senate", "house of delegates", "bill", "law", "governor", "democrat", "republican", "vote", "policy", "political", "council", "mayor", "congress", "ballot", "candidates"]
 const GOVERNMENT_KEYWORDS = ["government", "statehouse", "capitol", "agency", "department", "public service", "official", "administration", "bureau", "budget", "tax", "regulation", "city council", "board of supervisors", "commissioners", "federal", "state", "local", "public hearing", "ordinance"]
-const VIRGINIA_KEYWORDS = ["virginia", "va", "commonwealth", "richmond", "norfolk", "virginia beach", "chesapeake", "newport news", "hampton", "alexandria", "portsmouth"]
+const VIRGINIA_KEYWORDS = ["virginia", "va", "commonwealth"]
+const RICHMOND_KEYWORDS = ["richmond", "capital city", "richmond city"]
+const WEATHER_KEYWORDS = ["weather", "forecast", "hurricane", "storm", "tropical", "advisory", "warning", "tempest"]
 
-const ALL_RELEVANT_KEYWORDS = [...POLITICAL_KEYWORDS, ...GOVERNMENT_KEYWORDS, ...VIRGINIA_KEYWORDS].map(k => k.toLowerCase())
+const ALL_RELEVANT_KEYWORDS = [...POLITICAL_KEYWORDS, ...GOVERNMENT_KEYWORDS, ...VIRGINIA_KEYWORDS, ...RICHMOND_KEYWORDS].map(k => k.toLowerCase())
 
 // Utility functions
 const sanitizeTitle = (text: string): string => {
