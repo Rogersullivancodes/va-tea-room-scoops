@@ -15,6 +15,7 @@ export const useNews = () => {
       const { data, error } = await supabase
         .from('news_articles')
         .select('*')
+        .order('priority', { ascending: true })
         .order('published_at', { ascending: false })
         .limit(20);
 
@@ -52,6 +53,12 @@ export const useNews = () => {
   useEffect(() => {
     fetchNews();
 
+    // Auto-refresh news every 10 minutes
+    const refreshInterval = setInterval(() => {
+      console.log('Auto-refreshing news...');
+      fetchMoreNews();
+    }, 10 * 60 * 1000); // 10 minutes
+
     // Create a unique channel name using timestamp and random number
     const channelId = `news-updates-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
@@ -73,6 +80,7 @@ export const useNews = () => {
       .subscribe();
 
     return () => {
+      clearInterval(refreshInterval);
       supabase.removeChannel(channel);
     };
   }, []);

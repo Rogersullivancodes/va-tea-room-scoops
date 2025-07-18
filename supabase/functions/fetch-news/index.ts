@@ -193,28 +193,44 @@ serve(async (req) => {
 
     const allArticles: any[] = []
 
-    // Scrape general news sources
-    console.log('Scraping general news sources...')
-    for (const [name, url] of Object.entries(NEWS_SOURCES)) {
+    // Priority 1: Political news sources (TV, newspapers, government) - randomized
+    console.log('Scraping priority political news sources...')
+    const politicalSources = Object.entries(NEWS_SOURCES)
+    const shuffledPoliticalSources = politicalSources.sort(() => Math.random() - 0.5)
+    
+    for (const [name, url] of shuffledPoliticalSources) {
       try {
         const articles = await scrapeNewsSource(name, url)
+        // Mark as priority political content
+        articles.forEach(article => {
+          article.priority = 1
+          article.category = 'politics'
+        })
         allArticles.push(...articles)
         
-        // Rate limiting - wait 2 seconds between requests
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        // Faster rate limiting for priority sources - 1 second
+        await new Promise(resolve => setTimeout(resolve, 1000))
       } catch (error) {
         console.error(`Error scraping ${name}:`, error)
       }
     }
 
-    // Scrape college news sources
+    // Priority 2: College news sources (last in rotation) - randomized
     console.log('Scraping college news sources...')
-    for (const [name, url] of Object.entries(COLLEGE_NEWS_SOURCES)) {
+    const collegeSources = Object.entries(COLLEGE_NEWS_SOURCES)
+    const shuffledCollegeSources = collegeSources.sort(() => Math.random() - 0.5)
+    
+    for (const [name, url] of shuffledCollegeSources) {
       try {
         const articles = await scrapeNewsSource(name, url)
+        // Mark as lower priority college content
+        articles.forEach(article => {
+          article.priority = 2
+          article.category = 'education'
+        })
         allArticles.push(...articles)
         
-        // Rate limiting
+        // Slower rate limiting for college sources
         await new Promise(resolve => setTimeout(resolve, 2000))
       } catch (error) {
         console.error(`Error scraping ${name}:`, error)
@@ -240,6 +256,14 @@ serve(async (req) => {
     const uniqueArticles = allArticles.filter((article, index, arr) => 
       arr.findIndex(a => a.title.toLowerCase() === article.title.toLowerCase()) === index
     )
+
+    // Sort by priority (political news first, college news last) then randomize within priority
+    uniqueArticles.sort((a, b) => {
+      if (a.priority !== b.priority) {
+        return a.priority - b.priority // Lower number = higher priority
+      }
+      return Math.random() - 0.5 // Randomize within same priority
+    })
 
     console.log(`${uniqueArticles.length} unique articles after deduplication`)
 

@@ -1,6 +1,5 @@
 
 import React from 'react';
-import TopAdBanner from '@/components/TopAdBanner';
 import DynamicTopBanner from '@/components/DynamicTopBanner';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -11,7 +10,7 @@ import ThemeProvider from '@/components/ThemeProvider';
 import { useNews } from '@/hooks/useNews';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Clock, TrendingUp } from 'lucide-react';
+import { Clock, TrendingUp, MegaphoneIcon } from 'lucide-react';
 
 const Index = () => {
   const { articles, loading } = useNews();
@@ -20,7 +19,6 @@ const Index = () => {
     <ThemeProvider>
       <div className="min-h-screen bg-background">
         <Navbar />
-        <TopAdBanner />
         <DynamicTopBanner />
         <NewsTicker />
         
@@ -90,6 +88,20 @@ const Index = () => {
 
             {/* Right Column - Ads */}
             <div className="space-y-8">
+              <div className="bg-card border border-border rounded-lg p-6 text-center">
+                <h3 className="text-lg font-semibold mb-4 flex items-center justify-center gap-2">
+                  <MegaphoneIcon className="h-5 w-5 text-primary" />
+                  Advertisement Space
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  Promote your business to thousands of politically engaged readers
+                </p>
+                <Link to="/ads">
+                  <Button className="w-full">
+                    View Ad Opportunities
+                  </Button>
+                </Link>
+              </div>
               <AdSpaces />
             </div>
           </div>
