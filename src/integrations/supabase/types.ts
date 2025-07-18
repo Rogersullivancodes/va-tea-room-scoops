@@ -228,6 +228,7 @@ export type Database = {
           excerpt: string | null
           id: string
           image_url: string | null
+          priority: number | null
           published_at: string
           source: string
           title: string
@@ -243,6 +244,7 @@ export type Database = {
           excerpt?: string | null
           id?: string
           image_url?: string | null
+          priority?: number | null
           published_at: string
           source: string
           title: string
@@ -258,6 +260,7 @@ export type Database = {
           excerpt?: string | null
           id?: string
           image_url?: string | null
+          priority?: number | null
           published_at?: string
           source?: string
           title?: string
