@@ -12,15 +12,35 @@ export const useNews = () => {
 
   const fetchNews = async () => {
     try {
-      const { data, error } = await supabase
+      // First get political news (priority 1) randomized
+      const { data: politicalNews, error: politicalError } = await supabase
         .from('news_articles')
         .select('*')
-        .order('priority', { ascending: true })
-        .order('published_at', { ascending: false })
-        .limit(20);
+        .eq('priority', 1)
+        .order('created_at', { ascending: false })
+        .limit(15);
 
-      if (error) throw error;
-      setArticles(data || []);
+      if (politicalError) throw politicalError;
+
+      // Then get college news (priority 2) randomized
+      const { data: collegeNews, error: collegeError } = await supabase
+        .from('news_articles')
+        .select('*')
+        .eq('priority', 2)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (collegeError) throw collegeError;
+
+      // Randomize political news within its group
+      const shuffledPolitical = (politicalNews || []).sort(() => Math.random() - 0.5);
+      // Randomize college news within its group
+      const shuffledCollege = (collegeNews || []).sort(() => Math.random() - 0.5);
+
+      // Combine with political news first, college news last
+      const combinedArticles = [...shuffledPolitical, ...shuffledCollege];
+      
+      setArticles(combinedArticles);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch news');
     } finally {
