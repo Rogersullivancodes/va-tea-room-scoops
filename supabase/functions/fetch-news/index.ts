@@ -36,13 +36,33 @@ const COLLEGE_NEWS_SOURCES = {
 }
 
 // Filter keywords for relevance
-const POLITICAL_KEYWORDS = ["politics", "election", "campaign", "legislature", "senate", "house of delegates", "bill", "law", "governor", "democrat", "republican", "vote", "policy", "political", "council", "mayor", "congress", "ballot", "candidates"]
-const GOVERNMENT_KEYWORDS = ["government", "statehouse", "capitol", "agency", "department", "public service", "official", "administration", "bureau", "budget", "tax", "regulation", "city council", "board of supervisors", "commissioners", "federal", "state", "local", "public hearing", "ordinance"]
-const VIRGINIA_KEYWORDS = ["virginia", "va", "commonwealth"]
-const RICHMOND_KEYWORDS = ["richmond", "capital city", "richmond city"]
-const WEATHER_KEYWORDS = ["weather", "forecast", "hurricane", "storm", "tropical", "advisory", "warning", "tempest"]
+const POLITICAL_KEYWORDS = [
+  "democrat", "republican", "far left", "far right", "liberal", "rhino", "maga",
+  "governor", "lt. governor", "lieutenant governor", "attorney general", 
+  "department of education", "entitlement programs", "welfare", "immigration",
+  "race", "candidate", "election", "vote", "district", "senator", "congressman",
+  "delegate", "supreme court", "district court", "electoral", "magistrate",
+  "mayor", "city council", "police", "fire", "budget", "prison", "sheriff race",
+  "commonwealth attorney", "treasurer", "politics", "campaign", "voting"
+]
 
-const ALL_RELEVANT_KEYWORDS = [...POLITICAL_KEYWORDS, ...GOVERNMENT_KEYWORDS, ...VIRGINIA_KEYWORDS, ...RICHMOND_KEYWORDS].map(k => k.toLowerCase())
+const VIRGINIA_CITIES = [
+  "richmond", "virginia beach", "norfolk", "chesapeake", "newport news",
+  "alexandria", "hampton", "portsmouth", "virginia", "va", "commonwealth"
+]
+
+const GOVERNMENT_KEYWORDS = [
+  "government", "statehouse", "capitol", "agency", "department", "public service", 
+  "official", "administration", "bureau", "tax", "regulation", "board of supervisors", 
+  "commissioners", "federal", "state", "local", "public hearing", "ordinance"
+]
+
+const COLLEGE_KEYWORDS = [
+  "university", "college", "student", "campus", "education", "academic",
+  "tuition", "enrollment", "graduation", "faculty", "research"
+]
+
+const ALL_RELEVANT_KEYWORDS = [...POLITICAL_KEYWORDS, ...GOVERNMENT_KEYWORDS, ...VIRGINIA_CITIES, ...COLLEGE_KEYWORDS].map(k => k.toLowerCase())
 
 // Utility functions
 const sanitizeTitle = (text: string): string => {
