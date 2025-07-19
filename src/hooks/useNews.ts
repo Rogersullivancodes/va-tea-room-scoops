@@ -12,30 +12,38 @@ export const useNews = () => {
 
   const fetchNews = async () => {
     try {
-      // First get political news (priority 1) randomized
-      const { data: politicalNews, error: politicalError } = await supabase
-        .from('news_articles')
-        .select('*')
-        .eq('priority', 1)
-        .order('created_at', { ascending: false })
-        .limit(15);
+      // Get all news articles in parallel for faster loading
+      const [politicalResponse, collegeResponse] = await Promise.all([
+        supabase
+          .from('news_articles')
+          .select('*')
+          .eq('priority', 1)
+          .order('created_at', { ascending: false })
+          .limit(20),
+        supabase
+          .from('news_articles')
+          .select('*')
+          .eq('priority', 2)
+          .order('created_at', { ascending: false })
+          .limit(8)
+      ]);
 
-      if (politicalError) throw politicalError;
+      if (politicalResponse.error) throw politicalResponse.error;
+      if (collegeResponse.error) throw collegeResponse.error;
 
-      // Then get college news (priority 2) randomized
-      const { data: collegeNews, error: collegeError } = await supabase
-        .from('news_articles')
-        .select('*')
-        .eq('priority', 2)
-        .order('created_at', { ascending: false })
-        .limit(5);
+      // Thoroughly shuffle political news using Fisher-Yates algorithm
+      const shuffledPolitical = [...(politicalResponse.data || [])];
+      for (let i = shuffledPolitical.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledPolitical[i], shuffledPolitical[j]] = [shuffledPolitical[j], shuffledPolitical[i]];
+      }
 
-      if (collegeError) throw collegeError;
-
-      // Randomize political news within its group
-      const shuffledPolitical = (politicalNews || []).sort(() => Math.random() - 0.5);
-      // Randomize college news within its group
-      const shuffledCollege = (collegeNews || []).sort(() => Math.random() - 0.5);
+      // Thoroughly shuffle college news
+      const shuffledCollege = [...(collegeResponse.data || [])];
+      for (let i = shuffledCollege.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledCollege[i], shuffledCollege[j]] = [shuffledCollege[j], shuffledCollege[i]];
+      }
 
       // Combine with political news first, college news last
       const combinedArticles = [...shuffledPolitical, ...shuffledCollege];
@@ -51,19 +59,24 @@ export const useNews = () => {
   const fetchMoreNews = async () => {
     try {
       console.log('Triggering news fetch...');
-      const { data, error } = await supabase.functions.invoke('fetch-news');
       
-      if (error) {
-        console.error('Error calling fetch-news function:', error);
-        throw error;
+      // Run both fetch-news and refresh articles in parallel for speed
+      const [fetchResponse] = await Promise.all([
+        supabase.functions.invoke('fetch-news'),
+        new Promise(resolve => setTimeout(resolve, 100)) // Small delay to ensure DB is updated
+      ]);
+      
+      if (fetchResponse.error) {
+        console.error('Error calling fetch-news function:', fetchResponse.error);
+        throw fetchResponse.error;
       }
       
-      console.log('News fetch response:', data);
+      console.log('News fetch response:', fetchResponse.data);
       
       // Refresh the articles after fetching new ones
       await fetchNews();
       
-      return data;
+      return fetchResponse.data;
     } catch (err) {
       console.error('Error fetching more news:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch more news');

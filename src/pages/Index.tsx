@@ -59,9 +59,12 @@ const Index = () => {
                   {articles.slice(0, 6).map((article, index) => (
                     <div key={article.id} className="bg-card border border-border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                       <img 
-                        src={article.image_url || `https://picsum.photos/seed/${article.id}/400/250`}
+                        src={article.image_url || `https://images.unsplash.com/photo-${1649972904349 + (index * 1000000)}-6e44c42644a7?w=400&h=250&fit=crop&auto=format`}
                         alt={article.title}
                         className="w-full h-48 object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = `https://picsum.photos/seed/${article.id}/400/250`;
+                        }}
                       />
                       <div className="p-4">
                         <h3 className="font-semibold text-foreground mb-2 line-clamp-2">
