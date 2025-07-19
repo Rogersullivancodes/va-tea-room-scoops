@@ -52,21 +52,24 @@ const DynamicTopBanner: React.FC = () => {
       
       <div className="relative z-10 container mx-auto px-4">
         {isVideoMode ? (
-          // Video/Commercial Mode
-          <div className="py-12 text-center">
-            <div className="bg-black/20 backdrop-blur-sm rounded-lg p-8 max-w-4xl mx-auto">
-              <div className="bg-black/50 rounded-lg aspect-video mb-4 flex items-center justify-center relative group cursor-pointer" onClick={togglePlay}>
-                {/* Video Placeholder */}
-                <div className="text-6xl text-white/50 group-hover:text-white/70 transition-colors">
-                  {isPlaying ? <Pause /> : <Play />}
-                </div>
-                {isPlaying && (
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-lg"></div>
-                )}
+          // Virginia Politics Video Mode
+          <div className="py-8 text-center">
+            <div className="bg-black/20 backdrop-blur-sm rounded-lg p-6 max-w-5xl mx-auto">
+              <div className="bg-black rounded-lg aspect-video mb-4 relative overflow-hidden">
+                <iframe 
+                  width="100%" 
+                  height="100%" 
+                  src={`https://www.youtube.com/embed/UZiGMrAY4JE?autoplay=${isPlaying ? 1 : 0}&controls=1&rel=0&modestbranding=1`}
+                  title="Virginia's 2025 election viewed as barometer for Trump administration"
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                  allowFullScreen
+                  className="rounded-lg"
+                ></iframe>
               </div>
-              <h2 className="text-2xl font-bold mb-2">Political Commercial Break</h2>
-              <p className="text-white/80 mb-4">
-                "Your message could be here - reaching thousands of politically engaged viewers daily"
+              <h2 className="text-xl font-bold mb-2">Virginia's 2025 Election: A Political Barometer</h2>
+              <p className="text-white/80 mb-4 text-sm">
+                Watch live coverage of Virginia's gubernatorial race - viewed nationally as a key indicator for the Trump administration
               </p>
               <div className="flex items-center justify-center gap-4">
                 <Button 

@@ -1,162 +1,163 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, MegaphoneIcon, Users, TrendingUp, Eye, Clock } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import ThemeProvider from '@/components/ThemeProvider';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Users, Eye, TrendingUp, Mail, Phone, Target } from 'lucide-react';
 
 const Ads = () => {
   const adPackages = [
     {
-      title: "Banner Ad",
+      title: "Banner Ad - Top",
       price: "$299/month",
-      description: "Display your message prominently across our site",
+      description: "Premium placement at the top of every page",
       features: [
-        "Header banner placement",
-        "Mobile responsive design",
-        "Click tracking & analytics",
+        "728x90 banner placement",
+        "100% page visibility",
+        "Click tracking included",
+        "Virginia-focused audience"
+      ],
+      icon: <Target className="h-8 w-8 text-primary" />
+    },
+    {
+      title: "Sidebar Premium",
+      price: "$199/month", 
+      description: "Consistent visibility in our sidebar",
+      features: [
+        "300x250 display ad",
+        "Sticky positioning option",
+        "Political audience targeting",
         "Monthly performance reports"
       ],
-      icon: <MegaphoneIcon className="h-8 w-8" />
+      icon: <Eye className="h-8 w-8 text-primary" />
     },
     {
-      title: "Video Commercial",
-      price: "$799/month",
-      description: "15-30 second video ads in our dynamic news banner",
+      title: "Article Sponsorship",
+      price: "$499/article",
+      description: "Sponsor breaking political news",
       features: [
-        "Prime video banner placement",
-        "Professional video hosting",
-        "Autoplay capabilities",
-        "Detailed engagement metrics"
-      ],
-      icon: <Eye className="h-8 w-8" />
-    },
-    {
-      title: "Sponsored Content",
-      price: "$1,299/month",
-      description: "Native article placement in our news feed",
-      features: [
-        "Editorial-style content",
-        "High engagement rates",
+        "Brand mention in articles",
+        "Logo placement",
         "Social media promotion",
-        "Extended reach guarantee"
+        "Newsletter inclusion"
       ],
-      icon: <TrendingUp className="h-8 w-8" />
+      icon: <TrendingUp className="h-8 w-8 text-primary" />
     }
   ];
 
   const stats = [
-    { label: "Monthly Visitors", value: "125K+", icon: <Users className="h-5 w-5" /> },
-    { label: "Avg. Session Time", value: "4.2 min", icon: <Clock className="h-5 w-5" /> },
-    { label: "Political Engagement", value: "92%", icon: <TrendingUp className="h-5 w-5" /> },
-    { label: "Return Visitors", value: "68%", icon: <Eye className="h-5 w-5" /> }
+    { label: "Monthly Readers", value: "25,000+", icon: <Users className="h-6 w-6" /> },
+    { label: "Page Views", value: "150,000+", icon: <Eye className="h-6 w-6" /> },
+    { label: "Political Engagement", value: "85%", icon: <TrendingUp className="h-6 w-6" /> }
   ];
 
   return (
-    <ThemeProvider>
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        
-        <main className="container mx-auto px-4 py-8">
-          {/* Header */}
-          <div className="mb-8">
-            <Link to="/" className="inline-flex items-center text-primary hover:text-primary/80 mb-4">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
-            </Link>
-            
-            <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                Advertise with CrabsFriedPolitically
-              </h1>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Reach thousands of politically engaged readers with our premium advertising solutions. 
-                Get your message in front of the audience that matters most.
-              </p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      
+      <main className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <Link 
+            to="/" 
+            className="inline-flex items-center text-primary hover:text-primary/80 transition-colors mb-4"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Home
+          </Link>
+          <h1 className="text-4xl font-bold text-foreground mb-4">
+            Advertise with Virginia Political News
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-3xl">
+            Reach thousands of politically engaged Virginia residents with targeted advertising opportunities.
+            Connect with voters, decision-makers, and political influencers across the Commonwealth.
+          </p>
+        </div>
 
-          {/* Stats Section */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-            {stats.map((stat, index) => (
-              <Card key={index} className="text-center">
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-center mb-2 text-primary">
-                    {stat.icon}
+        {/* Stats Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          {stats.map((stat, index) => (
+            <Card key={index} className="text-center">
+              <CardContent className="pt-6">
+                <div className="flex justify-center mb-2 text-primary">
+                  {stat.icon}
+                </div>
+                <div className="text-3xl font-bold text-foreground mb-1">
+                  {stat.value}
+                </div>
+                <div className="text-muted-foreground">
+                  {stat.label}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Ad Packages */}
+        <div className="mb-12">
+          <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
+            Advertising Packages
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {adPackages.map((pkg, index) => (
+              <Card key={index} className="relative hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-center justify-between mb-4">
+                    {pkg.icon}
+                    <span className="text-2xl font-bold text-primary">{pkg.price}</span>
                   </div>
-                  <div className="text-2xl font-bold text-foreground">{stat.value}</div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
+                  <CardTitle className="text-xl">{pkg.title}</CardTitle>
+                  <CardDescription>{pkg.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 mb-6">
+                    {pkg.features.map((feature, fIndex) => (
+                      <li key={fIndex} className="flex items-center text-sm">
+                        <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <Button className="w-full">
+                    Get Started
+                  </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
+        </div>
 
-          {/* Ad Packages */}
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-center text-foreground mb-8">
-              Choose Your Advertising Package
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {adPackages.map((pkg, index) => (
-                <Card key={index} className="relative hover:shadow-lg transition-shadow">
-                  <CardHeader className="text-center">
-                    <div className="flex justify-center mb-4 text-primary">
-                      {pkg.icon}
-                    </div>
-                    <CardTitle className="text-2xl">{pkg.title}</CardTitle>
-                    <CardDescription className="text-lg">{pkg.description}</CardDescription>
-                    <div className="text-3xl font-bold text-primary mt-4">{pkg.price}</div>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3">
-                      {pkg.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-center">
-                          <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
-                          <span className="text-muted-foreground">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <Button className="w-full mt-6">
-                      Get Started
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-
-          {/* Contact Section */}
-          <Card className="bg-primary text-primary-foreground">
-            <CardHeader className="text-center">
-              <CardTitle className="text-3xl">Ready to Get Started?</CardTitle>
-              <CardDescription className="text-primary-foreground/80 text-lg">
-                Contact our advertising team to discuss custom packages and pricing
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-center">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Email Us</h3>
-                  <p className="text-primary-foreground/80">ads@crabsfriedpolitically.com</p>
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Call Us</h3>
-                  <p className="text-primary-foreground/80">(757) 555-CRAB</p>
-                </div>
+        {/* Contact Section */}
+        <Card className="bg-primary/5 border-primary/20">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl text-foreground">
+              Ready to Reach Virginia Voters?
+            </CardTitle>
+            <CardDescription className="text-lg">
+              Contact our advertising team to discuss custom packages and political campaign opportunities.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+              <div className="flex items-center gap-2 text-foreground">
+                <Mail className="h-5 w-5 text-primary" />
+                <span>ads@virginianews.com</span>
               </div>
-              <Button variant="secondary" size="lg">
-                Schedule a Consultation
-              </Button>
-            </CardContent>
-          </Card>
-        </main>
+              <div className="flex items-center gap-2 text-foreground">
+                <Phone className="h-5 w-5 text-primary" />
+                <span>(757) 555-0123</span>
+              </div>
+            </div>
+            <Button size="lg" className="text-lg px-8">
+              Contact Advertising Team
+            </Button>
+          </CardContent>
+        </Card>
+      </main>
 
-        <Footer />
-      </div>
-    </ThemeProvider>
+      <Footer />
+    </div>
   );
 };
 
