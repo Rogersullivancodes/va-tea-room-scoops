@@ -1,6 +1,7 @@
 // src/components/DynamicTopBanner.tsx
 import React, { useState, useEffect } from 'react';
 import { useNews } from '@/hooks/useNews';
+import { useArticles } from '@/hooks/useArticles';
 import { Play, Pause, Volume2 } from 'lucide-react';
 import { Button } from './ui/button';
 
@@ -8,19 +9,28 @@ const DynamicTopBanner: React.FC = () => {
   const [currentHeadlineIndex, setCurrentHeadlineIndex] = useState(0);
   const [isVideoMode, setIsVideoMode] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const { articles, loading } = useNews();
+  const { articles: newsArticles, loading: newsLoading } = useNews();
+  const { articles: submittedArticles, loading: articlesLoading } = useArticles();
+
+  // Combine news and submitted articles for display
+  const allArticles = [
+    ...newsArticles.slice(0, 3), // Top 3 news articles
+    ...submittedArticles.slice(0, 2) // Top 2 submitted articles
+  ];
+  
+  const loading = newsLoading && articlesLoading;
 
   useEffect(() => {
-    if (articles.length > 0) {
+    if (allArticles.length > 0) {
       const timer = setInterval(() => {
-        setCurrentHeadlineIndex((prev) => (prev + 1) % articles.length);
+        setCurrentHeadlineIndex((prev) => (prev + 1) % allArticles.length);
       }, 8000); // Change headline every 8 seconds (longer for video mode)
 
       return () => clearInterval(timer);
     }
-  }, [articles.length]);
+  }, [allArticles.length]);
 
-  if (loading || articles.length === 0) {
+  if (loading || allArticles.length === 0) {
     return (
       <div className="bg-gradient-to-r from-red-600 to-red-800 text-white text-center py-8">
         <div className="container mx-auto px-4">
@@ -32,7 +42,8 @@ const DynamicTopBanner: React.FC = () => {
     );
   }
 
-  const currentHeadline = articles[currentHeadlineIndex];
+  const currentHeadline = allArticles[currentHeadlineIndex];
+  const isSubmittedArticle = submittedArticles.some(article => article.id === currentHeadline.id);
 
   const toggleVideoMode = () => {
     setIsVideoMode(!isVideoMode);
@@ -96,13 +107,16 @@ const DynamicTopBanner: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <p className="text-lg md:text-xl font-bold">
-                  <span className="bg-yellow-400 text-black px-3 py-1 rounded mr-3 animate-pulse">
-                    🔥 BREAKING
+                  <span className={`${isSubmittedArticle ? 'bg-blue-400' : 'bg-yellow-400'} text-black px-3 py-1 rounded mr-3 animate-pulse`}>
+                    {isSubmittedArticle ? '📝 COMMUNITY' : '🔥 BREAKING'}
                   </span>
                   {currentHeadline.title}
                 </p>
                 <p className="text-sm text-white/80 mt-1">
-                  Source: {currentHeadline.source} • {new Date(currentHeadline.published_at).toLocaleDateString()}
+                  {isSubmittedArticle 
+                    ? `Community Article • ${new Date(currentHeadline.published_at || currentHeadline.created_at).toLocaleDateString()}`
+                    : `Source: ${(currentHeadline as any).source || 'News'} • ${new Date(currentHeadline.published_at).toLocaleDateString()}`
+                  }
                 </p>
               </div>
               <div className="ml-4 flex gap-2">

@@ -1,41 +1,24 @@
-// Inside your Articles.tsx component
-import { Link } from 'react-router-dom';
-
-// A sample list of articles. You would fetch this from Supabase.
-const articleList = [
-  { title: 'Scandals and Gaffes Shake Up Capitol Hill', slug: 'scandals-and-gaffes' },
-  { title: 'Following the Money in Politics', slug: 'money-in-politics' },
-  { title: 'Latest Election Coverage and Predictions', slug: 'election-coverage' }
-];
-
-// In your return statement, where you map over the articles:
-<div>
-  {articleList.map(article => (
-    <div key={article.slug} className="mb-4">
-      <Link to={`/articles/${article.slug}`}>
-        <h2 className="text-2xl font-bold hover:underline">{article.title}</h2>
-      </Link>
-    </div>
-  ))}
-</div>
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Filter, Grid, List } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Filter, Grid, List, PenTool, Eye } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ThemeProvider from '@/components/ThemeProvider';
 import ArticleCard from '@/components/ArticleCard';
 import SearchBar from '@/components/SearchBar';
+import ArticleSubmissionForm from '@/components/ArticleSubmissionForm';
 import { useArticles } from '@/hooks/useArticles';
 
 const Articles: React.FC = () => {
-  const { articles, loading } = useArticles();
+  const { articles, loading, refetch } = useArticles();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('newest');
+  const [activeTab, setActiveTab] = useState<'browse' | 'submit'>('browse');
 
   const categories = ['all', 'politics', 'virginia', 'federal', 'local', 'campaigns'];
 
@@ -56,6 +39,11 @@ const Articles: React.FC = () => {
       }
     });
 
+  const handleSubmissionSuccess = () => {
+    refetch();
+    setActiveTab('browse');
+  };
+
   return (
     <ThemeProvider>
       <div className="min-h-screen flex flex-col">
@@ -67,109 +55,129 @@ const Articles: React.FC = () => {
                 <div>
                   <h1 className="text-3xl font-bold">Political Articles</h1>
                   <p className="text-gray-600 dark:text-gray-300">
-                    Latest political news and analysis from Virginia and beyond
+                    Read the latest political news and analysis, or submit your own article
                   </p>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant={viewMode === 'grid' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setViewMode('grid')}
-                  >
-                    <Grid className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={viewMode === 'list' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setViewMode('list')}
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
-                </div>
               </div>
 
-              <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
-                <div className="flex-1">
-                  <SearchBar className="w-full" />
-                </div>
-                <div className="flex flex-wrap items-center space-x-2">
-                  <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map(category => (
-                        <SelectItem key={category} value={category}>
-                          {category === 'all' ? 'All Categories' : category.charAt(0).toUpperCase() + category.slice(1)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="w-32">
-                      <SelectValue placeholder="Sort by" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="newest">Newest</SelectItem>
-                      <SelectItem value="oldest">Oldest</SelectItem>
-                      <SelectItem value="popular">Most Viewed</SelectItem>
-                      <SelectItem value="liked">Most Liked</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+              <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'browse' | 'submit')} className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="browse" className="flex items-center space-x-2">
+                    <Eye className="h-4 w-4" />
+                    <span>Browse Articles</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="submit" className="flex items-center space-x-2">
+                    <PenTool className="h-4 w-4" />
+                    <span>Submit Article</span>
+                  </TabsTrigger>
+                </TabsList>
 
-              <div className="flex items-center space-x-2">
-                <Badge variant="outline">{filteredArticles.length} articles</Badge>
-                {categoryFilter !== 'all' && (
-                  <Badge variant="secondary">
-                    {categoryFilter.charAt(0).toUpperCase() + categoryFilter.slice(1)}
-                  </Badge>
-                )}
-              </div>
+                <TabsContent value="browse" className="space-y-6">
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant={viewMode === 'grid' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setViewMode('grid')}
+                    >
+                      <Grid className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={viewMode === 'list' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setViewMode('list')}
+                    >
+                      <List className="h-4 w-4" />
+                    </Button>
+                  </div>
 
-              {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[...Array(6)].map((_, i) => (
-                    <div key={i} className="animate-pulse">
-                      <div className="bg-gray-200 dark:bg-gray-700 h-48 rounded-lg mb-4"></div>
-                      <div className="bg-gray-200 dark:bg-gray-700 h-4 rounded mb-2"></div>
-                      <div className="bg-gray-200 dark:bg-gray-700 h-4 rounded w-3/4"></div>
+                  <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
+                    <div className="flex-1">
+                      <SearchBar className="w-full" />
                     </div>
-                  ))}
-                </div>
-              ) : filteredArticles.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-gray-500 text-lg">No articles found matching your criteria.</p>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setCategoryFilter('all');
-                      setSortBy('newest');
-                    }}
-                    className="mt-4"
-                  >
-                    Clear Filters
-                  </Button>
-                </div>
-              ) : (
-                <div className={
-                  viewMode === 'grid' 
-                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                    : "space-y-4"
-                }>
-                  {filteredArticles.map((article) => (
-                    <ArticleCard
-                      key={article.id}
-                      article={article}
-                      onClick={() => {
-                        // Navigate to article detail page (to be implemented)
-                        console.log('Navigate to article:', article.id);
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
+                    <div className="flex flex-wrap items-center space-x-2">
+                      <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                        <SelectTrigger className="w-40">
+                          <SelectValue placeholder="Category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categories.map(category => (
+                            <SelectItem key={category} value={category}>
+                              {category === 'all' ? 'All Categories' : category.charAt(0).toUpperCase() + category.slice(1)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Select value={sortBy} onValueChange={setSortBy}>
+                        <SelectTrigger className="w-32">
+                          <SelectValue placeholder="Sort by" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="newest">Newest</SelectItem>
+                          <SelectItem value="oldest">Oldest</SelectItem>
+                          <SelectItem value="popular">Most Viewed</SelectItem>
+                          <SelectItem value="liked">Most Liked</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Badge variant="outline">{filteredArticles.length} articles</Badge>
+                    {categoryFilter !== 'all' && (
+                      <Badge variant="secondary">
+                        {categoryFilter.charAt(0).toUpperCase() + categoryFilter.slice(1)}
+                      </Badge>
+                    )}
+                  </div>
+
+                  {loading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {[...Array(6)].map((_, i) => (
+                        <div key={i} className="animate-pulse">
+                          <div className="bg-gray-200 dark:bg-gray-700 h-48 rounded-lg mb-4"></div>
+                          <div className="bg-gray-200 dark:bg-gray-700 h-4 rounded mb-2"></div>
+                          <div className="bg-gray-200 dark:bg-gray-700 h-4 rounded w-3/4"></div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : filteredArticles.length === 0 ? (
+                    <div className="text-center py-12">
+                      <p className="text-gray-500 text-lg">No articles found matching your criteria.</p>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setCategoryFilter('all');
+                          setSortBy('newest');
+                        }}
+                        className="mt-4"
+                      >
+                        Clear Filters
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className={
+                      viewMode === 'grid' 
+                        ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                        : "space-y-4"
+                    }>
+                      {filteredArticles.map((article) => (
+                        <ArticleCard
+                          key={article.id}
+                          article={article}
+                          onClick={() => {
+                            // Navigate to article detail page (to be implemented)
+                            console.log('Navigate to article:', article.id);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="submit" className="space-y-6">
+                  <ArticleSubmissionForm onSuccess={handleSubmissionSuccess} />
+                </TabsContent>
+              </Tabs>
             </div>
           </div>
         </main>
