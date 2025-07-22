@@ -69,11 +69,21 @@ const DynamicTopBanner: React.FC = () => {
     return () => clearInterval(shuffleInterval);
   }, []);
 
-  // Combine news and submitted articles for display
-  const allArticles = [
-    ...newsArticles.slice(0, 3), // Top 3 news articles
-    ...submittedArticles.slice(0, 2) // Top 2 submitted articles
-  ];
+  // Combine and shuffle news and submitted articles for display
+  const allArticles = React.useMemo(() => {
+    const combined = [
+      ...newsArticles.slice(0, 3), // Top 3 news articles
+      ...submittedArticles.slice(0, 2) // Top 2 submitted articles
+    ];
+    
+    // Shuffle headlines using Fisher-Yates algorithm
+    const shuffled = [...combined];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }, [newsArticles, submittedArticles]);
   
   const loading = newsLoading && articlesLoading;
 
@@ -237,13 +247,13 @@ const DynamicTopBanner: React.FC = () => {
           <div className="py-6">
             <div className="flex items-center justify-between">
               <div className="flex-1 flex space-x-4">
-                {/* Video Thumbnail */}
-                <div className="hidden md:block">
+                {/* Video Thumbnail - Mobile and Desktop */}
+                <div className="block">
                   <div className="relative">
                     <img
                       src={currentVideo.thumbnail}
                       alt="Virginia Politics Video"
-                      className="w-32 h-20 object-cover rounded-lg"
+                      className="w-20 h-12 md:w-32 md:h-20 object-cover rounded-lg"
                       onError={(e) => {
                         e.currentTarget.src = `https://img.youtube.com/vi/${currentVideo.id}/hqdefault.jpg`;
                       }}
@@ -252,7 +262,7 @@ const DynamicTopBanner: React.FC = () => {
                       onClick={toggleVideoMode}
                       className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg hover:bg-black/70 transition-colors"
                     >
-                      <Play className="w-6 h-6 text-white" />
+                      <Play className="w-4 h-4 md:w-6 md:h-6 text-white" />
                     </button>
                   </div>
                 </div>

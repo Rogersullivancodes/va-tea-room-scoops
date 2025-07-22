@@ -20,16 +20,23 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Article = Tables<'articles'>;
+type NewsArticle = Tables<'news_articles'>;
+
+type SearchResult = Article | (NewsArticle & { 
+  isNewsArticle: true;
+  excerpt: string;
+  published_at: string;
+});
 
 interface SearchBarProps {
-  onArticleSelect?: (article: Article) => void;
+  onArticleSelect?: (article: SearchResult) => void;
   className?: string;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ onArticleSelect, className }) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const [results, setResults] = useState<Article[]>([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -41,16 +48,38 @@ const SearchBar: React.FC<SearchBarProps> = ({ onArticleSelect, className }) => 
 
       setLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('articles')
-          .select('*')
-          .eq('status', 'published')
-          .or(`title.ilike.%${search}%, content.ilike.%${search}%, excerpt.ilike.%${search}%`)
-          .order('published_at', { ascending: false })
-          .limit(10);
+        // Search both articles and news_articles in parallel
+        const [articlesResponse, newsResponse] = await Promise.all([
+          supabase
+            .from('articles')
+            .select('*')
+            .eq('status', 'published')
+            .or(`title.ilike.%${search}%, content.ilike.%${search}%, excerpt.ilike.%${search}%`)
+            .order('published_at', { ascending: false })
+            .limit(5),
+          supabase
+            .from('news_articles')
+            .select('*')
+            .or(`title.ilike.%${search}%, content.ilike.%${search}%`)
+            .order('created_at', { ascending: false })
+            .limit(5)
+        ]);
 
-        if (error) throw error;
-        setResults(data || []);
+        if (articlesResponse.error) throw articlesResponse.error;
+        if (newsResponse.error) throw newsResponse.error;
+
+        // Combine results and mark news articles
+        const combinedResults: SearchResult[] = [
+          ...(articlesResponse.data || []),
+          ...(newsResponse.data || []).map(news => ({
+            ...news,
+            published_at: news.created_at,
+            excerpt: news.content.substring(0, 200) + '...',
+            isNewsArticle: true as const
+          }))
+        ];
+
+        setResults(combinedResults);
       } catch (err) {
         console.error('Search error:', err);
         setResults([]);
@@ -63,7 +92,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onArticleSelect, className }) => 
     return () => clearTimeout(debounceTimer);
   }, [search]);
 
-  const handleSelect = (article: Article) => {
+  const handleSelect = (article: SearchResult) => {
     setOpen(false);
     setSearch('');
     onArticleSelect?.(article);
@@ -127,6 +156,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ onArticleSelect, className }) => 
                           </span>
                         )}
                         <div className="flex items-center space-x-2 text-xs text-gray-400">
+                          <span className={`px-2 py-1 rounded text-xs ${(article as any).isNewsArticle ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
+                            {(article as any).isNewsArticle ? 'NEWS' : 'ARTICLE'}
+                          </span>
+                          <span>•</span>
                           <span>{article.category}</span>
                           <span>•</span>
                           <span>{article.views || 0} views</span>
