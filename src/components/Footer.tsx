@@ -45,11 +45,11 @@ const Footer: React.FC = () => {
           <div className="space-y-6">
             <h3 className="text-xl font-playfair font-bold text-gold">Hot Political Content</h3>
             <ul className="space-y-3 text-sm">
-              <li><a href="#social-tea" className="text-white/80 hover:text-gold transition-colors duration-200 hover:translate-x-1 inline-block">Social Media Slips</a></li>
-              <li><a href="#scandals" className="text-white/80 hover:text-gold transition-colors duration-200 hover:translate-x-1 inline-block">Scandals & Gaffes</a></li>
-              <li><a href="#money-politics" className="text-white/80 hover:text-gold transition-colors duration-200 hover:translate-x-1 inline-block">Money in Politics</a></li>
-              <li><a href="#election-watch" className="text-white/80 hover:text-gold transition-colors duration-200 hover:translate-x-1 inline-block">Election Coverage</a></li>
-              <li><a href="#capitol-gossip" className="text-white/80 hover:text-gold transition-colors duration-200 hover:translate-x-1 inline-block">Capitol Gossip</a></li>
+              <li><Link to="/news?category=social" className="text-white/80 hover:text-gold transition-colors duration-200 hover:translate-x-1 inline-block">Social Media Slips</Link></li>
+              <li><Link to="/news?category=scandals" className="text-white/80 hover:text-gold transition-colors duration-200 hover:translate-x-1 inline-block">Scandals & Gaffes</Link></li>
+              <li><Link to="/news?category=money" className="text-white/80 hover:text-gold transition-colors duration-200 hover:translate-x-1 inline-block">Money in Politics</Link></li>
+              <li><Link to="/news?category=election" className="text-white/80 hover:text-gold transition-colors duration-200 hover:translate-x-1 inline-block">Election Coverage</Link></li>
+              <li><Link to="/news?category=gossip" className="text-white/80 hover:text-gold transition-colors duration-200 hover:translate-x-1 inline-block">Capitol Gossip</Link></li>
             </ul>
           </div>
           

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Eye, Clock, ExternalLink, RefreshCw } from 'lucide-react';
+import { Eye, Clock, ExternalLink, RefreshCw, Filter } from 'lucide-react';
 import { format } from 'date-fns';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -18,6 +19,42 @@ const News: React.FC = () => {
   const [selectedArticle, setSelectedArticle] = useState<NewsArticle | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  const category = searchParams.get('category');
+  
+  // Category mapping for filtering
+  const categoryKeywords = {
+    social: ['social media', 'twitter', 'facebook', 'instagram', 'tiktok', 'post', 'tweet'],
+    scandals: ['scandal', 'controversy', 'gaffe', 'mistake', 'error', 'blunder'],
+    money: ['money', 'funding', 'donation', 'finance', 'campaign finance', 'lobbying'],
+    election: ['election', 'vote', 'poll', 'candidate', 'campaign', 'ballot'],
+    gossip: ['gossip', 'rumor', 'insider', 'behind scenes', 'leak', 'exclusive']
+  };
+  
+  // Filter articles based on category
+  const filteredArticles = useMemo(() => {
+    if (!category || !categoryKeywords[category as keyof typeof categoryKeywords]) {
+      return articles;
+    }
+    
+    const keywords = categoryKeywords[category as keyof typeof categoryKeywords];
+    return articles.filter(article => {
+      const searchText = `${article.title} ${article.content} ${article.excerpt || ''}`.toLowerCase();
+      return keywords.some(keyword => searchText.includes(keyword.toLowerCase()));
+    });
+  }, [articles, category]);
+  
+  const getCategoryTitle = () => {
+    const titles = {
+      social: 'Social Media Slips',
+      scandals: 'Scandals & Gaffes', 
+      money: 'Money in Politics',
+      election: 'Election Coverage',
+      gossip: 'Capitol Gossip'
+    };
+    return category ? titles[category as keyof typeof titles] || 'Latest Political News' : 'Latest Political News';
+  };
 
   const handleFetchLatest = async () => {
     setIsFetching(true);
@@ -71,11 +108,19 @@ const News: React.FC = () => {
             {/* Header */}
             <div className="text-center mb-8">
               <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                Latest Political News
+                {getCategoryTitle()}
               </h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
-                Stay updated with the latest political developments from Virginia and beyond
+                {category ? `Browse articles in the ${getCategoryTitle()} category` : 'Stay updated with the latest political developments from Virginia and beyond'}
               </p>
+              {category && (
+                <div className="flex items-center justify-center mb-4">
+                  <Badge variant="outline" className="flex items-center gap-2">
+                    <Filter className="h-4 w-4" />
+                    Filtered by: {getCategoryTitle()}
+                  </Badge>
+                </div>
+              )}
               <Button 
                 onClick={handleFetchLatest}
                 disabled={isFetching}
@@ -88,7 +133,7 @@ const News: React.FC = () => {
 
             {/* News Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {articles.map((article, index) => (
+              {filteredArticles.map((article, index) => (
                 <Card 
                   key={article.id} 
                   className="group hover:shadow-lg transition-all duration-300 cursor-pointer"
@@ -149,6 +194,13 @@ const News: React.FC = () => {
                 </Card>
               ))}
             </div>
+
+            {filteredArticles.length === 0 && articles.length > 0 && (
+              <div className="text-center py-16">
+                <h3 className="text-2xl font-semibold text-muted-foreground mb-2">No articles found in this category</h3>
+                <p className="text-muted-foreground mb-4">Try browsing all news or check back later for updates in this category.</p>
+              </div>
+            )}
 
             {articles.length === 0 && (
               <div className="text-center py-16">
