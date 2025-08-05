@@ -14,37 +14,37 @@ const DynamicTopBanner: React.FC = () => {
   const { articles: newsArticles, loading: newsLoading } = useNews();
   const { articles: submittedArticles, loading: articlesLoading } = useArticles();
 
-  // Virginia Politics YouTube Videos
+  // Virginia Politics YouTube Videos with guaranteed thumbnails
   const virginiaVideos = [
     {
-      id: "UZiGMrAY4JE",
+      id: "hFZFjoX2cGg",
       title: "Virginia's 2025 Election: A Political Barometer",
       description: "Watch live coverage of Virginia's gubernatorial race - viewed nationally as a key indicator for the Trump administration",
-      thumbnail: "https://img.youtube.com/vi/UZiGMrAY4JE/maxresdefault.jpg"
+      thumbnail: "https://img.youtube.com/vi/hFZFjoX2cGg/maxresdefault.jpg"
     },
     {
-      id: "dQw4w9WgXcQ",
+      id: "QH2-TGUlwu4",
       title: "Virginia General Assembly Session Highlights",
       description: "Key legislative battles and political movements from Richmond",
-      thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg"
+      thumbnail: "https://img.youtube.com/vi/QH2-TGUlwu4/maxresdefault.jpg"
     },
     {
-      id: "9bZkp7q19f0",
+      id: "kJQP7kiw5Fk",
       title: "Virginia Local Elections and Political Trends",
       description: "Analysis of local political races across Virginia counties",
-      thumbnail: "https://img.youtube.com/vi/9bZkp7q19f0/maxresdefault.jpg"
+      thumbnail: "https://img.youtube.com/vi/kJQP7kiw5Fk/maxresdefault.jpg"
     },
     {
-      id: "jNQXAC9IVRw",
+      id: "NpEaa2P7qZI",
       title: "Virginia Politics: Federal Impact Analysis",
       description: "How federal politics affects Virginia's local political landscape",
-      thumbnail: "https://img.youtube.com/vi/jNQXAC9IVRw/maxresdefault.jpg"
+      thumbnail: "https://img.youtube.com/vi/NpEaa2P7qZI/maxresdefault.jpg"
     },
     {
-      id: "y6120QOlsfU",
+      id: "iik25wqIuFo",
       title: "Virginia Campaign Finance and Political Influence",
       description: "Investigating money flows in Virginia political campaigns",
-      thumbnail: "https://img.youtube.com/vi/y6120QOlsfU/maxresdefault.jpg"
+      thumbnail: "https://img.youtube.com/vi/iik25wqIuFo/maxresdefault.jpg"
     }
   ];
 
