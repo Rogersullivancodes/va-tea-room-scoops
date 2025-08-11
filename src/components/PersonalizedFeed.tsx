@@ -102,7 +102,7 @@ const PersonalizedFeed: React.FC<PersonalizedFeedProps> = ({ categories = [], cl
         excerpt: allContent.news[i].excerpt,
         category: allContent.news[i].source,
         published_at: allContent.news[i].published_at,
-        featured_image_url: allContent.news[i].image_url,
+        featured_image_url: allContent.news[i].image_url || `https://images.unsplash.com/photo-${649 + i}72904349-6e44c42644a7?w=400&h=300&fit=crop`,
         views: 0,
         likes: 0,
         credits_required: 0,

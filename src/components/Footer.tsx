@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Mail, Twitter, Instagram, Facebook, Heart, Sparkles } from 'lucide-react';
+import { Mail, Twitter, Instagram, Facebook, Heart, Sparkles, Video } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useAdmin } from '@/contexts/AdminContext';
 import { Link } from 'react-router-dom';
@@ -26,10 +26,13 @@ const Footer: React.FC = () => {
               Serving Virginia's spiciest political gossip and news from the legislature, campaigns, and government—always with humor and integrity.
             </p>
             <div className="flex space-x-4">
-              <a href="#twitter" className="text-white/70 hover:text-gold transition-all duration-300 hover:scale-110 p-2 rounded-full hover:bg-white/10">
+              <a href="https://www.tiktok.com/@crabsfriedpolitically" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-gold transition-all duration-300 hover:scale-110 p-2 rounded-full hover:bg-white/10">
+                <Video className="h-5 w-5" />
+              </a>
+              <a href="https://x.com/Politicalcrabs" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-gold transition-all duration-300 hover:scale-110 p-2 rounded-full hover:bg-white/10">
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#instagram" className="text-white/70 hover:text-gold transition-all duration-300 hover:scale-110 p-2 rounded-full hover:bg-white/10">
+              <a href="https://www.instagram.com/crabsfriedpolitically/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-gold transition-all duration-300 hover:scale-110 p-2 rounded-full hover:bg-white/10">
                 <Instagram className="h-5 w-5" />
               </a>
               <a href="#facebook" className="text-white/70 hover:text-gold transition-all duration-300 hover:scale-110 p-2 rounded-full hover:bg-white/10">
