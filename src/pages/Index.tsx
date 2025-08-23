@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import DynamicTopBanner from '@/components/DynamicTopBanner';
 import Navbar from '@/components/Navbar';
@@ -15,11 +16,9 @@ import { useArticles } from '@/hooks/useArticles';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Clock, TrendingUp, MegaphoneIcon, Sparkles, Star, Zap } from 'lucide-react';
+
 const Index = () => {
-  const {
-    articles: newsArticles,
-    loading: newsLoading
-  } = useNews();
+  const { articles: newsArticles, loading: newsLoading } = useNews();
   const [featuredNewsArticle, setFeaturedNewsArticle] = useState(null);
 
   // Set featured news article (no articles on homepage)
@@ -29,8 +28,11 @@ const Index = () => {
       setFeaturedNewsArticle(newsArticles[0]);
     }
   }, [newsArticles]);
+
   const loading = newsLoading;
-  return <ThemeProvider>
+
+  return (
+    <ThemeProvider>
       <div className="min-h-screen bg-background">
         <Navbar />
         <DynamicTopBanner />
@@ -43,26 +45,116 @@ const Index = () => {
           </div>
 
           {/* Featured News Section */}
-          {featuredNewsArticle}
+          {featuredNewsArticle && (
+            <section className="mb-12 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              <div className="flex items-center gap-3 mb-6">
+                <Star className="h-8 w-8 text-accent animate-pulse-slow" />
+                <h2 className="text-3xl font-bold text-foreground">Featured News</h2>
+                <div className="flex-1 h-px bg-gradient-to-r from-primary/50 to-transparent" />
+              </div>
+              <InteractiveArticleCard 
+                article={{
+                  ...featuredNewsArticle,
+                  id: featuredNewsArticle.id,
+                  title: featuredNewsArticle.title,
+                  excerpt: featuredNewsArticle.excerpt,
+                  category: featuredNewsArticle.source,
+                  published_at: featuredNewsArticle.published_at,
+                  featured_image_url: featuredNewsArticle.image_url || 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&h=600&fit=crop',
+                  views: featuredNewsArticle.views || 0,
+                  likes: 0,
+                  credits_required: 0,
+                  is_premium: false,
+                  status: 'published',
+                  author_id: '',
+                  content: featuredNewsArticle.content,
+                  created_at: featuredNewsArticle.published_at,
+                  meta_description: '',
+                  meta_keywords: [],
+                  tags: [],
+                  updated_at: featuredNewsArticle.published_at
+                }}
+                featured={true} 
+              />
+            </section>
+          )}
 
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
             {/* Left Column - Personalized Feed */}
             <div className="xl:col-span-3 space-y-12">
               {/* Dynamic News Ticker Integration */}
-              
+              <section className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                <div className="flex items-center gap-3 mb-6">
+                  <Zap className="h-7 w-7 text-primary animate-float" />
+                  <h2 className="text-2xl font-bold text-foreground">Breaking News</h2>
+                  <div className="flex-1 h-px bg-gradient-to-r from-primary/50 to-transparent" />
+                </div>
+                {loading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[...Array(6)].map((_, i) => (
+                      <div key={i} className="bg-card border border-border rounded-lg p-4 animate-pulse">
+                        <div className="w-full h-48 bg-muted rounded mb-4"></div>
+                        <div className="h-4 bg-muted rounded mb-2"></div>
+                        <div className="h-4 bg-muted rounded w-3/4"></div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {newsArticles.slice(1, 7).map((article, index) => {
+                      const placeholderImages = [
+                        'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop'
+                      ];
+                      
+                      return (
+                        <div
+                          key={article.id}
+                          className="animate-fade-in hover-scale"
+                          style={{ animationDelay: `${index * 0.1}s` }}
+                        >
+                          <InteractiveArticleCard 
+                            article={{
+                              ...article,
+                              id: article.id,
+                              title: article.title,
+                              excerpt: article.excerpt,
+                              category: article.source,
+                              published_at: article.published_at,
+                              featured_image_url: article.image_url || placeholderImages[index % placeholderImages.length],
+                              views: article.views || 0,
+                              likes: 0,
+                              credits_required: 0,
+                              is_premium: false,
+                              status: 'published',
+                              author_id: '',
+                              content: article.content,
+                              created_at: article.published_at,
+                              meta_description: '',
+                              meta_keywords: [],
+                              tags: [],
+                              updated_at: article.published_at
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
 
               {/* More News Feed */}
-              <section className="animate-fade-in" style={{
-              animationDelay: '0.6s'
-            }}>
+              <section className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
                 <PersonalizedFeed />
               </section>
 
               {/* Interactive Navigation */}
-              <section className="text-center animate-fade-in" style={{
-              animationDelay: '0.8s'
-            }}>
+              <section className="text-center animate-fade-in" style={{ animationDelay: '0.8s' }}>
                 <div className="flex flex-wrap justify-center gap-4">
                   <Link to="/news">
                     <Button variant="outline" className="button-glow hover:scale-105 transition-all duration-300">
@@ -83,16 +175,12 @@ const Index = () => {
             {/* Right Column - Enhanced Sidebar */}
             <div className="space-y-8">
               {/* Reading List Widget */}
-              <div className="animate-fade-in" style={{
-              animationDelay: '1.0s'
-            }}>
+              <div className="animate-fade-in" style={{ animationDelay: '1.0s' }}>
                 <ReadingListWidget />
               </div>
 
               {/* Advertisement Space with Enhanced Design */}
-              <div className="bg-gradient-to-br from-card via-card to-primary/5 border border-border rounded-lg p-6 text-center hover-scale animate-fade-in" style={{
-              animationDelay: '1.2s'
-            }}>
+              <div className="bg-gradient-to-br from-card via-card to-primary/5 border border-border rounded-lg p-6 text-center hover-scale animate-fade-in" style={{ animationDelay: '1.2s' }}>
                 <div className="flex items-center justify-center gap-2 mb-4">
                   <MegaphoneIcon className="h-6 w-6 text-primary animate-pulse-slow" />
                   <h3 className="text-lg font-semibold">Premium Ad Space</h3>
@@ -108,9 +196,7 @@ const Index = () => {
               </div>
 
               {/* Enhanced Ad Spaces */}
-              <div className="animate-fade-in" style={{
-              animationDelay: '1.4s'
-            }}>
+              <div className="animate-fade-in" style={{ animationDelay: '1.4s' }}>
                 <AdSpaces />
               </div>
             </div>
@@ -119,6 +205,8 @@ const Index = () => {
 
         <Footer />
       </div>
-    </ThemeProvider>;
+    </ThemeProvider>
+  );
 };
+
 export default Index;
