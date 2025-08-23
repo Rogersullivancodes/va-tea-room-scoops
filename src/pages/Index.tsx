@@ -19,24 +19,17 @@ import { Clock, TrendingUp, MegaphoneIcon, Sparkles, Star, Zap } from 'lucide-re
 
 const Index = () => {
   const { articles: newsArticles, loading: newsLoading } = useNews();
-  const { articles, loading: articlesLoading } = useArticles();
-  const [featuredArticle, setFeaturedArticle] = useState(null);
-  const [categories, setCategories] = useState([]);
+  const [featuredNewsArticle, setFeaturedNewsArticle] = useState(null);
 
-  // Set featured article and extract categories
+  // Set featured news article (no articles on homepage)
   useEffect(() => {
-    if (articles.length > 0) {
-      // Set the most recent premium article as featured, or first article
-      const featured = articles.find(article => article.is_premium) || articles[0];
-      setFeaturedArticle(featured);
-      
-      // Extract unique categories for personalization
-      const uniqueCategories = [...new Set(articles.map(article => article.category).filter(Boolean))];
-      setCategories(uniqueCategories.slice(0, 5)); // Limit to 5 categories
+    if (newsArticles.length > 0) {
+      // Set the most recent news article as featured
+      setFeaturedNewsArticle(newsArticles[0]);
     }
-  }, [articles]);
+  }, [newsArticles]);
 
-  const loading = newsLoading || articlesLoading;
+  const loading = newsLoading;
 
   return (
     <ThemeProvider>
@@ -51,15 +44,38 @@ const Index = () => {
             <Hero />
           </div>
 
-          {/* Featured Article Section */}
-          {featuredArticle && (
+          {/* Featured News Section */}
+          {featuredNewsArticle && (
             <section className="mb-12 animate-fade-in" style={{ animationDelay: '0.2s' }}>
               <div className="flex items-center gap-3 mb-6">
                 <Star className="h-8 w-8 text-accent animate-pulse-slow" />
-                <h2 className="text-3xl font-bold text-foreground">Featured Story</h2>
+                <h2 className="text-3xl font-bold text-foreground">Featured News</h2>
                 <div className="flex-1 h-px bg-gradient-to-r from-primary/50 to-transparent" />
               </div>
-              <InteractiveArticleCard article={featuredArticle} featured={true} />
+              <InteractiveArticleCard 
+                article={{
+                  ...featuredNewsArticle,
+                  id: featuredNewsArticle.id,
+                  title: featuredNewsArticle.title,
+                  excerpt: featuredNewsArticle.excerpt,
+                  category: featuredNewsArticle.source,
+                  published_at: featuredNewsArticle.published_at,
+                  featured_image_url: featuredNewsArticle.image_url || 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&h=600&fit=crop',
+                  views: featuredNewsArticle.views || 0,
+                  likes: 0,
+                  credits_required: 0,
+                  is_premium: false,
+                  status: 'published',
+                  author_id: '',
+                  content: featuredNewsArticle.content,
+                  created_at: featuredNewsArticle.published_at,
+                  meta_description: '',
+                  meta_keywords: [],
+                  tags: [],
+                  updated_at: featuredNewsArticle.published_at
+                }}
+                featured={true} 
+              />
             </section>
           )}
 
@@ -86,44 +102,55 @@ const Index = () => {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {newsArticles.slice(0, 6).map((article, index) => (
-                      <div
-                        key={article.id}
-                        className="animate-fade-in hover-scale"
-                        style={{ animationDelay: `${index * 0.1}s` }}
-                      >
-                        <InteractiveArticleCard 
-                          article={{
-                            ...article,
-                            id: article.id,
-                            title: article.title,
-                            excerpt: article.excerpt,
-                            category: article.source,
-                            published_at: article.published_at,
-                            featured_image_url: article.image_url,
-                            views: 0,
-                            likes: 0,
-                            credits_required: 0,
-                            is_premium: false,
-                            status: 'published',
-                            author_id: '',
-                            content: '',
-                            created_at: article.published_at,
-                            meta_description: '',
-                            meta_keywords: [],
-                            tags: [],
-                            updated_at: article.published_at
-                          }}
-                        />
-                      </div>
-                    ))}
+                    {newsArticles.slice(1, 7).map((article, index) => {
+                      const placeholderImages = [
+                        'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop'
+                      ];
+                      
+                      return (
+                        <div
+                          key={article.id}
+                          className="animate-fade-in hover-scale"
+                          style={{ animationDelay: `${index * 0.1}s` }}
+                        >
+                          <InteractiveArticleCard 
+                            article={{
+                              ...article,
+                              id: article.id,
+                              title: article.title,
+                              excerpt: article.excerpt,
+                              category: article.source,
+                              published_at: article.published_at,
+                              featured_image_url: article.image_url || placeholderImages[index % placeholderImages.length],
+                              views: article.views || 0,
+                              likes: 0,
+                              credits_required: 0,
+                              is_premium: false,
+                              status: 'published',
+                              author_id: '',
+                              content: article.content,
+                              created_at: article.published_at,
+                              meta_description: '',
+                              meta_keywords: [],
+                              tags: [],
+                              updated_at: article.published_at
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </section>
 
-              {/* Personalized Content Feed */}
+              {/* More News Feed */}
               <section className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
-                <PersonalizedFeed categories={categories} />
+                <PersonalizedFeed />
               </section>
 
               {/* Interactive Navigation */}

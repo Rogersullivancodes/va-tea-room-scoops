@@ -12,43 +12,29 @@ export const useNews = () => {
 
   const fetchNews = async () => {
     try {
-      // Get all news articles in parallel for faster loading
-      const [politicalResponse, collegeResponse] = await Promise.all([
-        supabase
-          .from('news_articles')
-          .select('*')
-          .eq('priority', 1)
-          .order('created_at', { ascending: false })
-          .limit(20),
-        supabase
-          .from('news_articles')
-          .select('*')
-          .eq('priority', 2)
-          .order('created_at', { ascending: false })
-          .limit(8)
-      ]);
+      // Get all news articles with random ordering for variety
+      const response = await supabase
+        .from('news_articles')
+        .select('*')
+        .order('published_at', { ascending: false })
+        .limit(50);
 
-      if (politicalResponse.error) throw politicalResponse.error;
-      if (collegeResponse.error) throw collegeResponse.error;
+      if (response.error) throw response.error;
 
-      // Thoroughly shuffle political news using Fisher-Yates algorithm
-      const shuffledPolitical = [...(politicalResponse.data || [])];
-      for (let i = shuffledPolitical.length - 1; i > 0; i--) {
+      // Always shuffle news articles using Fisher-Yates algorithm for different content each visit
+      const shuffledNews = [...(response.data || [])];
+      for (let i = shuffledNews.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [shuffledPolitical[i], shuffledPolitical[j]] = [shuffledPolitical[j], shuffledPolitical[i]];
+        [shuffledNews[i], shuffledNews[j]] = [shuffledNews[j], shuffledNews[i]];
       }
 
-      // Thoroughly shuffle college news
-      const shuffledCollege = [...(collegeResponse.data || [])];
-      for (let i = shuffledCollege.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffledCollege[i], shuffledCollege[j]] = [shuffledCollege[j], shuffledCollege[i]];
-      }
-
-      // Combine with political news first, college news last
-      const combinedArticles = [...shuffledPolitical, ...shuffledCollege];
+      // Add timestamp to ensure different results each fetch
+      const timestampedNews = shuffledNews.map(article => ({
+        ...article,
+        fetchedAt: Date.now() + Math.random()
+      }));
       
-      setArticles(combinedArticles);
+      setArticles(timestampedNews);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch news');
     } finally {
@@ -86,11 +72,11 @@ export const useNews = () => {
   useEffect(() => {
     fetchNews();
 
-    // Auto-refresh news every 10 minutes
+    // Auto-refresh news every 5 minutes for dynamic content
     const refreshInterval = setInterval(() => {
-      console.log('Auto-refreshing news...');
-      fetchMoreNews();
-    }, 10 * 60 * 1000); // 10 minutes
+      console.log('Auto-refreshing news for dynamic content...');
+      fetchNews(); // Direct fetch for faster refresh
+    }, 5 * 60 * 1000); // 5 minutes
 
     // Create a unique channel name using timestamp and random number
     const channelId = `news-updates-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;

@@ -154,12 +154,13 @@ const DynamicTopBanner: React.FC = () => {
                     <iframe 
                       width="100%" 
                       height="100%" 
-                      src={`https://www.youtube.com/embed/${currentVideo.id}?autoplay=${isPlaying ? 1 : 0}&controls=1&rel=0&modestbranding=1`}
+                      src={`https://www.youtube.com/embed/${currentVideo.id}?autoplay=1&controls=1&rel=0&modestbranding=1&mute=0&loop=1&playlist=${currentVideo.id}`}
                       title={currentVideo.title}
                       frameBorder="0" 
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                       allowFullScreen
                       className="rounded-lg"
+                      loading="eager"
                     />
                   </div>
                   <h2 className="text-xl font-bold mb-2 text-white">{currentVideo.title}</h2>
