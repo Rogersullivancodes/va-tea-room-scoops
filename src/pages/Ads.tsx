@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Users, Eye, TrendingUp, Mail, Phone, Target } from 'lucide-react';
 
 const Ads = () => {
+  const navigate = useNavigate();
   const adPackages = [
     {
       title: "Banner Ad - Top",
@@ -119,7 +120,12 @@ const Ads = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button className="w-full">
+                  <Button 
+                    className="w-full"
+                    onClick={() => navigate('/ad-submission', { 
+                      state: { selectedPackage: pkg } 
+                    })}
+                  >
                     Get Started
                   </Button>
                 </CardContent>
@@ -142,11 +148,11 @@ const Ads = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
               <div className="flex items-center gap-2 text-foreground">
                 <Mail className="h-5 w-5 text-primary" />
-                <span>ads@virginianews.com</span>
+                <span>crabsfriedpolitically@outlook.com</span>
               </div>
               <div className="flex items-center gap-2 text-foreground">
                 <Phone className="h-5 w-5 text-primary" />
-                <span>(757) 555-0123</span>
+                <span>(818) 335-2099</span>
               </div>
             </div>
             <Button size="lg" className="text-lg px-8">

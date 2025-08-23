@@ -26,41 +26,24 @@ const PersonalizedFeed: React.FC<PersonalizedFeedProps> = ({ categories = [], cl
     const limit = 12;
     const offset = pageParam * limit;
 
-    // Fetch articles
-    const articlesQuery = supabase
-      .from('articles')
-      .select('*')
-      .eq('status', 'published')
-      .order('published_at', { ascending: false })
-      .range(offset, offset + limit - 1);
-
-    if (categories.length > 0) {
-      articlesQuery.in('category', categories);
-    }
-
-    // Fetch news
+    // Only fetch news articles for homepage feed
     const newsQuery = supabase
       .from('news_articles')
       .select('*')
       .order('published_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
-    const [articlesResult, newsResult] = await Promise.all([
-      articlesQuery,
-      newsQuery
-    ]);
+    const newsResult = await newsQuery;
 
-    if (articlesResult.error) throw articlesResult.error;
     if (newsResult.error) throw newsResult.error;
 
-    // Personalize based on user preferences (simplified)
-    const shuffledArticles = [...(articlesResult.data || [])].sort(() => Math.random() - 0.5);
+    // Shuffle news for variety
     const shuffledNews = [...(newsResult.data || [])].sort(() => Math.random() - 0.5);
 
     return {
-      articles: shuffledArticles,
+      articles: [], // No articles, only news
       news: shuffledNews,
-      hasNextPage: (articlesResult.data?.length || 0) === limit
+      hasNextPage: (newsResult.data?.length || 0) === limit
     };
   }, [categories]);
 
@@ -84,33 +67,33 @@ const PersonalizedFeed: React.FC<PersonalizedFeedProps> = ({ categories = [], cl
     news: [...acc.news, ...page.news]
   }), { articles: [], news: [] }) || { articles: [], news: [] };
 
-  // Intersect articles and news for variety
-  const combinedContent = [];
-  const maxLength = Math.max(allContent.articles.length, allContent.news.length);
-  
-  for (let i = 0; i < maxLength; i++) {
-    if (allContent.articles[i]) {
-      combinedContent.push({ ...allContent.articles[i], type: 'article' });
-    }
-    if (allContent.news[i]) {
-      combinedContent.push({ 
-        ...allContent.news[i], 
-        type: 'news',
-        // Convert news to article-like structure for ArticleCard
-        id: allContent.news[i].id,
-        title: allContent.news[i].title,
-        excerpt: allContent.news[i].excerpt,
-        category: allContent.news[i].source,
-        published_at: allContent.news[i].published_at,
-        featured_image_url: allContent.news[i].image_url || `https://images.unsplash.com/photo-${649 + i}72904349-6e44c42644a7?w=400&h=300&fit=crop`,
-        views: 0,
-        likes: 0,
-        credits_required: 0,
-        is_premium: false,
-        status: 'published'
-      });
-    }
-  }
+  // Convert news to article format with guaranteed thumbnails
+  const placeholderImages = [
+    'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop'
+  ];
+
+  const combinedContent = allContent.news.map((newsItem, index) => ({
+    ...newsItem,
+    type: 'news',
+    // Convert news to article-like structure for ArticleCard  
+    id: newsItem.id,
+    title: newsItem.title,
+    excerpt: newsItem.excerpt || newsItem.content?.substring(0, 150) + '...',
+    category: newsItem.source,
+    published_at: newsItem.published_at,
+    featured_image_url: newsItem.image_url || placeholderImages[index % placeholderImages.length],
+    views: newsItem.views || 0,
+    likes: 0,
+    credits_required: 0,
+    is_premium: false,
+    status: 'published',
+    author_id: null
+  }));
 
   if (isLoading) {
     return (
@@ -133,24 +116,13 @@ const PersonalizedFeed: React.FC<PersonalizedFeedProps> = ({ categories = [], cl
     <div className={className}>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2">
-          {user ? (
-            <>
-              <User className="h-7 w-7 text-primary" />
-              For You
-            </>
-          ) : (
-            <>
-              <TrendingUp className="h-7 w-7 text-primary" />
-              Trending Now
-            </>
-          )}
+          <TrendingUp className="h-7 w-7 text-primary" />
+          Latest News
         </h2>
-        {user && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Zap className="h-4 w-4 text-accent" />
-            Personalized
-          </div>
-        )}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Zap className="h-4 w-4 text-accent" />
+          Breaking Updates
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

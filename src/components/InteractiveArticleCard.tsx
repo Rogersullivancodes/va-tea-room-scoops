@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,7 @@ import { useBookmarks } from '@/hooks/useBookmarks';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Article = Tables<'articles'>;
@@ -30,6 +31,26 @@ const InteractiveArticleCard: React.FC<InteractiveArticleCardProps> = ({
   const [imageLoaded, setImageLoaded] = useState(false);
   const bookmarked = isBookmarked(article.id);
   const cardRef = useRef<HTMLDivElement>(null);
+  const { elementRef, hasIntersected } = useIntersectionObserver({ threshold: 0.1 });
+
+  // Placeholder images for news articles without thumbnails
+  const placeholderImages = [
+    'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop'
+  ];
+
+  const getImageUrl = () => {
+    if (article.featured_image_url || (article as any).image_url) {
+      return article.featured_image_url || (article as any).image_url;
+    }
+    // Use article ID hash to consistently pick same placeholder
+    const hash = article.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return placeholderImages[hash % placeholderImages.length];
+  };
 
   const createSlug = (title: string): string => {
     return title
@@ -110,13 +131,16 @@ const InteractiveArticleCard: React.FC<InteractiveArticleCardProps> = ({
 
   return (
     <Card 
-      ref={cardRef}
+      ref={(node) => {
+        cardRef.current = node;
+        if (elementRef) elementRef.current = node;
+      }}
       className={`
         cursor-pointer group relative overflow-hidden
         transition-all duration-500 ease-out
         hover:shadow-2xl hover:shadow-primary/20
         ${featured ? 'lg:col-span-2 lg:row-span-2' : ''}
-        transform-gpu
+        transform-gpu fade-in-on-scroll ${hasIntersected ? 'visible' : ''}
       `}
       onClick={handleCardClick}
       onMouseEnter={() => setIsHovered(true)}
@@ -127,14 +151,19 @@ const InteractiveArticleCard: React.FC<InteractiveArticleCardProps> = ({
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
       <CardHeader className={`pb-3 relative z-10 ${featured ? 'p-6' : 'p-4'}`}>
-        {article.featured_image_url && (
-          <div className={`w-full overflow-hidden rounded-lg mb-4 relative ${featured ? 'h-64' : 'h-48'}`}>
-            <img
-              src={article.featured_image_url}
-              alt={article.title}
-              className={`w-full h-full object-cover transition-all duration-700 ${imageLoaded ? 'opacity-100' : 'opacity-0'} group-hover:scale-110`}
-              onLoad={() => setImageLoaded(true)}
-            />
+        <div className={`w-full overflow-hidden rounded-lg mb-4 relative ${featured ? 'h-64' : 'h-48'}`}>
+          <img
+            src={getImageUrl()}
+            alt={article.title}
+            className={`w-full h-full object-cover transition-all duration-700 will-change-transform ${imageLoaded ? 'opacity-100' : 'opacity-0'} group-hover:scale-110`}
+            onLoad={() => setImageLoaded(true)}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              const hash = article.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+              target.src = placeholderImages[hash % placeholderImages.length];
+            }}
+            loading="lazy"
+          />
             
             {/* Hover Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -155,7 +184,7 @@ const InteractiveArticleCard: React.FC<InteractiveArticleCardProps> = ({
                   variant="secondary"
                   size="sm"
                   onClick={handleBookmarkToggle}
-                  className="bg-white/20 backdrop-blur-sm hover:bg-white/30 border-0"
+                  className="bg-white/20 backdrop-blur-sm hover:bg-white/30 border-0 touch-target"
                 >
                   {bookmarked ? (
                     <BookmarkCheck className="h-4 w-4 text-red-500" />
@@ -168,13 +197,12 @@ const InteractiveArticleCard: React.FC<InteractiveArticleCardProps> = ({
                 variant="secondary"
                 size="sm"
                 onClick={handleShare}
-                className="bg-white/20 backdrop-blur-sm hover:bg-white/30 border-0"
+                className="bg-white/20 backdrop-blur-sm hover:bg-white/30 border-0 touch-target"
               >
                 <Share2 className="h-4 w-4 text-white" />
               </Button>
             </div>
           </div>
-        )}
         
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
