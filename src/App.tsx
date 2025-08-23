@@ -25,8 +25,8 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOfUse";
 import ArticleDetail from "./pages/ArticleDetail";
 import Ads from "./pages/Ads";
-import AdCreativeForm from "./components/AdCreativeForm";
-import AdConfirmation from "./components/AdConfirmation";
+import AdSubmission from "./pages/AdSubmission";
+import AdConfirmation from "./pages/AdConfirmation";
 
 const queryClient = new QueryClient();
 
@@ -53,7 +53,7 @@ const App = () => (
                 <Route path="/articles/:articleSlug" element={<ArticleDetail />} />
                 <Route path="/news" element={<News />} />
                 <Route path="/ads" element={<Ads />} />
-                <Route path="/ad-submission" element={<AdCreativeForm />} />
+                <Route path="/ad-submission" element={<AdSubmission />} />
                 <Route path="/ad-confirmation" element={<AdConfirmation />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms-of-use" element={<TermsOfUse />} />

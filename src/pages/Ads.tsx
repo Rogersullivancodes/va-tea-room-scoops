@@ -123,7 +123,13 @@ const Ads = () => {
                   <Button 
                     className="w-full"
                     onClick={() => navigate('/ad-submission', { 
-                      state: { selectedPackage: pkg } 
+                      state: { 
+                        selectedPackage: {
+                          title: pkg.title,
+                          price: pkg.price,
+                          description: pkg.description
+                        }
+                      } 
                     })}
                   >
                     Get Started
