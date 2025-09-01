@@ -28,18 +28,41 @@ const NewsCard: React.FC<NewsCardProps> = ({ news, onClick, className = '', styl
     }
   };
 
-  // Category-specific placeholder images
-  const getCategoryPlaceholder = (category: string) => {
+  // Diverse category-specific placeholder images
+  const getCategoryPlaceholder = (category: string, cardIndex: number = 0) => {
     const placeholders = {
-      politics: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400&h=300&fit=crop',
-      university: 'https://images.unsplash.com/photo-1562774053-701939374585?w=400&h=300&fit=crop',
-      breaking: 'https://images.unsplash.com/photo-1586776977044-3d6e1e0e7b52?w=400&h=300&fit=crop',
-      default: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=300&fit=crop'
+      politics: [
+        'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1586776977044-3d6e1e0e7b52?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1541872705-1f73c6400ec9?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop'
+      ],
+      university: [
+        'https://images.unsplash.com/photo-1562774053-701939374585?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1607013251379-e6eecfffe234?w=400&h=300&fit=crop'
+      ],
+      breaking: [
+        'https://images.unsplash.com/photo-1586776977044-3d6e1e0e7b52?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=400&h=300&fit=crop'
+      ],
+      default: [
+        'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=400&h=300&fit=crop'
+      ]
     };
-    return placeholders[category as keyof typeof placeholders] || placeholders.default;
+    const categoryImages = placeholders[category as keyof typeof placeholders] || placeholders.default;
+    // Use a hash of the news ID to ensure consistent but varied selection
+    const index = Math.abs(news.id.split('').reduce((a, b) => a + b.charCodeAt(0), cardIndex)) % categoryImages.length;
+    return categoryImages[index];
   };
 
-  const displayThumbnail = news.thumbnailUrl || getCategoryPlaceholder(news.category);
+  const displayThumbnail = news.thumbnailUrl || getCategoryPlaceholder(news.category, Math.abs(news.id.split('').reduce((a, b) => a + b.charCodeAt(0), 0)));
 
   return (
     <div 
@@ -54,7 +77,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ news, onClick, className = '', styl
           alt={news.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           onError={(e) => {
-            e.currentTarget.src = getCategoryPlaceholder(news.category);
+            e.currentTarget.src = getCategoryPlaceholder(news.category, Math.abs(news.id.split('').reduce((a, b) => a + b.charCodeAt(0), 0)));
           }}
         />
         {/* Category Badge */}

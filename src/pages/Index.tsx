@@ -1,11 +1,12 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import ThemeProvider from '@/components/ThemeProvider';
-import FullscreenVideoBanner from '@/components/FullscreenVideoBanner';
+import DynamicTopBanner from '@/components/DynamicTopBanner';
 import FeaturedNewsSection from '@/components/FeaturedNewsSection';
 import NewsCard from '@/components/NewsCard';
 import NewsModal from '@/components/NewsModal';
 import Footer from '@/components/Footer';
+import SimpleSearchBar from '@/components/SimpleSearchBar';
 import { useNews } from '@/hooks/useNews';
 import { Zap, AlertTriangle } from 'lucide-react';
 
@@ -28,15 +29,45 @@ const Index = () => {
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Transform news articles to required format
+  // Diverse placeholder images for different categories
+  const getRandomThumbnail = (category: string, index: number) => {
+    const placeholders = {
+      politics: [
+        'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1586776977044-3d6e1e0e7b52?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1541872705-1f73c6400ec9?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=400&h=300&fit=crop'
+      ],
+      university: [
+        'https://images.unsplash.com/photo-1562774053-701939374585?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1607013251379-e6eecfffe234?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=400&h=300&fit=crop'
+      ],
+      default: [
+        'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=400&h=300&fit=crop'
+      ]
+    };
+    
+    const categoryPlaceholders = placeholders[category as keyof typeof placeholders] || placeholders.default;
+    return categoryPlaceholders[index % categoryPlaceholders.length];
+  };
+
+  // Transform news articles to required format with randomized thumbnails
   const transformedNews: NewsItem[] = useMemo(() => {
-    return newsArticles.map(article => ({
+    return newsArticles.map((article, index) => ({
       id: article.id,
       title: article.title,
       description: article.excerpt || article.content?.substring(0, 200) + '...' || 'No description available',
       sourceName: (article as any).source || 'News Source',
       articleUrl: (article as any).url || '',
-      thumbnailUrl: (article as any).image_url || '',
+      thumbnailUrl: (article as any).image_url || getRandomThumbnail((article as any).category || 'politics', index),
       category: (article as any).category || 'politics',
       publishedAt: article.published_at
     }));
@@ -87,11 +118,18 @@ const Index = () => {
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-background">
-        {/* Full Viewport Video Banner */}
-        <FullscreenVideoBanner onSearch={handleSearch} searchQuery={searchQuery} />
+        {/* Dynamic Top Banner - Made Bigger */}
+        <div className="transform scale-110 origin-top">
+          <DynamicTopBanner />
+        </div>
+        
+        {/* Search Bar */}
+        <div className="container mx-auto px-4 py-6">
+          <SimpleSearchBar onSearch={handleSearch} searchQuery={searchQuery} />
+        </div>
         
         {/* Main Content */}
-        <main className="container mx-auto px-4 py-12 space-y-12">
+        <main className="container mx-auto px-4 py-8 space-y-12">
           {/* Loading State */}
           {newsLoading && (
             <div className="text-center py-12">

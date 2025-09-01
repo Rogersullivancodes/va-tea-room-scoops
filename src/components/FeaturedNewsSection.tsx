@@ -31,21 +31,33 @@ const FeaturedNewsSection: React.FC<FeaturedNewsSectionProps> = ({ featuredNews,
     triggerOnce: false 
   });
 
-  // Sample video for demonstration (replace with actual video URLs from your data)
+  // Sample video for demonstration with proper autoplay
   const videoSrc = featuredNews.videoUrl || "https://cdn.pixabay.com/vimeo/439842157/aurora-44671.mp4";
-  const posterImage = featuredNews.thumbnailUrl || "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=800&h=500&fit=crop";
+  const posterImage = featuredNews.thumbnailUrl;
 
   useEffect(() => {
     const video = videoRef.current;
     if (video && isIntersecting) {
       const playVideo = async () => {
         try {
-          video.muted = true; // Start muted for autoplay compliance
+          // Start with sound enabled
+          video.muted = false;
+          video.autoplay = true;
+          video.preload = "auto";
           await video.play();
           setIsPlaying(true);
+          setIsMuted(false);
         } catch (error) {
-          console.log('Auto-play failed:', error);
-          setIsPlaying(false);
+          // If autoplay with sound fails, try muted
+          try {
+            video.muted = true;
+            await video.play();
+            setIsPlaying(true);
+            setIsMuted(true);
+          } catch (mutedError) {
+            console.log('Auto-play failed completely:', mutedError);
+            setIsPlaying(false);
+          }
         }
       };
       
