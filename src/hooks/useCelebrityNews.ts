@@ -24,7 +24,7 @@ export const useCelebrityNews = () => {
       excerpt: 'The Virginia Beach native plans a massive music festival celebrating Virginia artists',
       source: 'Entertainment Tonight',
       published_at: new Date().toISOString(),
-      image_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop',
+      image_url: 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=400&h=300&fit=crop',
       url: '#',
       category: 'celebrity' as const
     },
@@ -44,7 +44,7 @@ export const useCelebrityNews = () => {
       excerpt: 'The Tappahannock native returns home to support local youth programs',
       source: 'Rolling Stone',
       published_at: new Date(Date.now() - 172800000).toISOString(),
-      image_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop',
+      image_url: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&h=300&fit=crop',
       url: '#',
       category: 'celebrity' as const
     },

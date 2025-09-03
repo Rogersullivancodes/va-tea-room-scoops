@@ -23,34 +23,58 @@ const Index = () => {
   const { articles: celebrityArticles, loading: celebrityLoading } = useCelebrityNews();
   const [featuredNewsArticle, setFeaturedNewsArticle] = useState(null);
 
-  // Categorize and organize news articles
+  // Enhanced categorization with better filtering and thumbnail management
   const categorizedNews = useMemo(() => {
-    const politicalNews = newsArticles.filter(article => 
-      article.category === 'politics' || 
-      article.source?.toLowerCase().includes('politics') ||
-      article.title?.toLowerCase().includes('politics') ||
-      article.title?.toLowerCase().includes('government') ||
-      article.title?.toLowerCase().includes('election')
-    );
+    // Political/Government news with priority keywords
+    const politicalNews = newsArticles.filter(article => {
+      const searchText = `${article.title || ''} ${article.content || ''} ${article.excerpt || ''} ${article.source || ''}`.toLowerCase();
+      return (
+        article.category === 'politics' ||
+        searchText.includes('politics') ||
+        searchText.includes('government') ||
+        searchText.includes('election') ||
+        searchText.includes('congress') ||
+        searchText.includes('senate') ||
+        searchText.includes('house') ||
+        searchText.includes('democrat') ||
+        searchText.includes('republican') ||
+        searchText.includes('campaign') ||
+        searchText.includes('vote') ||
+        searchText.includes('policy') ||
+        searchText.includes('administration') ||
+        searchText.includes('governor') ||
+        searchText.includes('mayor')
+      );
+    }).sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
     
-    const collegeNews = newsArticles.filter(article => 
-      article.category === 'education' || 
-      article.source?.toLowerCase().includes('university') ||
-      article.source?.toLowerCase().includes('college') ||
-      article.title?.toLowerCase().includes('university') ||
-      article.title?.toLowerCase().includes('college') ||
-      article.title?.toLowerCase().includes('student')
-    );
+    // College/University news
+    const collegeNews = newsArticles.filter(article => {
+      const searchText = `${article.title || ''} ${article.content || ''} ${article.excerpt || ''} ${article.source || ''}`.toLowerCase();
+      return (
+        article.category === 'education' ||
+        searchText.includes('university') ||
+        searchText.includes('college') ||
+        searchText.includes('student') ||
+        searchText.includes('campus') ||
+        searchText.includes('academic') ||
+        searchText.includes('school') ||
+        searchText.includes('education') ||
+        searchText.includes('graduation') ||
+        searchText.includes('tuition')
+      );
+    }).filter(article => !politicalNews.includes(article))
+    .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
     
+    // Other news (everything else)
     const otherNews = newsArticles.filter(article => 
       !politicalNews.includes(article) && !collegeNews.includes(article)
-    );
+    ).sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
 
     return {
-      political: politicalNews.slice(0, 8),
-      college: collegeNews.slice(0, 6),
-      celebrity: celebrityArticles.slice(0, 4),
-      other: otherNews.slice(0, 4)
+      political: politicalNews.slice(0, 12), // More political news
+      college: collegeNews.slice(0, 8),
+      celebrity: celebrityArticles.slice(0, 6),
+      other: otherNews.slice(0, 6)
     };
   }, [newsArticles, celebrityArticles]);
 
@@ -132,7 +156,7 @@ const Index = () => {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {categorizedNews.political.map((article, index) => {
+                     {categorizedNews.political.map((article, index) => {
                       const politicalImages = [
                         'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=300&fit=crop',
                         'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400&h=300&fit=crop',
@@ -141,7 +165,11 @@ const Index = () => {
                         'https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&h=300&fit=crop',
                         'https://images.unsplash.com/photo-1541872705-1f73c6400ec9?w=400&h=300&fit=crop',
                         'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&h=300&fit=crop',
-                        'https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=400&h=300&fit=crop'
+                        'https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1482062364825-616fd23b8fc1?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1526666923127-b2970f64b422?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&h=300&fit=crop'
                       ];
                       
                       return (
@@ -194,14 +222,16 @@ const Index = () => {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {categorizedNews.college.map((article, index) => {
+                     {categorizedNews.college.map((article, index) => {
                       const collegeImages = [
                         'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400&h=300&fit=crop',
                         'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&h=300&fit=crop',
                         'https://images.unsplash.com/photo-1562774053-701939374585?w=400&h=300&fit=crop',
                         'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop',
                         'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=400&h=300&fit=crop',
-                        'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&h=300&fit=crop'
+                        'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1576267423445-b2f8b13e1923?w=400&h=300&fit=crop'
                       ];
                       
                       return (
