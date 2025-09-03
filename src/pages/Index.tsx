@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import DynamicTopBanner from '@/components/DynamicTopBanner';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -13,23 +13,57 @@ import ReadingListWidget from '@/components/ReadingListWidget';
 import InfiniteScrollContainer from '@/components/InfiniteScrollContainer';
 import { useNews } from '@/hooks/useNews';
 import { useArticles } from '@/hooks/useArticles';
+import { useCelebrityNews } from '@/hooks/useCelebrityNews';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Clock, TrendingUp, MegaphoneIcon, Sparkles, Star, Zap } from 'lucide-react';
+import { Clock, TrendingUp, MegaphoneIcon, Sparkles, Star, Zap, Users, Trophy } from 'lucide-react';
 
 const Index = () => {
   const { articles: newsArticles, loading: newsLoading } = useNews();
+  const { articles: celebrityArticles, loading: celebrityLoading } = useCelebrityNews();
   const [featuredNewsArticle, setFeaturedNewsArticle] = useState(null);
 
-  // Set featured news article (no articles on homepage)
+  // Categorize and organize news articles
+  const categorizedNews = useMemo(() => {
+    const politicalNews = newsArticles.filter(article => 
+      article.category === 'politics' || 
+      article.source?.toLowerCase().includes('politics') ||
+      article.title?.toLowerCase().includes('politics') ||
+      article.title?.toLowerCase().includes('government') ||
+      article.title?.toLowerCase().includes('election')
+    );
+    
+    const collegeNews = newsArticles.filter(article => 
+      article.category === 'education' || 
+      article.source?.toLowerCase().includes('university') ||
+      article.source?.toLowerCase().includes('college') ||
+      article.title?.toLowerCase().includes('university') ||
+      article.title?.toLowerCase().includes('college') ||
+      article.title?.toLowerCase().includes('student')
+    );
+    
+    const otherNews = newsArticles.filter(article => 
+      !politicalNews.includes(article) && !collegeNews.includes(article)
+    );
+
+    return {
+      political: politicalNews.slice(0, 8),
+      college: collegeNews.slice(0, 6),
+      celebrity: celebrityArticles.slice(0, 4),
+      other: otherNews.slice(0, 4)
+    };
+  }, [newsArticles, celebrityArticles]);
+
+  // Set featured news article (political news first priority)
   useEffect(() => {
-    if (newsArticles.length > 0) {
-      // Set the most recent news article as featured
+    if (categorizedNews.political.length > 0) {
+      setFeaturedNewsArticle(categorizedNews.political[0]);
+    } else if (newsArticles.length > 0) {
       setFeaturedNewsArticle(newsArticles[0]);
     }
-  }, [newsArticles]);
+  }, [categorizedNews.political, newsArticles]);
 
-  const loading = newsLoading;
+  const loading = newsLoading || celebrityLoading;
 
   return (
     <ThemeProvider>
@@ -39,17 +73,12 @@ const Index = () => {
         <NewsTicker />
         
         <main className="container mx-auto px-4 py-8 space-y-12">
-          {/* Hero Section with Enhanced Animation */}
-          <div className="mb-12 animate-fade-in">
-            <Hero />
-          </div>
-
           {/* Featured News Section */}
           {featuredNewsArticle && (
             <section className="mb-12 animate-fade-in" style={{ animationDelay: '0.2s' }}>
               <div className="flex items-center gap-3 mb-6">
                 <Star className="h-8 w-8 text-accent animate-pulse-slow" />
-                <h2 className="text-3xl font-bold text-foreground">Featured News</h2>
+                <h2 className="text-3xl font-bold text-foreground">Featured Political News</h2>
                 <div className="flex-1 h-px bg-gradient-to-r from-primary/50 to-transparent" />
               </div>
               <InteractiveArticleCard 
@@ -81,14 +110,15 @@ const Index = () => {
 
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-            {/* Left Column - Personalized Feed */}
+            {/* Left Column - Categorized News */}
             <div className="xl:col-span-3 space-y-12">
-              {/* Dynamic News Ticker Integration */}
-              <section className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
+              
+              {/* Political News Section */}
+              <section className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
                 <div className="flex items-center gap-3 mb-6">
-                  <Zap className="h-7 w-7 text-primary animate-float" />
-                  <h2 className="text-2xl font-bold text-foreground">Breaking News</h2>
-                  <div className="flex-1 h-px bg-gradient-to-r from-primary/50 to-transparent" />
+                  <Zap className="h-7 w-7 text-red-500 animate-float" />
+                  <h2 className="text-2xl font-bold text-foreground">Political News</h2>
+                  <div className="flex-1 h-px bg-gradient-to-r from-red-500/50 to-transparent" />
                 </div>
                 {loading ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -101,15 +131,17 @@ const Index = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {newsArticles.slice(1, 7).map((article, index) => {
-                      const placeholderImages = [
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {categorizedNews.political.map((article, index) => {
+                      const politicalImages = [
                         'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=300&fit=crop',
-                        'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=300&fit=crop',
-                        'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
-                        'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop',
-                        'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop',
-                        'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop'
+                        'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1541872705-1f73c6400ec9?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=400&h=300&fit=crop'
                       ];
                       
                       return (
@@ -121,19 +153,14 @@ const Index = () => {
                           <InteractiveArticleCard 
                             article={{
                               ...article,
-                              id: article.id,
-                              title: article.title,
-                              excerpt: article.excerpt,
+                              featured_image_url: article.image_url || politicalImages[index % politicalImages.length],
                               category: article.source,
-                              published_at: article.published_at,
-                              featured_image_url: article.image_url || placeholderImages[index % placeholderImages.length],
                               views: article.views || 0,
                               likes: 0,
                               credits_required: 0,
                               is_premium: false,
                               status: 'published',
                               author_id: '',
-                              content: article.content,
                               created_at: article.published_at,
                               meta_description: '',
                               meta_keywords: [],
@@ -148,9 +175,113 @@ const Index = () => {
                 )}
               </section>
 
-              {/* More News Feed */}
-              <section className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
-                <PersonalizedFeed />
+              {/* College News Section */}
+              <section className="animate-fade-in" style={{ animationDelay: '0.5s' }}>
+                <div className="flex items-center gap-3 mb-6">
+                  <Users className="h-7 w-7 text-blue-500 animate-float" />
+                  <h2 className="text-2xl font-bold text-foreground">College & University News</h2>
+                  <div className="flex-1 h-px bg-gradient-to-r from-blue-500/50 to-transparent" />
+                </div>
+                {loading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="bg-card border border-border rounded-lg p-4 animate-pulse">
+                        <div className="w-full h-48 bg-muted rounded mb-4"></div>
+                        <div className="h-4 bg-muted rounded mb-2"></div>
+                        <div className="h-4 bg-muted rounded w-3/4"></div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {categorizedNews.college.map((article, index) => {
+                      const collegeImages = [
+                        'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1562774053-701939374585?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=400&h=300&fit=crop',
+                        'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&h=300&fit=crop'
+                      ];
+                      
+                      return (
+                        <div
+                          key={article.id}
+                          className="animate-fade-in hover-scale"
+                          style={{ animationDelay: `${index * 0.1}s` }}
+                        >
+                          <InteractiveArticleCard 
+                            article={{
+                              ...article,
+                              featured_image_url: article.image_url || collegeImages[index % collegeImages.length],
+                              category: article.source,
+                              views: article.views || 0,
+                              likes: 0,
+                              credits_required: 0,
+                              is_premium: false,
+                              status: 'published',
+                              author_id: '',
+                              created_at: article.published_at,
+                              meta_description: '',
+                              meta_keywords: [],
+                              tags: [],
+                              updated_at: article.published_at
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+
+              {/* Celebrity News Section */}
+              <section className="animate-fade-in" style={{ animationDelay: '0.7s' }}>
+                <div className="flex items-center gap-3 mb-6">
+                  <Trophy className="h-7 w-7 text-purple-500 animate-float" />
+                  <h2 className="text-2xl font-bold text-foreground">Virginia Celebrity News</h2>
+                  <div className="flex-1 h-px bg-gradient-to-r from-purple-500/50 to-transparent" />
+                </div>
+                {loading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {[...Array(4)].map((_, i) => (
+                      <div key={i} className="bg-card border border-border rounded-lg p-4 animate-pulse">
+                        <div className="w-full h-48 bg-muted rounded mb-4"></div>
+                        <div className="h-4 bg-muted rounded mb-2"></div>
+                        <div className="h-4 bg-muted rounded w-3/4"></div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {categorizedNews.celebrity.map((article, index) => (
+                      <div
+                        key={article.id}
+                        className="animate-fade-in hover-scale"
+                        style={{ animationDelay: `${index * 0.1}s` }}
+                      >
+                        <InteractiveArticleCard 
+                          article={{
+                            ...article,
+                            featured_image_url: article.image_url,
+                            content: article.excerpt,
+                            views: 0,
+                            likes: 0,
+                            credits_required: 0,
+                            is_premium: false,
+                            status: 'published',
+                            author_id: '',
+                            created_at: article.published_at,
+                            meta_description: '',
+                            meta_keywords: [],
+                            tags: [],
+                            updated_at: article.published_at
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </section>
 
               {/* Interactive Navigation */}

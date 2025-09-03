@@ -14,7 +14,7 @@ const DynamicTopBanner: React.FC = () => {
   const { articles: newsArticles, loading: newsLoading } = useNews();
   const { articles: submittedArticles, loading: articlesLoading } = useArticles();
 
-  // Virginia Politics YouTube Videos with guaranteed thumbnails
+  // Virginia Politics & Entertainment YouTube Videos with guaranteed thumbnails
   const virginiaVideos = [
     {
       id: "hFZFjoX2cGg",
@@ -45,6 +45,36 @@ const DynamicTopBanner: React.FC = () => {
       title: "Virginia Campaign Finance and Political Influence",
       description: "Investigating money flows in Virginia political campaigns",
       thumbnail: "https://img.youtube.com/vi/iik25wqIuFo/maxresdefault.jpg"
+    },
+    {
+      id: "dQw4w9WgXcQ",
+      title: "Virginia Beach Music Festival 2024",
+      description: "Highlights from the largest music festival in Virginia featuring local and national artists",
+      thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg"
+    },
+    {
+      id: "M7lc1UVf-VE",
+      title: "Richmond Entertainment District Tour",
+      description: "Exploring Virginia's growing entertainment and nightlife scene",
+      thumbnail: "https://img.youtube.com/vi/M7lc1UVf-VE/maxresdefault.jpg"
+    },
+    {
+      id: "L_jWHffIx5E",
+      title: "Virginia's Rising Stars in Entertainment",
+      description: "Meet the next generation of Virginia entertainers making it big",
+      thumbnail: "https://img.youtube.com/vi/L_jWHffIx5E/maxresdefault.jpg"
+    },
+    {
+      id: "KQ6zr6kCPj8",
+      title: "Historic Virginia Venues and Their Stories",
+      description: "A look at Virginia's iconic entertainment venues and their cultural impact",
+      thumbnail: "https://img.youtube.com/vi/KQ6zr6kCPj8/maxresdefault.jpg"
+    },
+    {
+      id: "ZZ5LpwO-An4",
+      title: "Virginia Film Industry Update",
+      description: "How Virginia is becoming a major hub for film and television production",
+      thumbnail: "https://img.youtube.com/vi/ZZ5LpwO-An4/maxresdefault.jpg"
     }
   ];
 
@@ -136,32 +166,33 @@ const DynamicTopBanner: React.FC = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-red-600 via-red-700 to-red-800 text-white relative overflow-hidden">
+    <div className="bg-gradient-to-r from-red-600 via-red-700 to-red-800 text-white relative overflow-hidden min-h-[50vh]">
       {/* Background Animation */}
       <div className="absolute inset-0 bg-black/10">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-pulse"></div>
       </div>
       
-      <div className="relative z-10 container mx-auto px-4">
+      <div className="relative z-10 container mx-auto px-4 h-full flex items-center">
         {isVideoMode ? (
-          // Virginia Politics Video Mode with Thumbnails
-          <div className="py-8">
-            <div className="bg-black/20 backdrop-blur-sm rounded-lg p-6 max-w-6xl mx-auto">
-              <div className="grid md:grid-cols-3 gap-6">
-                {/* Main Video Player */}
+          // Virginia Politics Video Mode with Thumbnails - Full Banner Height
+          <div className="py-12 h-full">
+            <div className="bg-black/20 backdrop-blur-sm rounded-lg p-8 max-w-7xl mx-auto h-full">
+              <div className="grid md:grid-cols-3 gap-8 h-full">
+                {/* Main Video Player - Larger */}
                 <div className="md:col-span-2">
-                  <div className="bg-black rounded-lg aspect-video mb-4 relative overflow-hidden">
+                  <div className="bg-black rounded-lg aspect-video mb-6 relative overflow-hidden h-80 md:h-96">
                     <iframe 
                       width="100%" 
                       height="100%" 
-                      src={`https://www.youtube.com/embed/${currentVideo.id}?autoplay=1&controls=1&rel=0&modestbranding=1&mute=0&loop=1&playlist=${currentVideo.id}`}
+                      src={`https://www.youtube.com/embed/${currentVideo.id}?autoplay=1&controls=1&rel=0&modestbranding=1&mute=0&loop=1&playlist=${currentVideo.id}&enablejsapi=1`}
                       title={currentVideo.title}
                       frameBorder="0" 
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                       allowFullScreen
-                      className="rounded-lg"
+                      className="rounded-lg w-full h-full"
                       loading="eager"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
                   </div>
                   <h2 className="text-xl font-bold mb-2 text-white">{currentVideo.title}</h2>
                   <p className="text-white/80 mb-4 text-sm">{currentVideo.description}</p>
@@ -244,56 +275,67 @@ const DynamicTopBanner: React.FC = () => {
             </div>
           </div>
         ) : (
-          // News Headlines Mode with Video Thumbnail
-          <div className="py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex-1 flex space-x-4">
-                {/* Video Thumbnail - Mobile and Desktop */}
-                <div className="block">
-                  <div className="relative">
+          // News Headlines Mode with Large Video Thumbnail - Half Page Height
+          <div className="py-12 h-full flex items-center">
+            <div className="w-full">
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                {/* Large Video Thumbnail */}
+                <div className="order-2 md:order-1">
+                  <div className="relative group">
                     <img
                       src={currentVideo.thumbnail}
                       alt="Virginia Politics Video"
-                      className="w-20 h-12 md:w-32 md:h-20 object-cover rounded-lg"
+                      className="w-full h-48 md:h-64 object-cover rounded-xl shadow-2xl"
                       onError={(e) => {
-                        e.currentTarget.src = `https://img.youtube.com/vi/${currentVideo.id}/hqdefault.jpg`;
+                        e.currentTarget.src = `https://img.youtube.com/vi/${currentVideo.id}/maxresdefault.jpg`;
                       }}
                     />
                     <button
                       onClick={toggleVideoMode}
-                      className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg hover:bg-black/70 transition-colors"
+                      className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-xl hover:bg-black/70 transition-all duration-300 group-hover:bg-black/30"
                     >
-                      <Play className="w-4 h-4 md:w-6 md:h-6 text-white" />
+                      <div className="bg-white/20 backdrop-blur-sm rounded-full p-4 group-hover:scale-110 transition-transform">
+                        <Play className="w-8 h-8 md:w-12 md:h-12 text-white" />
+                      </div>
                     </button>
+                    <div className="absolute bottom-4 left-4 right-4 bg-black/70 backdrop-blur-sm rounded-lg p-3">
+                      <p className="text-white font-semibold text-sm">{currentVideo.title}</p>
+                    </div>
                   </div>
                 </div>
                 
-                {/* News Content */}
-                <div className="flex-1">
-                  <p className="text-lg md:text-xl font-bold">
-                    <span className={`${isSubmittedArticle ? 'bg-blue-400' : 'bg-yellow-400'} text-black px-3 py-1 rounded mr-3 animate-pulse`}>
-                      {isSubmittedArticle ? '📝 COMMUNITY' : '🔥 BREAKING'}
-                    </span>
-                    {currentHeadline.title}
-                  </p>
-                  <p className="text-sm text-white/80 mt-1">
-                    {isSubmittedArticle 
-                      ? `Community Article • ${new Date(currentHeadline.published_at || currentHeadline.created_at).toLocaleDateString()}`
-                      : `Source: ${(currentHeadline as any).source || 'News'} • ${new Date(currentHeadline.published_at).toLocaleDateString()}`
-                    }
-                  </p>
+                {/* News Content - Larger */}
+                <div className="order-1 md:order-2">
+                  <div className="space-y-4">
+                    <p className="text-2xl md:text-3xl font-bold leading-tight">
+                      <span className={`${isSubmittedArticle ? 'bg-blue-400' : 'bg-yellow-400'} text-black px-4 py-2 rounded-lg mr-4 animate-pulse text-lg`}>
+                        {isSubmittedArticle ? '📝 COMMUNITY' : '🔥 BREAKING'}
+                      </span>
+                      <br className="md:hidden" />
+                      {currentHeadline.title}
+                    </p>
+                    <p className="text-lg text-white/90 leading-relaxed">
+                      {currentHeadline.excerpt || 'Stay informed with the latest political developments.'}
+                    </p>
+                    <p className="text-base text-white/70">
+                      {isSubmittedArticle 
+                        ? `Community Article • ${new Date(currentHeadline.published_at || currentHeadline.created_at).toLocaleDateString()}`
+                        : `Source: ${(currentHeadline as any).source || 'News'} • ${new Date(currentHeadline.published_at).toLocaleDateString()}`
+                      }
+                    </p>
+                    <div className="flex gap-3 pt-2">
+                      <Button 
+                        onClick={toggleVideoMode}
+                        size="lg"
+                        variant="outline"
+                        className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:scale-105 transition-all"
+                      >
+                        <Volume2 className="w-5 h-5 mr-2" />
+                        Watch Virginia Politics
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="ml-4 flex gap-2">
-                <Button 
-                  onClick={toggleVideoMode}
-                  size="sm"
-                  variant="outline"
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-                >
-                  <Volume2 className="w-4 h-4 mr-1" />
-                  Watch Video
-                </Button>
               </div>
             </div>
           </div>
