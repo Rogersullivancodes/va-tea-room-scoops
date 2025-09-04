@@ -152,18 +152,29 @@ const InteractiveArticleCard: React.FC<InteractiveArticleCardProps> = ({
       
       <CardHeader className={`pb-3 relative z-10 ${featured ? 'p-6' : 'p-4'}`}>
         <div className={`w-full overflow-hidden rounded-lg mb-4 relative ${featured ? 'h-64' : 'h-48'}`}>
-          <img
-            src={getImageUrl()}
-            alt={article.title}
-            className={`w-full h-full object-cover transition-all duration-700 will-change-transform ${imageLoaded ? 'opacity-100' : 'opacity-0'} group-hover:scale-110`}
-            onLoad={() => setImageLoaded(true)}
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              const hash = article.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-              target.src = placeholderImages[hash % placeholderImages.length];
-            }}
-            loading="lazy"
-          />
+          {/* Image with skeleton loader */}
+          <div className="relative w-full h-full">
+            <img
+              src={getImageUrl()}
+              alt={article.title}
+              className={`w-full h-full object-cover transition-all duration-700 will-change-transform ${imageLoaded ? 'opacity-100' : 'opacity-0'} group-hover:scale-110`}
+              onLoad={() => setImageLoaded(true)}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                const hash = article.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                target.src = placeholderImages[hash % placeholderImages.length];
+                setImageLoaded(true);
+              }}
+              loading="lazy"
+            />
+            
+            {/* Skeleton placeholder while image loads */}
+            {!imageLoaded && (
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 animate-pulse">
+                <div className="w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
+              </div>
+            )}
+          </div>
             
             {/* Hover Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

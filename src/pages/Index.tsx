@@ -172,6 +172,10 @@ const Index = () => {
                         'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&h=300&fit=crop'
                       ];
                       
+                      // Create unique hash from article ID for consistent image selection
+                      const hash = article.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                      const imageIndex = hash % politicalImages.length;
+                      
                       return (
                         <div
                           key={article.id}
@@ -181,7 +185,7 @@ const Index = () => {
                           <InteractiveArticleCard 
                             article={{
                               ...article,
-                              featured_image_url: article.image_url || politicalImages[index % politicalImages.length],
+                              featured_image_url: article.image_url || politicalImages[imageIndex],
                               category: article.source,
                               views: article.views || 0,
                               likes: 0,
@@ -234,6 +238,10 @@ const Index = () => {
                         'https://images.unsplash.com/photo-1576267423445-b2f8b13e1923?w=400&h=300&fit=crop'
                       ];
                       
+                      // Create unique hash from article ID for consistent image selection
+                      const hash = article.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                      const imageIndex = hash % collegeImages.length;
+                      
                       return (
                         <div
                           key={article.id}
@@ -243,7 +251,7 @@ const Index = () => {
                           <InteractiveArticleCard 
                             article={{
                               ...article,
-                              featured_image_url: article.image_url || collegeImages[index % collegeImages.length],
+                              featured_image_url: article.image_url || collegeImages[imageIndex],
                               category: article.source,
                               views: article.views || 0,
                               likes: 0,

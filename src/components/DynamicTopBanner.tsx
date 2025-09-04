@@ -282,24 +282,41 @@ const DynamicTopBanner: React.FC = () => {
                 {/* Large Video Thumbnail */}
                 <div className="order-2 md:order-1">
                   <div className="relative group">
-                    <img
-                      src={currentVideo.thumbnail}
-                      alt="Virginia Politics Video"
-                      className="w-full h-48 md:h-64 object-cover rounded-xl shadow-2xl"
-                      onError={(e) => {
-                        e.currentTarget.src = `https://img.youtube.com/vi/${currentVideo.id}/maxresdefault.jpg`;
-                      }}
-                    />
-                    <button
-                      onClick={toggleVideoMode}
-                      className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-xl hover:bg-black/70 transition-all duration-300 group-hover:bg-black/30"
-                    >
-                      <div className="bg-white/20 backdrop-blur-sm rounded-full p-4 group-hover:scale-110 transition-transform">
-                        <Play className="w-8 h-8 md:w-12 md:h-12 text-white" />
+                    {/* Video Placeholder with loading */}
+                    <div className="w-full h-48 md:h-64 bg-gradient-to-br from-red-800/20 to-red-900/20 rounded-xl shadow-2xl overflow-hidden relative">
+                      <img
+                        src={currentVideo.thumbnail}
+                        alt="Virginia Politics Video"
+                        className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
+                        onLoad={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.opacity = '1';
+                        }}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = `https://img.youtube.com/vi/${currentVideo.id}/hqdefault.jpg`;
+                          if (!target.complete) {
+                            target.src = 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=600&h=400&fit=crop';
+                          }
+                        }}
+                        style={{ opacity: 0 }}
+                      />
+                      
+                      {/* Skeleton loader while image loads */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-red-600/30 via-red-700/40 to-red-800/30 animate-pulse opacity-100 transition-opacity duration-500 group-hover:opacity-0" />
+                      
+                      <button
+                        onClick={toggleVideoMode}
+                        className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-xl hover:bg-black/70 transition-all duration-300 group-hover:bg-black/30"
+                      >
+                        <div className="bg-white/20 backdrop-blur-sm rounded-full p-4 group-hover:scale-110 transition-transform duration-300 animate-pulse">
+                          <Play className="w-8 h-8 md:w-12 md:h-12 text-white" />
+                        </div>
+                      </button>
+                      
+                      <div className="absolute bottom-4 left-4 right-4 bg-black/70 backdrop-blur-sm rounded-lg p-3">
+                        <p className="text-white font-semibold text-sm">{currentVideo.title}</p>
                       </div>
-                    </button>
-                    <div className="absolute bottom-4 left-4 right-4 bg-black/70 backdrop-blur-sm rounded-lg p-3">
-                      <p className="text-white font-semibold text-sm">{currentVideo.title}</p>
                     </div>
                   </div>
                 </div>
