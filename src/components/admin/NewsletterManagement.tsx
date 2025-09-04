@@ -88,11 +88,13 @@ const NewsletterManagement: React.FC = () => {
     try {
       const { error } = await supabase
         .from('newsletter_campaigns')
-        .insert([{
-          ...newCampaign,
+        .insert({
+          title: newCampaign.title,
+          subject: newCampaign.subject,
+          content: newCampaign.content,
           recipients_count: subscribers.length,
           user_id: user.id
-        }]);
+        });
 
       if (error) throw error;
 
