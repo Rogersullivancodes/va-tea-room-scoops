@@ -1,175 +1,201 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import ThemeProvider from '@/components/ThemeProvider';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Users, Eye, TrendingUp, Mail, Phone, Target } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { TrendingUp, Users, Eye, Target } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-const Ads = () => {
-  const navigate = useNavigate();
-  const adPackages = [
-    {
-      title: "Banner Ad - Top",
-      price: "$299/month",
-      description: "Premium placement at the top of every page",
-      features: [
-        "728x90 banner placement",
-        "100% page visibility",
-        "Click tracking included",
-        "Virginia-focused audience"
-      ],
-      icon: <Target className="h-8 w-8 text-primary" />
-    },
-    {
-      title: "Sidebar Premium",
-      price: "$199/month", 
-      description: "Consistent visibility in our sidebar",
-      features: [
-        "300x250 display ad",
-        "Sticky positioning option",
-        "Political audience targeting",
-        "Monthly performance reports"
-      ],
-      icon: <Eye className="h-8 w-8 text-primary" />
-    },
-    {
-      title: "Article Sponsorship",
-      price: "$499/article",
-      description: "Sponsor breaking political news",
-      features: [
-        "Brand mention in articles",
-        "Logo placement",
-        "Social media promotion",
-        "Newsletter inclusion"
-      ],
-      icon: <TrendingUp className="h-8 w-8 text-primary" />
-    }
-  ];
-
-  const stats = [
-    { label: "Monthly Readers", value: "25,000+", icon: <Users className="h-6 w-6" /> },
-    { label: "Page Views", value: "150,000+", icon: <Eye className="h-6 w-6" /> },
-    { label: "Political Engagement", value: "85%", icon: <TrendingUp className="h-6 w-6" /> }
-  ];
-
+const Ads: React.FC = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      <main className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <Link 
-            to="/" 
-            className="inline-flex items-center text-primary hover:text-primary/80 transition-colors mb-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Home
-          </Link>
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            Advertise with Virginia Political News
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl">
-            Reach thousands of politically engaged Virginia residents with targeted advertising opportunities.
-            Connect with voters, decision-makers, and political influencers across the Commonwealth.
-          </p>
-        </div>
+    <ThemeProvider>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-1 container mx-auto py-12 px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h1 className="text-4xl font-bold mb-4">Advertise with CrabsFriedPolitically</h1>
+              <p className="text-xl text-muted-foreground">
+                Reach engaged political readers across Virginia and beyond
+              </p>
+            </div>
 
-        {/* Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {stats.map((stat, index) => (
-            <Card key={index} className="text-center">
-              <CardContent className="pt-6">
-                <div className="flex justify-center mb-2 text-primary">
-                  {stat.icon}
-                </div>
-                <div className="text-3xl font-bold text-foreground mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-muted-foreground">
-                  {stat.label}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              <Card>
+                <CardHeader className="text-center">
+                  <Users className="h-8 w-8 mx-auto text-primary mb-2" />
+                  <CardTitle className="text-3xl font-bold">50K+</CardTitle>
+                  <p className="text-muted-foreground">Monthly Readers</p>
+                </CardHeader>
+              </Card>
 
-        {/* Ad Packages */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
-            Advertising Packages
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {adPackages.map((pkg, index) => (
-              <Card key={index} className="relative hover:shadow-lg transition-shadow">
+              <Card>
+                <CardHeader className="text-center">
+                  <Eye className="h-8 w-8 mx-auto text-primary mb-2" />
+                  <CardTitle className="text-3xl font-bold">200K+</CardTitle>
+                  <p className="text-muted-foreground">Page Views</p>
+                </CardHeader>
+              </Card>
+
+              <Card>
+                <CardHeader className="text-center">
+                  <Target className="h-8 w-8 mx-auto text-primary mb-2" />
+                  <CardTitle className="text-3xl font-bold">85%</CardTitle>
+                  <p className="text-muted-foreground">Engagement Rate</p>
+                </CardHeader>
+              </Card>
+
+              <Card>
+                <CardHeader className="text-center">
+                  <TrendingUp className="h-8 w-8 mx-auto text-primary mb-2" />
+                  <CardTitle className="text-3xl font-bold">25%</CardTitle>
+                  <p className="text-muted-foreground">Growth Rate</p>
+                </CardHeader>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+              <Card className="lg:col-span-2">
                 <CardHeader>
-                  <div className="flex items-center justify-between mb-4">
-                    {pkg.icon}
-                    <span className="text-2xl font-bold text-primary">{pkg.price}</span>
+                  <CardTitle>Why Advertise With Us?</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <h3 className="font-semibold mb-2">Targeted Political Audience</h3>
+                    <p className="text-muted-foreground text-sm">
+                      Reach politically engaged readers who are actively interested in Virginia politics and current events.
+                    </p>
                   </div>
-                  <CardTitle className="text-xl">{pkg.title}</CardTitle>
-                  <CardDescription>{pkg.description}</CardDescription>
+                  <div>
+                    <h3 className="font-semibold mb-2">Premium Placement</h3>
+                    <p className="text-muted-foreground text-sm">
+                      Your ads will be strategically placed alongside high-quality political content for maximum visibility.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-2">Flexible Options</h3>
+                    <p className="text-muted-foreground text-sm">
+                      Choose from banner ads, sponsored content, newsletter placements, or custom advertising solutions.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Our Audience</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between">
+                    <span>Age 25-44:</span>
+                    <span>45%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Age 45-64:</span>
+                    <span>35%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>College Educated:</span>
+                    <span>78%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Virginia Residents:</span>
+                    <span>62%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Political Engagement:</span>
+                    <span>High</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Banner Ads</CardTitle>
+                  <Badge>Popular</Badge>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-2 mb-6">
-                    {pkg.features.map((feature, fIndex) => (
-                      <li key={fIndex} className="flex items-center text-sm">
-                        <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
-                        {feature}
-                      </li>
-                    ))}
+                  <div className="text-3xl font-bold mb-2">$250</div>
+                  <div className="text-muted-foreground mb-4">per week</div>
+                  <ul className="space-y-2 text-sm">
+                    <li>• Prime homepage placement</li>
+                    <li>• 728x90 leaderboard format</li>
+                    <li>• 50,000+ weekly impressions</li>
+                    <li>• Performance analytics</li>
                   </ul>
-                  <Button 
-                    className="w-full"
-                    onClick={() => navigate('/ad-submission', { 
-                      state: { 
-                        selectedPackage: {
-                          title: pkg.title,
-                          price: pkg.price,
-                          description: pkg.description
-                        }
-                      } 
-                    })}
-                  >
-                    Get Started
+                  <Button className="w-full mt-4" asChild>
+                    <Link to="/ad-submission">Get Started</Link>
                   </Button>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        </div>
 
-        {/* Contact Section */}
-        <Card className="bg-primary/5 border-primary/20">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl text-foreground">
-              Ready to Reach Virginia Voters?
-            </CardTitle>
-            <CardDescription className="text-lg">
-              Contact our advertising team to discuss custom packages and political campaign opportunities.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-              <div className="flex items-center gap-2 text-foreground">
-                <Mail className="h-5 w-5 text-primary" />
-                <span>crabsfriedpolitically@outlook.com</span>
-              </div>
-              <div className="flex items-center gap-2 text-foreground">
-                <Phone className="h-5 w-5 text-primary" />
-                <span>(818) 335-2099</span>
-              </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Sponsored Content</CardTitle>
+                  <Badge className="bg-yellow-600">Premium</Badge>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold mb-2">$500</div>
+                  <div className="text-muted-foreground mb-4">per article</div>
+                  <ul className="space-y-2 text-sm">
+                    <li>• Native content format</li>
+                    <li>• Editorial team collaboration</li>
+                    <li>• Social media promotion</li>
+                    <li>• Newsletter inclusion</li>
+                  </ul>
+                  <Button className="w-full mt-4" asChild>
+                    <Link to="/ad-submission">Get Started</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Newsletter Ads</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold mb-2">$150</div>
+                  <div className="text-muted-foreground mb-4">per edition</div>
+                  <ul className="space-y-2 text-sm">
+                    <li>• Weekly newsletter placement</li>
+                    <li>• 5,000+ subscribers</li>
+                    <li>• High open rates (45%+)</li>
+                    <li>• Click tracking included</li>
+                  </ul>
+                  <Button className="w-full mt-4" asChild>
+                    <Link to="/ad-submission">Get Started</Link>
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
-            <Button size="lg" className="text-lg px-8">
-              Contact Advertising Team
-            </Button>
-          </CardContent>
-        </Card>
-      </main>
 
-      <Footer />
-    </div>
+            <Card className="text-center">
+              <CardHeader>
+                <CardTitle>Ready to Get Started?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-6">
+                  Contact our advertising team to discuss custom packages and bulk discounts.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button size="lg" asChild>
+                    <Link to="/ad-submission">Submit Your Ad</Link>
+                  </Button>
+                  <Button variant="outline" size="lg" asChild>
+                    <Link to="/contact">Contact Sales Team</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    </ThemeProvider>
   );
 };
 

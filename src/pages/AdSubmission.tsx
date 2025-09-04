@@ -1,329 +1,356 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { Upload, Calendar, DollarSign, Target, FileText } from 'lucide-react';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import ThemeProvider from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, X, FileText, Image, Video } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 
-interface AdFormData {
+interface AdSubmissionFormData {
   companyName: string;
-  contactEmail: string;
-  contactPhone: string;
-  packageType: string;
-  duration: string;
-  adTitle: string;
-  adDescription: string;
+  contactName: string;
+  email: string;
+  phone: string;
+  adType: string;
+  campaignName: string;
   targetAudience: string;
-  callToAction: string;
-  files: File[];
+  budget: string;
+  startDate: string;
+  endDate: string;
+  adContent: string;
+  specialRequests: string;
+  agreeToTerms: boolean;
 }
 
 const AdSubmission: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const selectedPackage = location.state?.selectedPackage;
+  const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<AdSubmissionFormData>();
 
-  const [formData, setFormData] = useState<AdFormData>({
-    companyName: '',
-    contactEmail: '',
-    contactPhone: '',
-    packageType: selectedPackage?.title || '',
-    duration: selectedPackage?.price || '',
-    adTitle: '',
-    adDescription: '',
-    targetAudience: '',
-    callToAction: '',
-    files: []
-  });
+  const selectedAdType = watch('adType');
+  const agreeToTerms = watch('agreeToTerms');
 
-  const [dragActive, setDragActive] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleInputChange = (field: keyof AdFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleFileUpload = (files: FileList | null) => {
-    if (files) {
-      const newFiles = Array.from(files);
-      const validFiles = newFiles.filter(file => {
-        const isValid = file.size <= 50 * 1024 * 1024; // 50MB limit
-        if (!isValid) {
-          toast({
-            title: "File too large",
-            description: `${file.name} exceeds 50MB limit`,
-            variant: "destructive"
-          });
-        }
-        return isValid;
+  const onSubmit = async (data: AdSubmissionFormData) => {
+    if (!data.agreeToTerms) {
+      toast({
+        title: "Agreement Required",
+        description: "Please agree to the terms and conditions to proceed.",
+        variant: "destructive",
       });
-      
-      setFormData(prev => ({
-        ...prev,
-        files: [...prev.files, ...validFiles].slice(0, 5) // Max 5 files
-      }));
+      return;
     }
-  };
 
-  const removeFile = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      files: prev.files.filter((_, i) => i !== index)
-    }));
-  };
-
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    handleFileUpload(e.dataTransfer.files);
-  };
-
-  const getFileIcon = (file: File) => {
-    if (file.type.startsWith('image/')) return <Image className="h-4 w-4" />;
-    if (file.type.startsWith('video/')) return <Video className="h-4 w-4" />;
-    return <FileText className="h-4 w-4" />;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
+    setLoading(true);
     try {
       // Simulate form submission
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       toast({
-        title: "Submission Successful!",
-        description: "Your ad creative has been submitted for review.",
+        title: "Ad Submitted Successfully!",
+        description: "Our team will review your submission and contact you within 24 hours.",
       });
-
-      navigate('/ad-confirmation', { 
-        state: { 
-          formData: {
-            ...formData,
-            files: [] // Don't pass files in navigation state
-          },
-          submissionId: `AD-${Date.now()}`
-        }
-      });
+      navigate('/ad-confirmation');
     } catch (error) {
       toast({
         title: "Submission Failed",
         description: "There was an error submitting your ad. Please try again.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="py-8 px-4">
-        <div className="container mx-auto max-w-4xl">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl text-center">
-                Submit Your Ad Creative
-              </CardTitle>
-              <p className="text-muted-foreground text-center">
-                Upload your advertising materials and provide campaign details
-              </p>
-              {selectedPackage && (
-                <div className="bg-primary/10 p-4 rounded-lg text-center">
-                  <p className="font-semibold">Selected Package: {selectedPackage.title}</p>
-                  <p className="text-sm text-muted-foreground">{selectedPackage.price}</p>
-                </div>
-              )}
-            </CardHeader>
-            
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Company Information */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="companyName">Company/Organization Name *</Label>
-                    <Input
-                      id="companyName"
-                      value={formData.companyName}
-                      onChange={(e) => handleInputChange('companyName', e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="contactEmail">Contact Email *</Label>
-                    <Input
-                      id="contactEmail"
-                      type="email"
-                      value={formData.contactEmail}
-                      onChange={(e) => handleInputChange('contactEmail', e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
+  const adTypes = [
+    { value: 'banner', label: 'Banner Ad - $250/week', description: 'Homepage banner placement' },
+    { value: 'sponsored', label: 'Sponsored Content - $500/article', description: 'Native content format' },
+    { value: 'newsletter', label: 'Newsletter Ad - $150/edition', description: 'Weekly newsletter placement' },
+    { value: 'custom', label: 'Custom Package', description: 'Tailored advertising solution' },
+  ];
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="contactPhone">Contact Phone</Label>
-                    <Input
-                      id="contactPhone"
-                      type="tel"
-                      value={formData.contactPhone}
-                      onChange={(e) => handleInputChange('contactPhone', e.target.value)}
-                    />
+  return (
+    <ThemeProvider>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-1 container mx-auto py-12 px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h1 className="text-4xl font-bold mb-4">Submit Your Advertisement</h1>
+              <p className="text-xl text-muted-foreground">
+                Join our growing network of advertisers and reach engaged political readers
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+              {/* Company Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="h-5 w-5" />
+                    Company Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="companyName">Company Name *</Label>
+                      <Input
+                        id="companyName"
+                        placeholder="Your company name"
+                        {...register('companyName', {
+                          required: 'Company name is required'
+                        })}
+                      />
+                      {errors.companyName && (
+                        <p className="text-sm text-red-600">{errors.companyName.message}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="contactName">Contact Name *</Label>
+                      <Input
+                        id="contactName"
+                        placeholder="Your full name"
+                        {...register('contactName', {
+                          required: 'Contact name is required'
+                        })}
+                      />
+                      {errors.contactName && (
+                        <p className="text-sm text-red-600">{errors.contactName.message}</p>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <Label htmlFor="targetAudience">Target Audience</Label>
-                    <Select onValueChange={(value) => handleInputChange('targetAudience', value)}>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email Address *</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="contact@company.com"
+                        {...register('email', {
+                          required: 'Email is required',
+                          pattern: {
+                            value: /^\S+@\S+$/i,
+                            message: 'Please enter a valid email'
+                          }
+                        })}
+                      />
+                      {errors.email && (
+                        <p className="text-sm text-red-600">{errors.email.message}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone Number</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="(555) 123-4567"
+                        {...register('phone')}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Campaign Details */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Campaign Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="adType">Advertisement Type *</Label>
+                    <Select onValueChange={(value) => setValue('adType', value)}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select target audience" />
+                        <SelectValue placeholder="Select ad type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="virginia-voters">Virginia Voters</SelectItem>
-                        <SelectItem value="political-enthusiasts">Political Enthusiasts</SelectItem>
-                        <SelectItem value="local-residents">Local Residents</SelectItem>
-                        <SelectItem value="business-professionals">Business Professionals</SelectItem>
-                        <SelectItem value="all-demographics">All Demographics</SelectItem>
+                        {adTypes.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            <div>
+                              <div className="font-medium">{type.label}</div>
+                              <div className="text-sm text-muted-foreground">{type.description}</div>
+                            </div>
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
+                    {errors.adType && (
+                      <p className="text-sm text-red-600">Please select an ad type</p>
+                    )}
                   </div>
-                </div>
 
-                {/* Ad Content */}
-                <div>
-                  <Label htmlFor="adTitle">Ad Title/Headline *</Label>
-                  <Input
-                    id="adTitle"
-                    value={formData.adTitle}
-                    onChange={(e) => handleInputChange('adTitle', e.target.value)}
-                    placeholder="Enter compelling ad headline"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="adDescription">Ad Description/Copy *</Label>
-                  <Textarea
-                    id="adDescription"
-                    value={formData.adDescription}
-                    onChange={(e) => handleInputChange('adDescription', e.target.value)}
-                    placeholder="Describe your ad content and message"
-                    rows={4}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="callToAction">Call to Action</Label>
-                  <Input
-                    id="callToAction"
-                    value={formData.callToAction}
-                    onChange={(e) => handleInputChange('callToAction', e.target.value)}
-                    placeholder="e.g., 'Visit our website', 'Call now', 'Learn more'"
-                  />
-                </div>
-
-                {/* File Upload */}
-                <div>
-                  <Label>Upload Creative Files (Images, Videos, Documents)</Label>
-                  <div
-                    className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                      dragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'
-                    }`}
-                    onDragEnter={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDragOver={handleDrag}
-                    onDrop={handleDrop}
-                  >
-                    <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <p className="text-lg font-medium mb-2">
-                      Drag & drop files here, or click to select
-                    </p>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Support for images, videos, and documents (Max 50MB each, up to 5 files)
-                    </p>
+                  <div className="space-y-2">
+                    <Label htmlFor="campaignName">Campaign Name *</Label>
                     <Input
-                      type="file"
-                      multiple
-                      accept="image/*,video/*,.pdf,.doc,.docx"
-                      onChange={(e) => handleFileUpload(e.target.files)}
-                      className="hidden"
-                      id="fileUpload"
+                      id="campaignName"
+                      placeholder="Name for your advertising campaign"
+                      {...register('campaignName', {
+                        required: 'Campaign name is required'
+                      })}
                     />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => document.getElementById('fileUpload')?.click()}
-                    >
-                      Select Files
-                    </Button>
+                    {errors.campaignName && (
+                      <p className="text-sm text-red-600">{errors.campaignName.message}</p>
+                    )}
                   </div>
 
-                  {/* File List */}
-                  {formData.files.length > 0 && (
-                    <div className="mt-4 space-y-2">
-                      <Label>Uploaded Files:</Label>
-                      {formData.files.map((file, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                          <div className="flex items-center space-x-3">
-                            {getFileIcon(file)}
-                            <div>
-                              <p className="font-medium">{file.name}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {(file.size / (1024 * 1024)).toFixed(2)} MB
-                              </p>
-                            </div>
-                          </div>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeFile(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="budget">Budget Range</Label>
+                      <Select onValueChange={(value) => setValue('budget', value)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select budget range" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="under-500">Under $500</SelectItem>
+                          <SelectItem value="500-1000">$500 - $1,000</SelectItem>
+                          <SelectItem value="1000-2500">$1,000 - $2,500</SelectItem>
+                          <SelectItem value="2500-5000">$2,500 - $5,000</SelectItem>
+                          <SelectItem value="over-5000">Over $5,000</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                  )}
-                </div>
 
-                {/* Submit Button */}
-                <div className="flex justify-center pt-6">
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting || !formData.companyName || !formData.contactEmail || !formData.adTitle || !formData.adDescription}
-                    className="w-full md:w-auto px-8 py-3"
+                    <div className="space-y-2">
+                      <Label htmlFor="targetAudience">Target Audience</Label>
+                      <Select onValueChange={(value) => setValue('targetAudience', value)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select target audience" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="general">General Political Readers</SelectItem>
+                          <SelectItem value="virginia">Virginia Residents</SelectItem>
+                          <SelectItem value="democrats">Democratic Voters</SelectItem>
+                          <SelectItem value="republicans">Republican Voters</SelectItem>
+                          <SelectItem value="independents">Independent Voters</SelectItem>
+                          <SelectItem value="young-adults">Young Adults (18-35)</SelectItem>
+                          <SelectItem value="professionals">Working Professionals</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="startDate">Preferred Start Date</Label>
+                      <Input
+                        id="startDate"
+                        type="date"
+                        {...register('startDate')}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="endDate">Preferred End Date</Label>
+                      <Input
+                        id="endDate"
+                        type="date"
+                        {...register('endDate')}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Ad Content */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Upload className="h-5 w-5" />
+                    Advertisement Content
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="adContent">Ad Content Description *</Label>
+                    <Textarea
+                      id="adContent"
+                      placeholder="Describe your advertisement content, including key messages, call-to-action, and any specific requirements..."
+                      className="min-h-[120px]"
+                      {...register('adContent', {
+                        required: 'Ad content description is required',
+                        minLength: {
+                          value: 50,
+                          message: 'Please provide at least 50 characters'
+                        }
+                      })}
+                    />
+                    {errors.adContent && (
+                      <p className="text-sm text-red-600">{errors.adContent.message}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="specialRequests">Special Requests or Requirements</Label>
+                    <Textarea
+                      id="specialRequests"
+                      placeholder="Any special requirements, design preferences, or additional information..."
+                      {...register('specialRequests')}
+                    />
+                  </div>
+
+                  <div className="bg-muted p-4 rounded-lg">
+                    <h4 className="font-semibold mb-2">Next Steps:</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• Our team will review your submission within 24 hours</li>
+                      <li>• We'll contact you to discuss creative assets and finalize details</li>
+                      <li>• Once approved, your ad will go live on the scheduled date</li>
+                      <li>• You'll receive performance reports throughout the campaign</li>
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Terms and Submit */}
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center space-x-2 mb-6">
+                    <Checkbox
+                      id="agreeToTerms"
+                      onCheckedChange={(checked) => setValue('agreeToTerms', !!checked)}
+                    />
+                    <Label htmlFor="agreeToTerms" className="text-sm">
+                      I agree to the{' '}
+                      <a href="/terms-of-use" className="text-primary hover:underline">
+                        Terms and Conditions
+                      </a>{' '}
+                      and{' '}
+                      <a href="/privacy-policy" className="text-primary hover:underline">
+                        Privacy Policy
+                      </a>
+                    </Label>
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    size="lg" 
+                    className="w-full"
+                    disabled={loading || !agreeToTerms}
                   >
-                    {isSubmitting ? 'Submitting...' : 'Submit Ad for Review'}
+                    {loading ? 'Submitting...' : 'Submit Advertisement'}
                   </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
+                </CardContent>
+              </Card>
+            </form>
+          </div>
+        </main>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </ThemeProvider>
   );
 };
 

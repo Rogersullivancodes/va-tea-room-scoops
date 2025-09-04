@@ -1,132 +1,108 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { Star, Crown, Zap, Check, Gift, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Check, Crown, Zap, Star } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ThemeProvider from '@/components/ThemeProvider';
-import { useToast } from "@/components/ui/use-toast"; // For showing alerts
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 const Memberships: React.FC = () => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null); // State to track loading
-  const navigate = useNavigate(); // Hook for navigation
-  const { toast } = useToast(); // Hook for showing notifications
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const { toast } = useToast();
 
-  // Function to handle the checkout process
   const handleCheckout = async (planId: string, priceId: string) => {
-    setLoadingPlan(planId); // Set loading state for the clicked button
-
+    setLoadingPlan(planId);
+    
     try {
-      // This is where you call YOUR backend.
-      // Do not put Stripe secret keys here. EVER.
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ priceId: priceId }),
+        body: JSON.stringify({
+          priceId,
+          mode: 'subscription',
+        }),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to create checkout session.');
-      }
 
       const { url } = await response.json();
-
-      if (url) {
-        // Redirect the user to Stripe's checkout page
-        window.location.href = url;
-      } else {
-        throw new Error('Stripe session URL not found.');
-      }
-
+      window.location.href = url;
     } catch (error) {
-      console.error("Stripe Checkout Error:", error);
       toast({
+        title: "Error",
+        description: "Failed to start checkout process. Please try again.",
         variant: "destructive",
-        title: "Oh no! Something went wrong.",
-        description: "We couldn't connect to the payment gateway. Please try again later.",
       });
-      setLoadingPlan(null); // Reset loading state on error
+    } finally {
+      setLoadingPlan(null);
     }
   };
 
-
   const plans = [
     {
-      id: 'observer',
-      name: 'Political Observer',
-      description: 'Perfect for casual political followers',
-      monthlyPrice: 4.99,
-      yearlyPrice: 49.99,
-      // IMPORTANT: These IDs must match the Price IDs in your Stripe account
-      priceIds: {
-        monthly: 'price_your_observer_monthly_id',
-        yearly: 'price_your_observer_yearly_id'
+      id: 'free',
+      name: 'Free Reader',
+      description: 'Basic access to political news',
+      monthlyPrice: 0,
+      yearlyPrice: 0,
+      stripePriceId: {
+        monthly: null,
+        yearly: null,
       },
       features: [
-        'Daily political updates',
-        'Basic news access',
-        '10 character credits/month',
+        '5 articles per month',
+        'Breaking news alerts',
+        'Weekly newsletter',
         'Community discussions',
-        'Email newsletter',
-        'Mobile app access'
       ],
-      icon: <Star className="h-8 w-8" />,
       popular: false,
-      trialDays: 7
     },
     {
-      id: 'insider',
-      name: 'Capitol Insider',
-      description: 'For serious political enthusiasts',
-      monthlyPrice: 12.99,
-      yearlyPrice: 129.99,
-      priceIds: {
-        monthly: 'price_your_insider_monthly_id',
-        yearly: 'price_your_insider_yearly_id'
+      id: 'premium',
+      name: 'Premium Insider',
+      description: 'Full access with exclusive content',
+      monthlyPrice: 9.99,
+      yearlyPrice: 99.99,
+      stripePriceId: {
+        monthly: 'price_premium_monthly',
+        yearly: 'price_premium_yearly',
       },
       features: [
-        'All Observer features',
+        'Unlimited articles',
         'Exclusive insider reports',
-        '50 character credits/month',
+        'Live political analysis',
+        'Priority news alerts',
         'Ad-free experience',
-        'Premium chat access',
-        'Weekly analysis calls',
-        'Early story access',
-        'Comment priority'
+        'Member-only events',
       ],
-      icon: <Crown className="h-8 w-8" />,
       popular: true,
-      trialDays: 14
     },
     {
-      id: 'elite',
-      name: 'Political Elite',
-      description: 'Ultimate political insider access',
+      id: 'vip',
+      name: 'VIP Political Elite',
+      description: 'Ultimate political news experience',
       monthlyPrice: 24.99,
       yearlyPrice: 249.99,
-      priceIds: {
-        monthly: 'price_your_elite_monthly_id',
-        yearly: 'price_your_elite_yearly_id'
+      stripePriceId: {
+        monthly: 'price_vip_monthly',
+        yearly: 'price_vip_yearly',
       },
       features: [
-        'All Insider features',
-        'Direct source access',
-        'Unlimited character credits',
-        'VIP discussion rooms',
-        'Monthly exclusive events',
-        'Priority customer support',
-        'Custom news alerts',
-        'One-on-one briefings',
-        'Archive access'
+        'Everything in Premium',
+        'Direct access to journalists',
+        'Quarterly VIP briefings',
+        'Custom research requests',
+        'Political consulting calls',
+        'Exclusive VIP newsletter',
+        'Early access to interviews',
       ],
-      icon: <Zap className="h-8 w-8" />,
       popular: false,
-      trialDays: 21
-    }
+    },
   ];
 
   const getPrice = (plan: typeof plans[0]) => {
@@ -134,161 +110,143 @@ const Memberships: React.FC = () => {
   };
 
   const getSavings = (plan: typeof plans[0]) => {
-    if (billingCycle === 'yearly') {
-      const monthlyCost = plan.monthlyPrice * 12;
-      const savings = monthlyCost - plan.yearlyPrice;
-      return Math.round((savings / monthlyCost) * 100);
-    }
-    return 0;
+    if (plan.monthlyPrice === 0) return 0;
+    const yearlyTotal = plan.monthlyPrice * 12;
+    const savings = ((yearlyTotal - plan.yearlyPrice) / yearlyTotal) * 100;
+    return Math.round(savings);
   };
 
   return (
     <ThemeProvider>
       <div className="min-h-screen flex flex-col">
         <Navbar />
-        <main className="flex-1">
-          {/* Hero Section */}
-          <section className="bg-gradient-to-r from-red-700 to-slate-800 text-white py-16">
-            <div className="container mx-auto px-4">
-              <div className="max-w-3xl mx-auto text-center">
-                <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                  Choose Your Political Access Level
-                </h1>
-                <p className="text-xl leading-relaxed mb-8">
-                  From casual observer to political insider - find the perfect membership for your Virginia political news needs.
-                </p>
-                <div className="bg-green-600 rounded-lg p-4 mb-8">
-                  <div className="flex items-center justify-center">
-                    <Gift className="h-6 w-6 mr-2" />
-                    <span className="font-bold text-lg">All plans include FREE TRIAL + 10 bonus credits!</span>
-                  </div>
+        <main className="flex-1 container mx-auto py-12 px-4">
+          <div className="max-w-6xl mx-auto">
+            {/* Hero Section */}
+            <div className="text-center mb-12">
+              <h1 className="text-4xl font-bold mb-4">Choose Your Membership</h1>
+              <p className="text-xl text-muted-foreground mb-8">
+                Get access to exclusive political insights and breaking news coverage
+              </p>
+              
+              {/* Billing Toggle */}
+              <div className="flex items-center justify-center space-x-4 mb-8">
+                <Label htmlFor="billing-toggle" className={billingCycle === 'monthly' ? 'text-foreground' : 'text-muted-foreground'}>
+                  Monthly
+                </Label>
+                <Switch
+                  id="billing-toggle"
+                  checked={billingCycle === 'yearly'}
+                  onCheckedChange={(checked) => setBillingCycle(checked ? 'yearly' : 'monthly')}
+                />
+                <Label htmlFor="billing-toggle" className={billingCycle === 'yearly' ? 'text-foreground' : 'text-muted-foreground'}>
+                  Yearly
+                </Label>
+                {billingCycle === 'yearly' && (
+                  <Badge className="bg-green-600">Save up to 17%</Badge>
+                )}
+              </div>
+            </div>
+
+            {/* Plans Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {plans.map((plan) => (
+                <Card key={plan.id} className={`relative ${plan.popular ? 'ring-2 ring-primary' : ''}`}>
+                  {plan.popular && (
+                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary">
+                      MOST POPULAR
+                    </Badge>
+                  )}
+                  <CardHeader className="text-center">
+                    <div className="mb-4">
+                      {plan.id === 'free' && <Zap className="h-12 w-12 mx-auto text-blue-500" />}
+                      {plan.id === 'premium' && <Star className="h-12 w-12 mx-auto text-yellow-500" />}
+                      {plan.id === 'vip' && <Crown className="h-12 w-12 mx-auto text-purple-500" />}
+                    </div>
+                    <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                    <p className="text-muted-foreground">{plan.description}</p>
+                    <div className="mt-4">
+                      <span className="text-4xl font-bold">${getPrice(plan)}</span>
+                      {plan.monthlyPrice > 0 && (
+                        <span className="text-muted-foreground">
+                          /{billingCycle === 'monthly' ? 'month' : 'year'}
+                        </span>
+                      )}
+                    </div>
+                    {billingCycle === 'yearly' && plan.monthlyPrice > 0 && (
+                      <p className="text-sm text-green-600 dark:text-green-400">
+                        Save {getSavings(plan)}% with yearly billing
+                      </p>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-3 mb-6">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-center">
+                          <Check className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                          <span className="text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button 
+                      className="w-full"
+                      variant={plan.popular ? 'default' : 'outline'}
+                      disabled={loadingPlan === plan.id}
+                      onClick={() => {
+                        if (plan.id === 'free') {
+                          toast({
+                            title: "Already Free!",
+                            description: "You can start reading for free right now.",
+                          });
+                        } else {
+                          const priceId = plan.stripePriceId[billingCycle];
+                          handleCheckout(plan.id, priceId);
+                        }
+                      }}
+                    >
+                      {loadingPlan === plan.id ? 'Loading...' : 
+                       plan.id === 'free' ? 'Start Reading' : 'Start Free Trial'}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* FAQ Section */}
+            <div className="mt-16 text-center">
+              <h2 className="text-2xl font-bold mb-8">Frequently Asked Questions</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                <div>
+                  <h3 className="font-semibold mb-2">Can I cancel anytime?</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Yes, you can cancel your subscription at any time. You'll continue to have access 
+                    until the end of your billing period.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-2">What's included in the free trial?</h3>
+                  <p className="text-muted-foreground text-sm">
+                    All paid plans include a 7-day free trial with full access to all features. 
+                    No credit card required to start.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-2">How do credits work?</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Credits are used to access premium articles. Premium members get unlimited credits, 
+                    while free users receive 10 credits monthly.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-2">Is there a student discount?</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Yes! Students can get 50% off any paid plan. Contact us with your student email 
+                    for verification.
+                  </p>
                 </div>
               </div>
             </div>
-          </section>
-
-          {/* Billing Toggle */}
-          <section className="py-8 bg-gray-50 dark:bg-gray-900">
-            <div className="container mx-auto px-4">
-              <div className="max-w-6xl mx-auto">
-                <div className="flex justify-center mb-8">
-                  <div className="bg-white dark:bg-gray-800 rounded-lg p-1 shadow-lg">
-                    <button
-                      onClick={() => setBillingCycle('monthly')}
-                      className={`px-6 py-2 rounded-md font-semibold transition-colors ${
-                        billingCycle === 'monthly'
-                          ? 'bg-red-600 text-white'
-                          : 'text-gray-600 dark:text-gray-300 hover:text-red-600'
-                      }`}
-                    >
-                      Monthly
-                    </button>
-                    <button
-                      onClick={() => setBillingCycle('yearly')}
-                      className={`px-6 py-2 rounded-md font-semibold transition-colors ${
-                        billingCycle === 'yearly'
-                          ? 'bg-red-600 text-white'
-                          : 'text-gray-600 dark:text-gray-300 hover:text-red-600'
-                      }`}
-                    >
-                      Yearly
-                      <span className="ml-2 bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
-                        Save up to 20%
-                      </span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Plans Grid */}
-                <div className="grid md:grid-cols-3 gap-8">
-                  {plans.map((plan) => {
-                    const priceId = billingCycle === 'monthly' ? plan.priceIds.monthly : plan.priceIds.yearly;
-                    const isLoading = loadingPlan === plan.id;
-                    
-                    return (
-                      <Card 
-                        key={plan.id} 
-                        className={`relative ${
-                          plan.popular 
-                            ? 'ring-2 ring-red-600 shadow-2xl scale-105' 
-                            : 'hover:shadow-xl'
-                        } transition-all duration-300`}
-                      >
-                        {plan.popular && (
-                          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                            <span className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold">
-                              MOST POPULAR
-                            </span>
-                          </div>
-                        )}
-                        
-                        <CardHeader className="text-center pb-4">
-                            <div className="text-red-600 mb-4">{plan.icon}</div>
-                            <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
-                            {plan.name}
-                            </CardTitle>
-                            <p className="text-gray-600 dark:text-gray-300">{plan.description}</p>
-                            
-                            <div className="mt-6">
-                            <div className="flex items-baseline justify-center">
-                                <span className="text-4xl font-bold text-red-600">
-                                ${getPrice(plan)}
-                                </span>
-                                <span className="text-gray-500 ml-1">
-                                /{billingCycle === 'monthly' ? 'month' : 'year'}
-                                </span>
-                            </div>
-                            
-                            {billingCycle === 'yearly' && getSavings(plan) > 0 && (
-                                <p className="text-green-600 font-semibold mt-2">
-                                Save {getSavings(plan)}% annually
-                                </p>
-                            )}
-                            
-                            <div className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-lg p-2 mt-4">
-                                <p className="font-semibold text-sm">
-                                {plan.trialDays}-Day FREE Trial
-                                </p>
-                            </div>
-                            </div>
-                        </CardHeader>
-                        
-                        <CardContent>
-                            <ul className="space-y-3 mb-8">
-                            {plan.features.map((feature, index) => (
-                                <li key={index} className="flex items-center">
-                                <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                                <span className="text-gray-600 dark:text-gray-300">{feature}</span>
-                                </li>
-                            ))}
-                            </ul>
-                            
-                            <Button 
-                                onClick={() => handleCheckout(plan.id, priceId)}
-                                disabled={isLoading}
-                                className={`w-full ${
-                                    plan.popular 
-                                    ? 'bg-red-600 hover:bg-red-700' 
-                                    : 'bg-gray-800 hover:bg-gray-700'
-                                } text-white py-3 text-lg font-semibold`}
-                            >
-                                {isLoading ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : null}
-                                {isLoading ? 'Redirecting...' : `Start ${plan.trialDays}-Day Free Trial`}
-                            </Button>
-                            
-                            <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-3">
-                            Cancel anytime during trial. No commitment.
-                            </p>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* ... (Keep your FAQ section as is) ... */}
+          </div>
         </main>
         <Footer />
       </div>

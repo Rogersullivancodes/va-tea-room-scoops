@@ -1,60 +1,52 @@
-
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useAdmin } from '@/contexts/AdminContext';
-import { supabase } from '@/integrations/supabase/client';
 import AdminLayout from '@/components/admin/AdminLayout';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminTabs from '@/components/admin/AdminTabs';
+import { supabase } from '@/integrations/supabase/client';
 
 const fetchStats = async () => {
-  // Fetch article count
-  const [{count: articlesCount}, {count: usersCount}, {count: newsArticleCount, data: newsViewsData}, {count: articleCount, data: articleViewsData}, {count: newsletterSubCount}]
-    = await Promise.all([
-      supabase.from('articles').select('id', { count: 'exact', head: true }),
-      supabase.from('profiles').select('id', { count: 'exact', head: true }),
-      supabase.from('news_articles').select('id,views', { count: 'exact' }),
-      supabase.from('articles').select('id,views', { count: 'exact' }),
-      supabase.from('newsletter_subscribers').select('id', { count: 'exact', head: true })
-    ]);
+  const [articlesResult, usersResult, subscribersResult] = await Promise.all([
+    supabase.from('articles').select('id, views', { count: 'exact' }),
+    supabase.from('profiles').select('id', { count: 'exact' }),
+    supabase.from('newsletter_subscribers').select('id', { count: 'exact' })
+  ]);
 
-  // Count views for pageviews (articles + news_articles)
-  let totalViews = 0;
-  if (newsViewsData) {
-    for (const row of newsViewsData) totalViews += row.views || 0;
-  }
-  if (articleViewsData) {
-    for (const row of articleViewsData) totalViews += row.views || 0;
-  }
-  
+  // Calculate total views
+  const totalArticleViews = articlesResult.data?.reduce((sum, article) => sum + (article.views || 0), 0) || 0;
+  const totalNewsViews = await supabase.from('news_articles').select('views').then(result => 
+    result.data?.reduce((sum, article) => sum + (article.views || 0), 0) || 0
+  );
+
   return {
-    articles: articlesCount || 0,
-    users: usersCount || 0,
-    pageViews: totalViews,
-    newsletter: newsletterSubCount || 0,
+    totalArticles: articlesResult.count || 0,
+    totalUsers: usersResult.count || 0,
+    totalPageViews: totalArticleViews + totalNewsViews,
+    totalSubscribers: subscribersResult.count || 0,
   };
 };
 
 const AdminDashboard: React.FC = () => {
-  const { admin, signOut, isAuthenticated } = useAdmin();
+  const { isAuthenticated, user } = useAdmin();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('overview');
 
-  React.useEffect(() => {
+  const handleSignOut = async () => {
+    // Implementation depends on your admin context
+    navigate('/secure/admin');
+  };
+
+  useEffect(() => {
     if (!isAuthenticated) {
       navigate('/secure/admin');
     }
   }, [isAuthenticated, navigate]);
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/secure/admin');
-  };
-
   const { data: stats, isLoading } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: fetchStats,
+    enabled: isAuthenticated,
   });
 
   if (!isAuthenticated) {
@@ -63,19 +55,8 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <AdminLayout>
-      <AdminHeader 
-        adminName={admin?.name || 'Admin'} 
-        onSignOut={handleSignOut} 
-      />
-      
-      <main className="max-w-7xl mx-auto p-6">
-        <AdminTabs 
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          stats={stats}
-          isLoading={isLoading}
-        />
-      </main>
+      <AdminHeader onSignOut={handleSignOut} />
+      <AdminTabs stats={stats} isLoading={isLoading} />
     </AdminLayout>
   );
 };

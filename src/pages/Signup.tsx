@@ -1,16 +1,17 @@
-
 import React, { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ThemeProvider from '@/components/ThemeProvider';
-import { useAuth } from '@/contexts/AuthContext';
 
 interface SignupFormData {
   firstName: string;
@@ -26,9 +27,8 @@ const Signup: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { signUp, user } = useAuth();
   const navigate = useNavigate();
-
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<SignupFormData>();
-  const password = watch("password");
+  const { toast } = useToast();
+  const { register, handleSubmit, formState: { errors }, watch } = useForm<SignupFormData>();
 
   useEffect(() => {
     if (user) {
@@ -38,23 +38,27 @@ const Signup: React.FC = () => {
 
   const onSubmit = async (data: SignupFormData) => {
     if (data.password !== data.confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match.",
+        variant: "destructive",
+      });
       return;
     }
-    
+
     setLoading(true);
-    
-    const { error } = await signUp(
-      data.email,
-      data.password,
-      data.firstName,
-      data.lastName
-    );
-    
-    if (!error) {
+    try {
+      await signUp(data.email, data.password, data.firstName, data.lastName);
       navigate('/signup-complete');
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create account. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   return (
@@ -63,156 +67,184 @@ const Signup: React.FC = () => {
         <Navbar />
         <main className="flex-1 flex items-center justify-center py-12 px-4">
           <Card className="w-full max-w-md">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-red-700 dark:text-red-400">
-                Join CrabsFriedPolitically
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-2xl font-bold text-center">
+                Create your account
               </CardTitle>
-              <p className="text-gray-600 dark:text-gray-300">
-                Get 10 FREE credits just for signing up!
-              </p>
+              <CardDescription className="text-center">
+                Join CrabsFriedPolitically and get 10 free credits
+              </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
+                  <div className="space-y-2">
                     <Label htmlFor="firstName">First Name</Label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       <Input
                         id="firstName"
                         type="text"
-                        placeholder="John"
+                        placeholder="First name"
                         className="pl-10"
-                        disabled={loading}
-                        {...register("firstName", { 
-                          required: "First name is required",
+                        {...register('firstName', {
+                          required: 'First name is required',
                           minLength: {
                             value: 2,
-                            message: "First name must be at least 2 characters"
+                            message: 'First name must be at least 2 characters'
                           }
                         })}
                       />
                     </div>
                     {errors.firstName && (
-                      <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.firstName.message}</p>
+                      <p className="text-sm text-red-600 dark:text-red-400">
+                        {errors.firstName.message}
+                      </p>
                     )}
                   </div>
-                  <div>
+
+                  <div className="space-y-2">
                     <Label htmlFor="lastName">Last Name</Label>
-                    <Input
-                      id="lastName"
-                      type="text"
-                      placeholder="Doe"
-                      disabled={loading}
-                      {...register("lastName", { 
-                        required: "Last name is required",
-                        minLength: {
-                          value: 2,
-                          message: "Last name must be at least 2 characters"
-                        }
-                      })}
-                    />
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="lastName"
+                        type="text"
+                        placeholder="Last name"
+                        className="pl-10"
+                        {...register('lastName', {
+                          required: 'Last name is required',
+                          minLength: {
+                            value: 2,
+                            message: 'Last name must be at least 2 characters'
+                          }
+                        })}
+                      />
+                    </div>
                     {errors.lastName && (
-                      <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.lastName.message}</p>
+                      <p className="text-sm text-red-600 dark:text-red-400">
+                        {errors.lastName.message}
+                      </p>
                     )}
                   </div>
                 </div>
-                
-                <div>
+
+                <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
                       id="email"
                       type="email"
-                      placeholder="your@email.com"
+                      placeholder="Enter your email"
                       className="pl-10"
-                      disabled={loading}
-                      {...register("email", { 
-                        required: "Email is required",
+                      {...register('email', {
+                        required: 'Email is required',
                         pattern: {
-                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                          message: "Invalid email address"
+                          value: /^\S+@\S+$/i,
+                          message: 'Please enter a valid email'
                         }
                       })}
                     />
                   </div>
                   {errors.email && (
-                    <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.email.message}</p>
+                    <p className="text-sm text-red-600 dark:text-red-400">
+                      {errors.email.message}
+                    </p>
                   )}
                 </div>
-                
-                <div>
+
+                <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
                       id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="Create a password"
                       className="pl-10 pr-10"
-                      disabled={loading}
-                      {...register("password", { 
-                        required: "Password is required",
+                      {...register('password', {
+                        required: 'Password is required',
                         minLength: {
                           value: 6,
-                          message: "Password must be at least 6 characters"
+                          message: 'Password must be at least 6 characters'
                         }
                       })}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                      disabled={loading}
+                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
                   {errors.password && (
-                    <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.password.message}</p>
+                    <p className="text-sm text-red-600 dark:text-red-400">
+                      {errors.password.message}
+                    </p>
                   )}
                 </div>
-                
-                <div>
+
+                <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
                       id="confirmPassword"
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="••••••••"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      placeholder="Confirm your password"
                       className="pl-10 pr-10"
-                      disabled={loading}
-                      {...register("confirmPassword", { 
-                        required: "Please confirm your password",
-                        validate: value => value === password || "Passwords do not match"
+                      {...register('confirmPassword', {
+                        required: 'Please confirm your password',
+                        validate: (value) => {
+                          const password = watch('password');
+                          return value === password || 'Passwords do not match';
+                        }
                       })}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                      disabled={loading}
+                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                     >
-                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
                   {errors.confirmPassword && (
-                    <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.confirmPassword.message}</p>
+                    <p className="text-sm text-red-600 dark:text-red-400">
+                      {errors.confirmPassword.message}
+                    </p>
                   )}
                 </div>
-                
-                <Button type="submit" className="w-full bg-red-600 hover:bg-red-700" disabled={loading}>
-                  {loading ? 'Creating Account...' : 'Create Account & Get 10 FREE Credits'}
+
+                <Button 
+                  type="submit" 
+                  className="w-full bg-red-600 hover:bg-red-700"
+                  disabled={loading}
+                >
+                  {loading ? 'Creating Account...' : 'Create Account'}
                 </Button>
               </form>
+
+              <Separator />
               
-              <div className="mt-6 text-center">
-                <p className="text-gray-600 dark:text-gray-300">
+              <div className="text-center">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Already have an account?{' '}
-                  <Link to="/login" className="text-red-600 hover:text-red-700 font-semibold">
-                    Sign in here
+                  <Link 
+                    to="/login" 
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                  >
+                    Sign in
                   </Link>
                 </p>
               </div>

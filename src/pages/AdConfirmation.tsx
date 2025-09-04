@@ -1,193 +1,179 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { CheckCircle, Mail, Home, ArrowRight } from 'lucide-react';
+import React from 'react';
+import { CheckCircle, Calendar, Mail, Phone, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import ThemeProvider from '@/components/ThemeProvider';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const AdConfirmation: React.FC = () => {
-  const location = useLocation();
-  const { formData, submissionId } = location.state || {};
-  const [animationPhase, setAnimationPhase] = useState(0);
-
-  useEffect(() => {
-    // Animation sequence
-    const timers = [
-      setTimeout(() => setAnimationPhase(1), 500),  // Show checkmark
-      setTimeout(() => setAnimationPhase(2), 1500), // Show details
-      setTimeout(() => setAnimationPhase(3), 2500), // Show final content
-    ];
-
-    return () => timers.forEach(clearTimeout);
-  }, []);
-
-  if (!formData || !submissionId) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="flex items-center justify-center py-16">
-          <Card className="max-w-md">
-            <CardContent className="text-center py-8">
-              <p className="text-muted-foreground mb-4">No submission data found.</p>
-              <Button asChild>
-                <Link to="/ads">Return to Ads Page</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="py-8 px-4">
-        <div className="container mx-auto max-w-2xl">
-          {/* Success Animation */}
-          <div className="text-center mb-8">
-            <div className={`inline-flex items-center justify-center w-24 h-24 rounded-full bg-green-100 mb-6 transition-all duration-1000 ${
-              animationPhase >= 1 ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
-            }`}>
-              <CheckCircle className={`h-12 w-12 text-green-600 transition-all duration-500 delay-500 ${
-                animationPhase >= 1 ? 'scale-100' : 'scale-0'
-              }`} />
-            </div>
-            
-            <div className={`transition-all duration-500 delay-1000 ${
-              animationPhase >= 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}>
-              <h1 className="text-3xl font-bold text-foreground mb-2">
-                Submission Successful!
+    <ThemeProvider>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-1 container mx-auto py-12 px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="flex justify-center mb-6">
+                <div className="p-4 bg-green-600 rounded-full">
+                  <CheckCircle className="h-12 w-12 text-white" />
+                </div>
+              </div>
+              <h1 className="text-4xl font-bold mb-4 text-green-700 dark:text-green-400">
+                Advertisement Submitted Successfully!
               </h1>
-              <p className="text-lg text-muted-foreground">
-                Your ad creative has been received and is under review.
+              <p className="text-xl text-muted-foreground">
+                Thank you for choosing CrabsFriedPolitically for your advertising needs
               </p>
             </div>
-          </div>
 
-          {/* Submission Details */}
-          <div className={`transition-all duration-500 delay-1500 ${
-            animationPhase >= 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-          }`}>
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Mail className="h-5 w-5 text-primary" />
-                  Submission Details
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Submission ID</p>
-                    <p className="font-medium">{submissionId}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Package Type</p>
-                    <p className="font-medium">{formData.packageType}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Company Name</p>
-                    <p className="font-medium">{formData.companyName}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Contact Email</p>
-                    <p className="font-medium">{formData.contactEmail}</p>
-                  </div>
-                </div>
-                
-                <div>
-                  <p className="text-sm text-muted-foreground">Ad Title</p>
-                  <p className="font-medium">{formData.adTitle}</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Confirmation Message */}
-            <Card className="bg-primary/5 border-primary/20 mb-8">
-              <CardContent className="text-center py-8">
-                <Mail className="h-16 w-16 text-primary mx-auto mb-4 animate-pulse" />
-                <h2 className="text-xl font-semibold text-foreground mb-3">
-                  Email Confirmation Coming Soon
-                </h2>
-                <p className="text-muted-foreground mb-2">
-                  <strong>You will receive an email confirmation within 24 hours regarding your submission.</strong>
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Our advertising team will review your materials and contact you with next steps.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Next Steps */}
-            <Card>
-              <CardHeader>
-                <CardTitle>What Happens Next?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-primary" />
+                    What Happens Next?
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white text-sm font-bold">
                       1
                     </div>
                     <div>
-                      <p className="font-medium">Review Process</p>
+                      <h4 className="font-semibold">Review Process</h4>
                       <p className="text-sm text-muted-foreground">
-                        Our team will review your ad creative and ensure it meets our guidelines.
+                        Our advertising team will review your submission within 24 hours
                       </p>
                     </div>
                   </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
+
+                  <div className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white text-sm font-bold">
                       2
                     </div>
                     <div>
-                      <p className="font-medium">Email Confirmation</p>
+                      <h4 className="font-semibold">Initial Contact</h4>
                       <p className="text-sm text-muted-foreground">
-                        You'll receive approval status and payment instructions within 24 hours.
+                        We'll reach out to discuss creative assets and campaign details
                       </p>
                     </div>
                   </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
+
+                  <div className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white text-sm font-bold">
                       3
                     </div>
                     <div>
-                      <p className="font-medium">Campaign Launch</p>
+                      <h4 className="font-semibold">Campaign Setup</h4>
                       <p className="text-sm text-muted-foreground">
-                        Once approved and payment is processed, your ad will go live on our platform.
+                        Finalize ad creatives, placement, and scheduling
                       </p>
                     </div>
                   </div>
+
+                  <div className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white text-sm font-bold">
+                      4
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Go Live</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Your advertisement goes live on the scheduled date
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Contact Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <Mail className="h-5 w-5 text-primary" />
+                    <div>
+                      <h4 className="font-semibold">Email</h4>
+                      <p className="text-sm text-muted-foreground">ads@crabsfriedpolitically.com</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-3">
+                    <Phone className="h-5 w-5 text-primary" />
+                    <div>
+                      <h4 className="font-semibold">Phone</h4>
+                      <p className="text-sm text-muted-foreground">(555) 123-4567</p>
+                      <p className="text-xs text-muted-foreground">Monday - Friday, 9AM - 5PM EST</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                    <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">
+                      Questions or Changes?
+                    </h4>
+                    <p className="text-sm text-blue-800 dark:text-blue-400">
+                      If you need to modify your submission or have any questions, 
+                      please contact our advertising team directly.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+              <Card className="text-center">
+                <CardContent className="pt-6">
+                  <h3 className="font-semibold mb-2">Average Response Time</h3>
+                  <div className="text-3xl font-bold text-primary mb-2">4 Hours</div>
+                  <p className="text-sm text-muted-foreground">Initial contact from our team</p>
+                </CardContent>
+              </Card>
+
+              <Card className="text-center">
+                <CardContent className="pt-6">
+                  <h3 className="font-semibold mb-2">Campaign Success Rate</h3>
+                  <div className="text-3xl font-bold text-green-600 mb-2">95%</div>
+                  <p className="text-sm text-muted-foreground">Client satisfaction rating</p>
+                </CardContent>
+              </Card>
+
+              <Card className="text-center">
+                <CardContent className="pt-6">
+                  <h3 className="font-semibold mb-2">Average CTR</h3>
+                  <div className="text-3xl font-bold text-blue-600 mb-2">2.8%</div>
+                  <p className="text-sm text-muted-foreground">Click-through rate</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="text-center">
+              <CardContent className="pt-6">
+                <h2 className="text-2xl font-bold mb-4">Ready to Explore More?</h2>
+                <p className="text-muted-foreground mb-6">
+                  While you wait for our team to contact you, explore our platform and see what your ads will be alongside.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button asChild>
+                    <Link to="/" className="flex items-center gap-2">
+                      Browse Articles <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button variant="outline" asChild>
+                    <Link to="/news">Latest News</Link>
+                  </Button>
+                  <Button variant="outline" asChild>
+                    <Link to="/ads">View Ad Packages</Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-              <Button asChild variant="outline">
-                <Link to="/ads">
-                  <ArrowRight className="h-4 w-4 mr-2" />
-                  Submit Another Ad
-                </Link>
-              </Button>
-              <Button asChild>
-                <Link to="/home">
-                  <Home className="h-4 w-4 mr-2" />
-                  Return to Homepage
-                </Link>
-              </Button>
-            </div>
           </div>
-        </div>
+        </main>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </ThemeProvider>
   );
 };
 
