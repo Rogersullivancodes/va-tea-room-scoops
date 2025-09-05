@@ -110,14 +110,14 @@ const Index: React.FC = () => {
                       </Card>
                     ))
                   ) : (
-                    categorizedNews.political.map((article) => (
+                    categorizedNews.political.map((article, index) => (
                       <InteractiveArticleCard
                         key={article.id}
                         article={{
                           ...article,
                           author_id: '',
                           credits_required: 0,
-                          featured_image_url: article.image_url || '',
+                          featured_image_url: article.image_url || `https://images.unsplash.com/photo-${1649972904349 + index}?w=400&h=300&fit=crop&auto=format`,
                           is_premium: false,
                           likes: 0,
                           meta_description: article.excerpt || '',
@@ -154,14 +154,14 @@ const Index: React.FC = () => {
                       </Card>
                     ))
                   ) : (
-                    categorizedNews.college.map((article) => (
+                    categorizedNews.college.map((article, index) => (
                       <InteractiveArticleCard
                         key={article.id}
                         article={{
                           ...article,
                           author_id: '',
                           credits_required: 0,
-                          featured_image_url: article.image_url || '',
+                          featured_image_url: article.image_url || `https://images.unsplash.com/photo-${1488590528505 + index}?w=400&h=300&fit=crop&auto=format`,
                           is_premium: false,
                           likes: 0,
                           meta_description: article.excerpt || '',
@@ -230,7 +230,7 @@ const Index: React.FC = () => {
                       </Card>
                     ))
                   ) : (
-                    celebNews.map((article) => (
+                    celebNews.map((article, index) => (
                       <InteractiveArticleCard
                         key={article.id}
                         article={{
@@ -240,7 +240,7 @@ const Index: React.FC = () => {
                           content: article.excerpt || '',
                           created_at: article.published_at,
                           credits_required: 0,
-                          featured_image_url: article.image_url || '',
+                          featured_image_url: article.image_url || `https://images.unsplash.com/photo-${1511671782779 + index}?w=400&h=300&fit=crop&auto=format`,
                           is_premium: false,
                           likes: 0,
                           meta_description: article.excerpt || '',
