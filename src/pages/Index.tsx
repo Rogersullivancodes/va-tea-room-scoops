@@ -113,8 +113,19 @@ const Index: React.FC = () => {
                     categorizedNews.political.map((article) => (
                       <InteractiveArticleCard
                         key={article.id}
-                        article={article}
-                        type="news"
+                        article={{
+                          ...article,
+                          author_id: '',
+                          credits_required: 0,
+                          featured_image_url: article.image_url || '',
+                          is_premium: false,
+                          likes: 0,
+                          meta_description: article.excerpt || '',
+                          meta_keywords: [],
+                          status: 'published',
+                          tags: [],
+                          updated_at: article.updated_at
+                        }}
                       />
                     ))
                   )}
@@ -146,8 +157,19 @@ const Index: React.FC = () => {
                     categorizedNews.college.map((article) => (
                       <InteractiveArticleCard
                         key={article.id}
-                        article={article}
-                        type="news"
+                        article={{
+                          ...article,
+                          author_id: '',
+                          credits_required: 0,
+                          featured_image_url: article.image_url || '',
+                          is_premium: false,
+                          likes: 0,
+                          meta_description: article.excerpt || '',
+                          meta_keywords: [],
+                          status: 'published',
+                          tags: [],
+                          updated_at: article.updated_at
+                        }}
                       />
                     ))
                   )}
@@ -180,7 +202,6 @@ const Index: React.FC = () => {
                       <InteractiveArticleCard
                         key={article.id}
                         article={article}
-                        type="article"
                       />
                     ))
                   )}
@@ -212,8 +233,23 @@ const Index: React.FC = () => {
                     celebNews.map((article) => (
                       <InteractiveArticleCard
                         key={article.id}
-                        article={article}
-                        type="news"
+                        article={{
+                          ...article,
+                          author_id: '',
+                          category: 'entertainment',
+                          content: article.excerpt || '',
+                          created_at: article.published_at,
+                          credits_required: 0,
+                          featured_image_url: article.image_url || '',
+                          is_premium: false,
+                          likes: 0,
+                          meta_description: article.excerpt || '',
+                          meta_keywords: [],
+                          status: 'published',
+                          tags: [],
+                          updated_at: article.published_at,
+                          views: 0
+                        }}
                       />
                     ))
                   )}

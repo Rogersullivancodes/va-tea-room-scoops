@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAdmin } from '@/contexts/AdminContext';
@@ -29,7 +29,8 @@ const fetchStats = async () => {
 };
 
 const AdminDashboard: React.FC = () => {
-  const { isAuthenticated, user } = useAdmin();
+  const { isAuthenticated, admin } = useAdmin();
+  const [activeTab, setActiveTab] = useState('overview');
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -55,8 +56,13 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <AdminLayout>
-      <AdminHeader onSignOut={handleSignOut} />
-      <AdminTabs stats={stats} isLoading={isLoading} />
+      <AdminHeader adminName={admin?.name || 'Admin'} onSignOut={handleSignOut} />
+      <AdminTabs 
+        activeTab={activeTab} 
+        onTabChange={setActiveTab} 
+        stats={stats} 
+        isLoading={isLoading} 
+      />
     </AdminLayout>
   );
 };
