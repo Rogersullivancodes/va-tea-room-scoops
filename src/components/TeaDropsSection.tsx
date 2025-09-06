@@ -87,7 +87,7 @@ const TeaDropsSection: React.FC = () => {
               <Card key={article.id} className="card-shadow group">
                 <div className="h-56 overflow-hidden rounded-t-lg relative">
                   <img 
-                    src={article.image_url || "https://images.unsplash.com/photo-1494522358652-f30e61a60313"} 
+                    src={article.image_url || "https://images.unsplash.com/photo-1494522358652-f30e61a60313?w=400&h=300&fit=crop"} 
                     alt={article.title} 
                     className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
                   />

@@ -12,6 +12,12 @@ import ThemeProvider from '@/components/ThemeProvider';
 import { useNews } from '@/hooks/useNews';
 import type { Tables } from '@/integrations/supabase/types';
 
+// Import thumbnail images
+import generalThumb from '@/assets/general-news-thumb.jpg';
+import politicalThumb from '@/assets/political-news-thumb.jpg';
+import collegeThumb from '@/assets/college-news-thumb.jpg';
+import entertainmentThumb from '@/assets/entertainment-news-thumb.jpg';
+
 type NewsArticle = Tables<'news_articles'>;
 
 const News: React.FC = () => {
@@ -70,16 +76,21 @@ const News: React.FC = () => {
     setIsDialogOpen(true);
   };
 
-  const getPlaceholderImage = (index: number) => {
-    const placeholders = [
-      'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop'
-    ];
-    return placeholders[index % placeholders.length];
+  const getPlaceholderImage = (article: NewsArticle, index: number) => {
+    // Categorize based on content to get relevant thumbnail
+    const content = `${article.title} ${article.content || ''} ${article.excerpt || ''}`.toLowerCase();
+    
+    if (content.includes('politic') || content.includes('government') || content.includes('election')) {
+      return politicalThumb;
+    }
+    if (content.includes('college') || content.includes('university') || content.includes('student')) {
+      return collegeThumb;
+    }
+    if (content.includes('entertainment') || content.includes('celebrity') || content.includes('hollywood')) {
+      return entertainmentThumb;
+    }
+    
+    return generalThumb;
   };
 
   if (loading) {
@@ -141,11 +152,11 @@ const News: React.FC = () => {
                 >
                   <div className="w-full h-48 overflow-hidden rounded-t-lg">
                     <img
-                      src={article.image_url || getPlaceholderImage(index)}
+                      src={article.image_url || getPlaceholderImage(article, index)}
                       alt={article.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
-                        e.currentTarget.src = getPlaceholderImage(index);
+                        e.currentTarget.src = getPlaceholderImage(article, index);
                       }}
                     />
                   </div>
@@ -236,11 +247,11 @@ const News: React.FC = () => {
                     {(selectedArticle.image_url || selectedArticle) && (
                       <div className="w-full h-64 rounded-lg overflow-hidden mb-4">
                         <img
-                          src={selectedArticle.image_url || getPlaceholderImage(0)}
+                          src={selectedArticle.image_url || getPlaceholderImage(selectedArticle, 0)}
                           alt={selectedArticle.title}
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            e.currentTarget.src = getPlaceholderImage(0);
+                            e.currentTarget.src = getPlaceholderImage(selectedArticle, 0);
                           }}
                         />
                       </div>

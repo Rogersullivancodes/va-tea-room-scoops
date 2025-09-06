@@ -17,6 +17,13 @@ import { useNews } from '@/hooks/useNews';
 import { useArticles } from '@/hooks/useArticles';
 import { useCelebrityNews } from '@/hooks/useCelebrityNews';
 
+// Import thumbnail images
+import politicalThumb from '@/assets/political-news-thumb.jpg';
+import collegeThumb from '@/assets/college-news-thumb.jpg';
+import entertainmentThumb from '@/assets/entertainment-news-thumb.jpg';
+import generalThumb from '@/assets/general-news-thumb.jpg';
+import featuredThumb from '@/assets/featured-article-thumb.jpg';
+
 const Index: React.FC = () => {
   const { articles: newsArticles, loading: newsLoading } = useNews();
   const { articles, loading: articlesLoading } = useArticles();
@@ -117,7 +124,7 @@ const Index: React.FC = () => {
                           ...article,
                           author_id: '',
                           credits_required: 0,
-                          featured_image_url: article.image_url || `https://images.unsplash.com/photo-${1649972904349 + index}?w=400&h=300&fit=crop&auto=format`,
+                          featured_image_url: article.image_url || politicalThumb,
                           is_premium: false,
                           likes: 0,
                           meta_description: article.excerpt || '',
@@ -161,7 +168,7 @@ const Index: React.FC = () => {
                           ...article,
                           author_id: '',
                           credits_required: 0,
-                          featured_image_url: article.image_url || `https://images.unsplash.com/photo-${1488590528505 + index}?w=400&h=300&fit=crop&auto=format`,
+                          featured_image_url: article.image_url || collegeThumb,
                           is_premium: false,
                           likes: 0,
                           meta_description: article.excerpt || '',
@@ -201,7 +208,10 @@ const Index: React.FC = () => {
                     featuredArticles.map((article) => (
                       <InteractiveArticleCard
                         key={article.id}
-                        article={article}
+                        article={{
+                          ...article,
+                          featured_image_url: article.featured_image_url || featuredThumb
+                        }}
                       />
                     ))
                   )}
@@ -240,7 +250,7 @@ const Index: React.FC = () => {
                           content: article.excerpt || '',
                           created_at: article.published_at,
                           credits_required: 0,
-                          featured_image_url: article.image_url || `https://images.unsplash.com/photo-${1511671782779 + index}?w=400&h=300&fit=crop&auto=format`,
+                          featured_image_url: article.image_url || entertainmentThumb,
                           is_premium: false,
                           likes: 0,
                           meta_description: article.excerpt || '',
