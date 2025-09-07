@@ -85,206 +85,21 @@ const Index: React.FC = () => {
         <NewsTicker />
         
         <main className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Left Column - Main Content */}
-            <div className="lg:col-span-3 space-y-12">
-              
-              {/* Hero Section */}
-              <Hero />
-
-              {/* Political News Section */}
-              <section>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-3xl font-bold text-foreground flex items-center gap-2">
-                    <Star className="h-6 w-6 text-primary" />
-                    Breaking Political News
-                  </h2>
-                  <Button variant="outline" asChild>
-                    <Link to="/news?category=politics" className="flex items-center gap-2">
-                      All Breaking News <ChevronRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {newsLoading ? (
-                    Array.from({ length: 6 }).map((_, i) => (
-                      <Card key={i} className="overflow-hidden">
-                        <Skeleton className="h-48 w-full" />
-                        <CardContent className="p-4">
-                          <Skeleton className="h-4 w-full mb-2" />
-                          <Skeleton className="h-4 w-3/4" />
-                        </CardContent>
-                      </Card>
-                    ))
-                  ) : (
-                    categorizedNews.political.map((article, index) => (
-                      <InteractiveArticleCard
-                        key={article.id}
-                        article={{
-                          ...article,
-                          author_id: '',
-                          category: 'politics',
-                          credits_required: 0,
-                          featured_image_url: article.image_url,
-                          is_premium: false,
-                          likes: 0,
-                          meta_description: article.excerpt || '',
-                          meta_keywords: [],
-                          status: 'published',
-                          tags: [],
-                          updated_at: article.updated_at
-                        }}
-                      />
-                    ))
-                  )}
-                </div>
-              </section>
-
-              {/* College News Section */}
-              <section>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-3xl font-bold text-foreground">College & Campus News</h2>
-                  <Button variant="outline" asChild>
-                    <Link to="/news?category=college" className="flex items-center gap-2">
-                      View All <ChevronRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {newsLoading ? (
-                    Array.from({ length: 4 }).map((_, i) => (
-                      <Card key={i} className="overflow-hidden">
-                        <Skeleton className="h-48 w-full" />
-                        <CardContent className="p-4">
-                          <Skeleton className="h-4 w-full mb-2" />
-                          <Skeleton className="h-4 w-3/4" />
-                        </CardContent>
-                      </Card>
-                    ))
-                  ) : (
-                    categorizedNews.college.map((article, index) => (
-                      <InteractiveArticleCard
-                        key={article.id}
-                        article={{
-                          ...article,
-                          author_id: '',
-                          category: 'college',
-                          credits_required: 0,
-                          featured_image_url: article.image_url,
-                          is_premium: false,
-                          likes: 0,
-                          meta_description: article.excerpt || '',
-                          meta_keywords: [],
-                          status: 'published',
-                          tags: [],
-                          updated_at: article.updated_at
-                        }}
-                      />
-                    ))
-                  )}
-                </div>
-              </section>
-
-              {/* Featured Articles Section */}
-              <section>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-3xl font-bold text-foreground">Featured Articles</h2>
-                  <Button variant="outline" asChild>
-                    <Link to="/articles" className="flex items-center gap-2">
-                      All Articles <ChevronRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {articlesLoading ? (
-                    Array.from({ length: 3 }).map((_, i) => (
-                      <Card key={i} className="overflow-hidden">
-                        <Skeleton className="h-48 w-full" />
-                        <CardContent className="p-4">
-                          <Skeleton className="h-4 w-full mb-2" />
-                          <Skeleton className="h-4 w-3/4" />
-                        </CardContent>
-                      </Card>
-                    ))
-                  ) : (
-                    featuredArticles.map((article) => (
-                      <InteractiveArticleCard
-                        key={article.id}
-                        article={{
-                          ...article,
-                          category: 'featured'
-                        }}
-                      />
-                    ))
-                  )}
-                </div>
-              </section>
-
-              {/* Celebrity & Entertainment News Section */}
-              <section>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-3xl font-bold text-foreground">Celebrity & Entertainment</h2>
-                  <Button variant="outline" asChild>
-                    <Link to="/news?category=entertainment" className="flex items-center gap-2">
-                      View All <ChevronRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {celebrityLoading ? (
-                    Array.from({ length: 4 }).map((_, i) => (
-                      <Card key={i} className="overflow-hidden">
-                        <Skeleton className="h-48 w-full" />
-                        <CardContent className="p-4">
-                          <Skeleton className="h-4 w-full mb-2" />
-                          <Skeleton className="h-4 w-3/4" />
-                        </CardContent>
-                      </Card>
-                    ))
-                  ) : (
-                    celebNews.map((article, index) => (
-                      <InteractiveArticleCard
-                        key={article.id}
-                        article={{
-                          ...article,
-                          author_id: '',
-                          category: 'entertainment',
-                          content: article.excerpt || '',
-                          created_at: article.published_at,
-                          credits_required: 0,
-                          featured_image_url: article.image_url,
-                          is_premium: false,
-                          likes: 0,
-                          meta_description: article.excerpt || '',
-                          meta_keywords: [],
-                          status: 'published',
-                          tags: [],
-                          updated_at: article.published_at,
-                          views: 0
-                        }}
-                      />
-                    ))
-                  )}
-                </div>
-              </section>
-
-              {/* Premium Ad Space */}
-              <section className="bg-gradient-to-r from-primary/10 to-secondary/10 p-8 rounded-lg border">
-                <div className="text-center space-y-4">
-                  <h3 className="text-2xl font-bold text-foreground">Premium Ad Space</h3>
-                  <p className="text-muted-foreground">Reach thousands of engaged political news readers</p>
-                  <Button size="lg" asChild>
-                    <Link to="/ad-submission">Advertise With Us</Link>
-                  </Button>
-                </div>
-              </section>
+          {/* Premium Ad Space - Full Width */}
+          <section className="bg-gradient-to-r from-primary/10 to-secondary/10 p-8 rounded-lg border mb-8">
+            <div className="text-center space-y-4">
+              <h3 className="text-2xl font-bold text-foreground">Premium Ad Space</h3>
+              <p className="text-muted-foreground">Reach thousands of engaged political news readers</p>
+              <Button size="lg" asChild>
+                <Link to="/ad-submission">Advertise With Us</Link>
+              </Button>
             </div>
+          </section>
 
-            {/* Right Column - Sidebar */}
-            <div className="space-y-6">
-              <ReadingListWidget />
-              <AdSpaces />
-            </div>
+          {/* Sidebar Content Below */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ReadingListWidget />
+            <AdSpaces />
           </div>
         </main>
 

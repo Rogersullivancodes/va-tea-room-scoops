@@ -166,7 +166,7 @@ const DynamicTopBanner: React.FC = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-red-600 via-red-700 to-red-800 text-white relative overflow-hidden min-h-[50vh]">
+    <div className="bg-gradient-to-r from-red-600 via-red-700 to-red-800 text-white relative overflow-hidden min-h-[80vh]">
       {/* Background Animation */}
       <div className="absolute inset-0 bg-black/10">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-pulse"></div>
@@ -175,12 +175,12 @@ const DynamicTopBanner: React.FC = () => {
       <div className="relative z-10 container mx-auto px-4 h-full flex items-center">
         {isVideoMode ? (
           // Virginia Politics Video Mode with Thumbnails - Full Banner Height
-          <div className="py-12 h-full">
+          <div className="py-16 h-full">
             <div className="bg-black/20 backdrop-blur-sm rounded-lg p-8 max-w-7xl mx-auto h-full">
               <div className="grid md:grid-cols-3 gap-8 h-full">
                 {/* Main Video Player - Larger */}
                 <div className="md:col-span-2">
-                  <div className="bg-black rounded-lg aspect-video mb-6 relative overflow-hidden h-80 md:h-96">
+                  <div className="bg-black rounded-lg aspect-video mb-6 relative overflow-hidden h-96 md:h-[500px]">
                     <iframe 
                       width="100%" 
                       height="100%" 
@@ -275,15 +275,15 @@ const DynamicTopBanner: React.FC = () => {
             </div>
           </div>
         ) : (
-          // News Headlines Mode with Large Video Thumbnail - Half Page Height
-          <div className="py-12 h-full flex items-center">
+          // News Headlines Mode with Large Video Thumbnail - Expanded Height
+          <div className="py-20 h-full flex items-center">
             <div className="w-full">
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 {/* Large Video Thumbnail */}
                 <div className="order-2 md:order-1">
                   <div className="relative group">
                     {/* Video Placeholder with loading */}
-                    <div className="w-full h-48 md:h-64 bg-gradient-to-br from-red-800/20 to-red-900/20 rounded-xl shadow-2xl overflow-hidden relative">
+                    <div className="w-full h-64 md:h-80 bg-gradient-to-br from-red-800/20 to-red-900/20 rounded-xl shadow-2xl overflow-hidden relative">
                       <img
                         src={currentVideo.thumbnail}
                         alt="Virginia Politics Video"

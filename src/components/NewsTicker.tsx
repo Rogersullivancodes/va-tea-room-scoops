@@ -11,11 +11,11 @@ const NewsTicker: React.FC = () => {
   ];
 
   return (
-    <div className="bg-primary text-primary-foreground py-2 overflow-hidden">
+    <div className="bg-primary text-primary-foreground py-6 overflow-hidden border-b border-primary/20">
       <div className="relative">
         <div className="flex animate-marquee whitespace-nowrap">
           {newsItems.map((item, index) => (
-            <span key={index} className="mx-8 text-sm font-medium">
+            <span key={index} className="mx-12 text-lg font-bold">
               🔥 {item}
             </span>
           ))}
