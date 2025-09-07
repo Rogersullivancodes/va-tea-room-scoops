@@ -11,6 +11,13 @@ import { toast } from 'sonner';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import type { Tables } from '@/integrations/supabase/types';
 
+// Import category thumbnails
+import politicalThumb from '@/assets/political-news-thumb.jpg';
+import collegeThumb from '@/assets/college-news-thumb.jpg';
+import entertainmentThumb from '@/assets/entertainment-news-thumb.jpg';
+import generalThumb from '@/assets/general-news-thumb.jpg';
+import featuredThumb from '@/assets/featured-article-thumb.jpg';
+
 type Article = Tables<'articles'>;
 
 interface InteractiveArticleCardProps {
@@ -33,7 +40,17 @@ const InteractiveArticleCard: React.FC<InteractiveArticleCardProps> = ({
   const cardRef = useRef<HTMLDivElement>(null);
   const { elementRef, hasIntersected } = useIntersectionObserver({ threshold: 0.1 });
 
-  // Placeholder images for news articles without thumbnails
+  // Category-specific thumbnails
+  const getCategoryThumbnail = (category?: string) => {
+    const cat = category?.toLowerCase();
+    if (cat === 'politics' || cat === 'political') return politicalThumb;
+    if (cat === 'college' || cat === 'university' || cat === 'education') return collegeThumb;
+    if (cat === 'entertainment' || cat === 'celebrity') return entertainmentThumb;
+    if (cat === 'featured') return featuredThumb;
+    return generalThumb;
+  };
+
+  // Fallback images for news articles without thumbnails
   const placeholderImages = [
     'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=300&fit=crop',
     'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=300&fit=crop',
@@ -44,10 +61,21 @@ const InteractiveArticleCard: React.FC<InteractiveArticleCardProps> = ({
   ];
 
   const getImageUrl = () => {
-    if (article.featured_image_url || (article as any).image_url) {
-      return article.featured_image_url || (article as any).image_url;
+    // Priority 1: Use the article's image if available
+    if (article.featured_image_url) {
+      return article.featured_image_url;
     }
-    // Use article ID hash to consistently pick same placeholder
+    if ((article as any).image_url) {
+      return (article as any).image_url;
+    }
+    
+    // Priority 2: Use category-specific thumbnail
+    const categoryThumb = getCategoryThumbnail(article.category);
+    if (categoryThumb) {
+      return categoryThumb;
+    }
+    
+    // Priority 3: Use consistent placeholder based on article ID
     const hash = article.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return placeholderImages[hash % placeholderImages.length];
   };
@@ -161,8 +189,14 @@ const InteractiveArticleCard: React.FC<InteractiveArticleCardProps> = ({
               onLoad={() => setImageLoaded(true)}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                const hash = article.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                target.src = placeholderImages[hash % placeholderImages.length];
+                // Try category thumbnail first, then fallback to placeholder
+                const categoryThumb = getCategoryThumbnail(article.category);
+                if (categoryThumb && target.src !== categoryThumb) {
+                  target.src = categoryThumb;
+                } else {
+                  const hash = article.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                  target.src = placeholderImages[hash % placeholderImages.length];
+                }
                 setImageLoaded(true);
               }}
               loading="lazy"

@@ -123,8 +123,9 @@ const Index: React.FC = () => {
                         article={{
                           ...article,
                           author_id: '',
+                          category: 'politics',
                           credits_required: 0,
-                          featured_image_url: article.image_url || politicalThumb,
+                          featured_image_url: article.image_url,
                           is_premium: false,
                           likes: 0,
                           meta_description: article.excerpt || '',
@@ -167,8 +168,9 @@ const Index: React.FC = () => {
                         article={{
                           ...article,
                           author_id: '',
+                          category: 'college',
                           credits_required: 0,
-                          featured_image_url: article.image_url || collegeThumb,
+                          featured_image_url: article.image_url,
                           is_premium: false,
                           likes: 0,
                           meta_description: article.excerpt || '',
@@ -210,7 +212,7 @@ const Index: React.FC = () => {
                         key={article.id}
                         article={{
                           ...article,
-                          featured_image_url: article.featured_image_url || featuredThumb
+                          category: 'featured'
                         }}
                       />
                     ))
@@ -250,7 +252,7 @@ const Index: React.FC = () => {
                           content: article.excerpt || '',
                           created_at: article.published_at,
                           credits_required: 0,
-                          featured_image_url: article.image_url || entertainmentThumb,
+                          featured_image_url: article.image_url,
                           is_premium: false,
                           likes: 0,
                           meta_description: article.excerpt || '',
