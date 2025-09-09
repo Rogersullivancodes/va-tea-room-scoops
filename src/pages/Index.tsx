@@ -9,6 +9,7 @@ import ReadingListWidget from '@/components/ReadingListWidget';
 import AdSpaces from '@/components/AdSpaces';
 import DynamicTopBanner from '@/components/DynamicTopBanner';
 import NewsTicker from '@/components/NewsTicker';
+import SearchBar from '@/components/SearchBar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -85,6 +86,11 @@ const Index: React.FC = () => {
         <NewsTicker />
         
         <main className="container mx-auto px-4 py-8">
+          {/* Search Bar - Full Width */}
+          <section className="mb-8">
+            <SearchBar className="max-w-2xl mx-auto" />
+          </section>
+
           {/* Premium Ad Space - Full Width */}
           <section className="bg-gradient-to-r from-primary/10 to-secondary/10 p-8 rounded-lg border mb-8">
             <div className="text-center space-y-4">

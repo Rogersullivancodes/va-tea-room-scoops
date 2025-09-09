@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, X } from 'lucide-react';
@@ -34,6 +35,7 @@ interface SearchBarProps {
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ onArticleSelect, className }) => {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -95,6 +97,16 @@ const SearchBar: React.FC<SearchBarProps> = ({ onArticleSelect, className }) => 
   const handleSelect = (article: SearchResult) => {
     setOpen(false);
     setSearch('');
+    
+    // Navigate to article if it's a regular article
+    if (!(article as any).isNewsArticle) {
+      navigate(`/articles/${article.id}`);
+    } else {
+      // For news articles, navigate to news page with filter
+      navigate(`/news?search=${encodeURIComponent(article.title)}`);
+    }
+    
+    // Call the callback if provided
     onArticleSelect?.(article);
   };
 
@@ -114,6 +126,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ onArticleSelect, className }) => 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onFocus={() => setOpen(true)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && results.length > 0) {
+                  handleSelect(results[0]);
+                }
+              }}
               className="pl-10 pr-10"
             />
             {search && (
